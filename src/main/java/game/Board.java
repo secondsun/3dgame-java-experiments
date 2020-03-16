@@ -95,17 +95,17 @@ public class Board {
 
     public Board rotateX(int rotX) {
         this.rotX = rotX;
-        //tiles = tiles.stream().map(tile -> tile.rotateX(rotX)).collect(Collectors.toList());
+        tiles = tiles.stream().map(tile -> tile.rotateX(rotX)).collect(Collectors.toList());
         return this;
     }
 
     public Board translateX(int i) {
-        //tiles = tiles.stream().map(tile -> tile.translateX(i)).collect(Collectors.toList());
+        tiles = tiles.stream().map(tile -> tile.translateX(i)).collect(Collectors.toList());
         return this;
     }
 
     public Board translateY(int i) {
-        //tiles = tiles.stream().map(tile -> tile.translateY(i)).collect(Collectors.toList());
+        tiles = tiles.stream().map(tile -> tile.translateY(i)).collect(Collectors.toList());
         return this;
     }
 }

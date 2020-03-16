@@ -22,13 +22,13 @@ public record Triangle(Vertex v1,Vertex v2,Vertex v3, int color) {
     }
 
     public Vertex normal() {
-        var line1= new Vertex(v2.x() - v1.x(),
-         v2.y() - v1.y(),
-         v2.z() - v1.z());
+        var line1= new Vertex(v2.x - v1.x,
+         v2.y - v1.y,
+         v2.z - v1.z);
 
-        var line2= new Vertex( v3.x() - v1.x(),
-         v3.y() - v1.y(),
-         v3.z() - v1.z());
+        var line2= new Vertex( v3.x - v1.x,
+         v3.y - v1.y,
+         v3.z - v1.z);
 
         return line1.cross(line2);
 

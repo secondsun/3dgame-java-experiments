@@ -158,7 +158,7 @@ public class OLCEngine extends Component {
     private int direction(Triangle face) {
         var normal = face.normal();
         var v1 = face.v1();
-        return v1.x() * normal.x() + v1.y()*normal.y() + v1.z() * normal.z();
+        return v1.x * normal.x + v1.y*normal.y + v1.z * normal.z;
     }
 
     private int randomColor() {
@@ -169,8 +169,8 @@ public class OLCEngine extends Component {
     }
 
     private void drawTriangle(Triangle scale) {
-        drawTriangle(scale.v1().x(), scale.v1().y(),
-                scale.v2().x(), scale.v2().y(),
-                scale.v3().x(), scale.v3().y(), scale.color());
+        drawTriangle(scale.v1().x, scale.v1().y,
+                scale.v2().x, scale.v2().y,
+                scale.v3().x, scale.v3().y, scale.color());
     }
 }

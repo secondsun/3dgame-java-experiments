@@ -11,7 +11,7 @@ import static geometry.Constants.rotX128Array;
 public class OLCEngineIsoGrid extends Component {
 
     private BufferedImage screenImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-    private Board board = new Board(192, 256, new int[]{0xfc49ab,0xff7300,0xe7ff00,0x5fe8ff,0x64ff00});//.rotateY(0).rotateX(30);
+    private Board board = new Board(192, 256, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});//.rotateY(0).rotateX(30);
     private int rotX = 0;
     private int rotY = 0;
 
@@ -39,9 +39,9 @@ public class OLCEngineIsoGrid extends Component {
         }
         var displayImage = screenImage.getScaledInstance(getWidth(), getHeight(), BufferedImage.SCALE_FAST);
         g.drawImage(displayImage, 0, 0, null);
-rotX++;
+        rotX++;
         rotY += 7;
-        if (rotY >=360) {
+        if (rotY >= 360) {
             rotY = 0;
         }
 //
