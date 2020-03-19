@@ -31,28 +31,10 @@ public class BoardNew {
     private Map<Point, Matrix> reversePrecalcs = Constants.getReversePrecalcs();
     private int translateY;
     private int translateX;
-    EdgeTableTuple[] edgeTable = createEdgeTupleTable(screenHeight);
+    Map<Integer, EdgeTableTuple> edgeTable = new HashMap<>();
 
-    private EdgeTableTuple[] createEdgeTupleTable(int i) {
-
-        var edgeTable = new EdgeTableTuple[i];
-        for (int x = 0; x < i; x++) {
-            edgeTable[x] = new EdgeTableTuple();
-        }
-        return edgeTable;
-    }
 
     EdgeTableTuple activeEdgeTuple = new EdgeTableTuple();
-
-    // Scanline Function
-    void initEdgeTable() {
-        int i;
-        for (i = 0; i < screenHeight; i++) {
-            edgeTable[i].countEdgeBucket = 0;
-        }
-
-        activeEdgeTuple.countEdgeBucket = 0;
-    }
 
 
     public BoardNew(int columns, int rows, int[] palette) {
@@ -85,7 +67,6 @@ public class BoardNew {
 
     //Calculate polygons for screen drawing
     public void generateEdgeList() {
-        initEdgeTable();
 
         tiles.forEach(quad -> {
             int yMin = Maths.min(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
@@ -99,47 +80,43 @@ public class BoardNew {
                 return;
             }
 
-            if (xMax < -96 || xMin > 1396) {
+            if (xMax < -96 || xMin > 96) {
                 //does not intersect with scan line
                 return;
             }
 
-            quad.edges().forEach(this::storeEdgeInTable);
+            quad.edges().forEach(edge -> {
+                storeEdgeInTable(edge, quad.color());
+            });
 
 
         });
-        //For Each Quad
-        //For each Edge calculate yMin and yMax
-        //if edge is horizontal, ignore it
-        // else if yMax on scan-lie, ignore it
-        // else if ymin<y<yMax add edge to scnalLine y's edge list
-        //add "lower" tiles with high z values to edge list
     }
 
-    private void storeEdgeInTable(Edge edge) {
+    private void storeEdgeInTable(Edge edge, int color) {
         int x1 = edge.v1.x;
         int y1 = edge.v1.y;
         int x2 = edge.v2.x;
         int y2 = edge.v2.y;
 
-        x1 = Maths.clamp(0, 255, x1);
-        x2 = Maths.clamp(0, 255, x2);
+        x1 = Maths.clamp(0, screenWidth, x1);
+        x2 = Maths.clamp(0, screenWidth, x2);
         y1 = Maths.clamp(0, screenHeight, y1);
         y2 = Maths.clamp(0, screenHeight, y2);
 
-        float m, minv;
+        float slope, inverseSlope;
         int ymaxTS, xwithyminTS, scanline; //ts stands for to store
 
         if (x2 == x1) {
-            minv = 0;
+            inverseSlope = 0;
         } else {
-            m = ((float) (y2 - y1)) / ((float) (x2 - x1));
+            slope = ((float) (y2 - y1)) / ((float) (x2 - x1));
 
             // horizontal lines are not stored in edge table
             if (y2 == y1)
                 return;
 
-            minv = (float) 1.0 / m;
+            inverseSlope = (float) 1.0 / slope;
 
         }
 
@@ -153,21 +130,19 @@ public class BoardNew {
             xwithyminTS = x1;
         }
         // the assignment part is done..now storage..
-        storeEdgeInTuple(edgeTable[scanline], ymaxTS, xwithyminTS, minv);
+        storeEdgeInTuple(edgeTable.computeIfAbsent(scanline, scanLine -> new EdgeTableTuple()), ymaxTS, xwithyminTS, inverseSlope, color);
 
     }
 
-    private void storeEdgeInTuple(EdgeTableTuple receiver, int ym, int xm, float slopInv) {
+    private void storeEdgeInTuple(EdgeTableTuple receiver, int ym, int xm, float slopInv, int color) {
         // both used for edgetable and active edge table..
         // The edge tuple sorted in increasing ymax and x of the lower end.
-        (receiver.buckets[(receiver).countEdgeBucket]).ymax = ym;
-        (receiver.buckets[(receiver).countEdgeBucket]).xofymin = (float) xm;
-        (receiver.buckets[(receiver).countEdgeBucket]).slopeinverse = slopInv;
+        var edge = new EdgeBucket(ym, xm, slopInv);
+        edge.color = color;
+        receiver.buckets.add(edge);
 
         // sort the buckets
         insertionSort(receiver);
-
-        receiver.countEdgeBucket++;
     }
 
     /* Function to sort an array using insertion sort*/
@@ -175,21 +150,21 @@ public class BoardNew {
         int i, j;
         EdgeBucket temp = new EdgeBucket(0, 0, 0);
 
-        for (i = 1; i < ett.countEdgeBucket; i++) {
-            temp.ymax = ett.buckets[i].ymax;
-            temp.xofymin = ett.buckets[i].xofymin;
-            temp.slopeinverse = ett.buckets[i].slopeinverse;
+        for (i = 1; i < ett.buckets.size(); i++) {
+            temp.ymax = ett.buckets.get(i).ymax;
+            temp.xofymin = ett.buckets.get(i).xofymin;
+            temp.slopeinverse = ett.buckets.get(i).slopeinverse;
             j = i - 1;
 
-            while ((j >= 0) && (temp.xofymin < ett.buckets[j].xofymin)) {
-                ett.buckets[j + 1].ymax = ett.buckets[j].ymax;
-                ett.buckets[j + 1].xofymin = ett.buckets[j].xofymin;
-                ett.buckets[j + 1].slopeinverse = ett.buckets[j].slopeinverse;
+            while ((j >= 0) && (temp.xofymin < ett.buckets.get(j).xofymin)) {
+                ett.buckets.get(j + 1).ymax = ett.buckets.get(j).ymax;
+                ett.buckets.get(j + 1).xofymin = ett.buckets.get(j).xofymin;
+                ett.buckets.get(j + 1).slopeinverse = ett.buckets.get(j).slopeinverse;
                 j = j - 1;
             }
-            ett.buckets[j + 1].ymax = temp.ymax;
-            ett.buckets[j + 1].xofymin = temp.xofymin;
-            ett.buckets[j + 1].slopeinverse = temp.slopeinverse;
+            ett.buckets.get(j + 1).ymax = temp.ymax;
+            ett.buckets.get(j + 1).xofymin = temp.xofymin;
+            ett.buckets.get(j + 1).slopeinverse = temp.slopeinverse;
         }
     }
 
@@ -209,16 +184,9 @@ public class BoardNew {
 
     void removeEdgeByYmax(EdgeTableTuple Tup, int yy) {
         int i, j;
-        for (i = 0; i < Tup.countEdgeBucket; i++) {
-            if (Tup.buckets[i].ymax == yy) {
-
-
-                for (j = i; j < Tup.countEdgeBucket - 1; j++) {
-                    Tup.buckets[j].ymax = Tup.buckets[j + 1].ymax;
-                    Tup.buckets[j].xofymin = Tup.buckets[j + 1].xofymin;
-                    Tup.buckets[j].slopeinverse = Tup.buckets[j + 1].slopeinverse;
-                }
-                Tup.countEdgeBucket--;
+        for (i = 0; i < Tup.buckets.size(); i++) {
+            if (Tup.buckets.get(i).ymax == yy) {
+                Tup.buckets.remove(i);
                 i--;
             }
         }
@@ -226,102 +194,107 @@ public class BoardNew {
 
     public BufferedImage draw() {
 
-        BufferedImage image = new BufferedImage(256, screenHeight, BufferedImage.TYPE_INT_RGB);
-        int i, j, x1, ymax1, x2, ymax2, FillFlag = 0, coordCount;
+        BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+
 
         // we will start from scanline 0;
         // Repeat until last scanline:
-        for (i = 0; i < screenHeight; i++)//4. Increment y by 1 (next scan line)
+        for (int sLine = 0; sLine < screenHeight; sLine++)//4. Increment y by 1 (next scan line)
         {
-
+            System.out.println("sLine size is " + sLine);
+            int scanLine = sLine;
             // 1. Move from ET bucket y to the
             // AET those edges whose ymin = y (entering edges)
-            for (j = 0; j < edgeTable[i].countEdgeBucket; j++) {
-                storeEdgeInTuple(activeEdgeTuple,
-                        edgeTable[i].buckets[j].ymax,
-                        (int) edgeTable[i].buckets[j].xofymin,
-                        edgeTable[i].buckets[j].slopeinverse);
-            }
+            edgeTable.forEach((index, tuple) -> {
+                for (int j = 0; j < tuple.buckets.size(); j++) {
+                    storeEdgeInTuple(activeEdgeTuple,
+                            tuple.buckets.get(j).ymax,
+                            (int) tuple.buckets.get(j).xofymin,
+                            tuple.buckets.get(j).slopeinverse,
+                            tuple.buckets.get(j).color);
+                }
 
 
-            // 2. Remove from AET those edges for
-            // which y=ymax (not involved in next scan line)
-            removeEdgeByYmax(activeEdgeTuple, i);
+                // 2. Remove from AET those edges for
+                // which y=ymax (not involved in next scan line)
+                removeEdgeByYmax(activeEdgeTuple, scanLine);
 
-            //sort AET (remember: ET is presorted)
-            insertionSort(activeEdgeTuple);
+                //sort AET (remember: ET is presorted)
+                insertionSort(activeEdgeTuple);
 
 
-            //3. Fill lines on scan line y by using pairs of x-coords from AET
-            j = 0;
-            FillFlag = 0;
-            coordCount = 0;
-            x1 = 0;
-            x2 = 0;
-            ymax1 = 0;
-            ymax2 = 0;
-            while (j < activeEdgeTuple.countEdgeBucket) {
-                if (coordCount % 2 == 0) {
-                    x1 = (int) (activeEdgeTuple.buckets[j].xofymin);
-                    ymax1 = activeEdgeTuple.buckets[j].ymax;
-                    if (x1 == x2) {
-				/* three cases can arrive-
-					1. lines are towards top of the intersection
-					2. lines are towards bottom
-					3. one line is towards top and other is towards bottom
-				*/
-                        if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
-                            x2 = x1;
-                            ymax2 = ymax1;
+                //3. Fill lines on scan line y by using pairs of x-coords from AET
+                int j = 0;
+                int FillFlag = 0;
+                int coordCount = 0;
+                int x1 = 0;
+                int x2 = 0;
+                int ymax1 = 0;
+                int ymax2 = 0;
+                while (j < activeEdgeTuple.buckets.size()) {
+                    if (coordCount % 2 == 0) {
+                        x1 = (int) (activeEdgeTuple.buckets.get(j).xofymin);
+                        ymax1 = activeEdgeTuple.buckets.get(j).ymax;
+                        if (x1 == x2) {
+                        /* three cases can arrive-
+                            1. lines are towards top of the intersection
+                            2. lines are towards bottom
+                            3. one line is towards top and other is towards bottom
+                        */
+                            if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
+                                x2 = x1;
+                                ymax2 = ymax1;
+                            } else {
+                                coordCount++;
+                            }
                         } else {
                             coordCount++;
                         }
                     } else {
-                        coordCount++;
-                    }
-                } else {
-                    x2 = (int) activeEdgeTuple.buckets[j].xofymin;
-                    ymax2 = activeEdgeTuple.buckets[j].ymax;
+                        x2 = (int) activeEdgeTuple.buckets.get(j).xofymin;
+                        ymax2 = activeEdgeTuple.buckets.get(j).ymax;
 
-                    FillFlag = 0;
+                        FillFlag = 0;
 
-                    // checking for intersection...
-                    if (x1 == x2) {
-				/*three cases can arive-
-					1. lines are towards top of the intersection
-					2. lines are towards bottom
-					3. one line is towards top and other is towards bottom
-				*/
-                        if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
-                            x1 = x2;
-                            ymax1 = ymax2;
+                        // checking for intersection...
+                        if (x1 == x2) {
+                    /*three cases can arive-
+                        1. lines are towards top of the intersection
+                        2. lines are towards bottom
+                        3. one line is towards top and other is towards bottom
+                    */
+                            if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
+                                x1 = x2;
+                                ymax1 = ymax2;
+                            } else {
+                                coordCount++;
+                                FillFlag = 1;
+                            }
                         } else {
                             coordCount++;
                             FillFlag = 1;
                         }
-                    } else {
-                        coordCount++;
-                        FillFlag = 1;
+
+
+                        if (FillFlag != 0) {
+                            //drawing actual lines...
+                            var gfx = image.getGraphics();
+                            gfx.setColor(new Color(activeEdgeTuple.buckets.get(j).color));
+                            gfx.drawLine(x1, scanLine, x2, scanLine);
+
+                            // printf("\nLine drawn from %d,%d to %d,%d",x1,i,x2,i);
+                        }
+
                     }
 
-
-                    if (FillFlag != 0) {
-                        //drawing actual lines...
-                        var gfx = image.getGraphics();
-                        gfx.setColor(new Color(0.0f, 0.7f, 0.0f));
-                        gfx.drawLine(x1, i, x2, i);
-
-                        // printf("\nLine drawn from %d,%d to %d,%d",x1,i,x2,i);
-                    }
-
+                    j++;
                 }
 
-                j++;
-            }
 
+                // 5. For each nonvertical edge remaining in AET, update x for new y
+                updatexbyslopeinv(activeEdgeTuple);
+            });
 
-            // 5. For each nonvertical edge remaining in AET, update x for new y
-            updatexbyslopeinv(activeEdgeTuple);
         }
         return image;
     }
@@ -330,8 +303,8 @@ public class BoardNew {
     void updatexbyslopeinv(EdgeTableTuple Tup) {
         int i;
 
-        for (i = 0; i < Tup.countEdgeBucket; i++) {
-            (Tup.buckets[i]).xofymin = (Tup.buckets[i]).xofymin + (Tup.buckets[i]).slopeinverse;
+        for (i = 0; i < Tup.buckets.size(); i++) {
+            (Tup.buckets.get(i)).xofymin = (Tup.buckets.get(i)).xofymin + (Tup.buckets.get(i)).slopeinverse;
         }
     }
 
