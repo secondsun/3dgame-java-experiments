@@ -63,8 +63,8 @@ public record Quad(Vertex v1, Vertex v2, Vertex v3, Vertex v4, int color) {
         Edge e1 = new Edge(v1,v2);
         Edge e2 = new Edge(v2,v3);
         Edge e3 = new Edge(v3,v1);
-        Edge e4 = new Edge(v1,v2);
-        Edge e5 = new Edge(v2,v4);
+        Edge e4 = new Edge(v1,v3);
+        Edge e5 = new Edge(v3,v4);
         Edge e6 = new Edge(v4,v1);
         return List.of(e1,e2,e3,e4,e5,e6);
     }
