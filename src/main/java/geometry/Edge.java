@@ -2,17 +2,17 @@ package geometry;
 
 import java.util.Objects;
 
-import static java.lang.Math.toRadians;
-
 public class Edge {
 
     public final Vertex v1;
     public final Vertex v2;
+    public final int polyId;
 
 
-    public Edge(Vertex v1, Vertex v2) {
+    public Edge(Vertex v1, Vertex v2, int polyId) {
         this.v1 = v1;
         this.v2 = v2;
+        this.polyId = polyId;
         if (v1 == null || v2 == null) {
             throw new NullPointerException("v1 or v2 was null");
         }

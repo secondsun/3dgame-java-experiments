@@ -3,13 +3,11 @@ package game;
 
 import geometry.*;
 import org.la4j.Matrix;
-import org.la4j.matrix.dense.Basic2DMatrix;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BoardNew {
 
@@ -37,12 +35,12 @@ public class BoardNew {
 
         var edgeTable = new EdgeTableTuple[i];
         for (int x = 0; x < i; x++) {
-            edgeTable[x] = new EdgeTableTuple();
+            edgeTable[x] = new EdgeTableTuple(-1);
         }
         return edgeTable;
     }
 
-    EdgeTableTuple activeEdgeTuple = new EdgeTableTuple();
+    EdgeTableTuple activeEdgeTuple = new EdgeTableTuple(-1);
 
     // Scanline Function
     void initEdgeTable() {
@@ -104,8 +102,10 @@ public class BoardNew {
                 return;
             }
 
-            quad.edges().forEach(this::storeEdgeInTable);
+            var pair = quad.edges();
 
+            pair.first.forEach(this::storeEdgeInTable);
+            pair.second.forEach(this::storeEdgeInTable);
 
         });
         //For Each Quad
@@ -153,16 +153,17 @@ public class BoardNew {
             xwithyminTS = x1;
         }
         // the assignment part is done..now storage..
-        storeEdgeInTuple(edgeTable[scanline], ymaxTS, xwithyminTS, minv);
+        storeEdgeInTuple(edgeTable[scanline], ymaxTS, xwithyminTS, minv,edge.polyId);
 
     }
 
-    private void storeEdgeInTuple(EdgeTableTuple receiver, int ym, int xm, float slopInv) {
+    private void storeEdgeInTuple(EdgeTableTuple receiver, int ym, int xm, float slopInv, int polyId) {
         // both used for edgetable and active edge table..
         // The edge tuple sorted in increasing ymax and x of the lower end.
         (receiver.buckets[(receiver).countEdgeBucket]).ymax = ym;
         (receiver.buckets[(receiver).countEdgeBucket]).xofymin = (float) xm;
         (receiver.buckets[(receiver).countEdgeBucket]).slopeinverse = slopInv;
+        (receiver.buckets[(receiver).countEdgeBucket]).polyId = polyId;
 
         // sort the buckets
         insertionSort(receiver);
@@ -173,23 +174,26 @@ public class BoardNew {
     /* Function to sort an array using insertion sort*/
     void insertionSort(EdgeTableTuple ett) {
         int i, j;
-        EdgeBucket temp = new EdgeBucket(0, 0, 0);
+        EdgeBucket temp = new EdgeBucket(0, 0, 0, -1);
 
         for (i = 1; i < ett.countEdgeBucket; i++) {
             temp.ymax = ett.buckets[i].ymax;
             temp.xofymin = ett.buckets[i].xofymin;
             temp.slopeinverse = ett.buckets[i].slopeinverse;
+            temp.polyId = ett.buckets[i].polyId;
             j = i - 1;
 
             while ((j >= 0) && (temp.xofymin < ett.buckets[j].xofymin)) {
                 ett.buckets[j + 1].ymax = ett.buckets[j].ymax;
                 ett.buckets[j + 1].xofymin = ett.buckets[j].xofymin;
                 ett.buckets[j + 1].slopeinverse = ett.buckets[j].slopeinverse;
+                ett.buckets[j + 1].polyId = ett.buckets[j].polyId;
                 j = j - 1;
             }
             ett.buckets[j + 1].ymax = temp.ymax;
             ett.buckets[j + 1].xofymin = temp.xofymin;
             ett.buckets[j + 1].slopeinverse = temp.slopeinverse;
+            ett.buckets[j + 1].polyId = temp.polyId;
         }
     }
 
@@ -207,16 +211,17 @@ public class BoardNew {
     }
 
 
-    void removeEdgeByYmax(EdgeTableTuple Tup, int yy) {
+    void removeEdgeByYmax(EdgeTableTuple Tup, int yy, int polyId) {
         int i, j;
         for (i = 0; i < Tup.countEdgeBucket; i++) {
-            if (Tup.buckets[i].ymax == yy) {
+            if (Tup.buckets[i].ymax == yy && Tup.buckets[i].polyId == polyId) {
 
 
                 for (j = i; j < Tup.countEdgeBucket - 1; j++) {
                     Tup.buckets[j].ymax = Tup.buckets[j + 1].ymax;
                     Tup.buckets[j].xofymin = Tup.buckets[j + 1].xofymin;
                     Tup.buckets[j].slopeinverse = Tup.buckets[j + 1].slopeinverse;
+                    Tup.buckets[j].polyId = Tup.buckets[j + 1].polyId;
                 }
                 Tup.countEdgeBucket--;
                 i--;
@@ -240,13 +245,14 @@ public class BoardNew {
                 storeEdgeInTuple(activeEdgeTuple,
                         edgeTable[i].buckets[j].ymax,
                         (int) edgeTable[i].buckets[j].xofymin,
-                        edgeTable[i].buckets[j].slopeinverse);
+                        edgeTable[i].buckets[j].slopeinverse,
+                        edgeTable[i].buckets[j].polyId);
             }
 
 
             // 2. Remove from AET those edges for
             // which y=ymax (not involved in next scan line)
-            removeEdgeByYmax(activeEdgeTuple, i);
+            removeEdgeByYmax(activeEdgeTuple, i, activeEdgeTuple.polyId);
 
             //sort AET (remember: ET is presorted)
             insertionSort(activeEdgeTuple);
