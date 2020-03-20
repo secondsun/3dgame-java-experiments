@@ -65,10 +65,10 @@ public class BoardNew {
         for (int x = 0; x < columns; x++) {
             for (int y = 0; y < rows; y++) {
 
-                var v1 = vertexMap.computeIfAbsent(new Point((x * tileSize) - boardWidth / 2, boardHeight / 2 - (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
-                var v2 = vertexMap.computeIfAbsent(new Point((x * tileSize) - boardWidth / 2 + tileSize, boardHeight / 2 - (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
-                var v3 = vertexMap.computeIfAbsent(new Point((x * tileSize) - boardWidth / 2, boardHeight / 2 - (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
-                var v4 = vertexMap.computeIfAbsent(new Point((x * tileSize) - boardWidth / 2 + tileSize, boardHeight / 2 - (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
+                var v1 = vertexMap.computeIfAbsent(new Point((x * tileSize),  (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
+                var v2 = vertexMap.computeIfAbsent(new Point((x * tileSize) + tileSize,   (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
+                var v3 = vertexMap.computeIfAbsent(new Point((x * tileSize),   (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
+                var v4 = vertexMap.computeIfAbsent(new Point((x * tileSize)  + tileSize,   (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
 
                 int paletteSize = palette.length;
                 int paletteColorIndex = ((y * tileSize + x) % paletteSize);
