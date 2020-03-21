@@ -37,7 +37,7 @@ public class CalculateConstants {
                 Matrix rotYMatrix = new Basic2DMatrix(rotYMatrixd);
                 Matrix rotMatrix = rotXMatrix.multiply(rotYMatrix);
 
-                System.out.println(rotY + "," + rotX + " -> {" + rotMatrix + "}");
+                //System.out.println(rotY + "," + rotX + " -> {" + rotMatrix + "}");
 
                 count++;
             }

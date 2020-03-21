@@ -1,372 +1,476 @@
 package game;
 //uses code from https://www.geeksforgeeks.org/scan-line-polygon-filling-using-opengl-c/
 
-import geometry.*;
-import org.la4j.Matrix;
-
-import java.awt.*;
+import geometry.Constants;
+import geometry.EdgeEntry;
+import geometry.Quad;
+import geometry.Triangle;
+import geometry.Vertex;
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.la4j.Matrix;
 
 public class BoardNew {
 
-    private static int tileSize = 8;
+  private static final int scale = 1;
+  private static int tileSize = 8 * scale;
 
-    private final int screenWidth = 256;
-    private final int screenHeight = 192;
-    private final int[] palette;
-    private final int boardWidth;
-    private final int boardHeight;
+  private final int screenWidth = 256 * scale;
+  private final int screenHeight = 192 * scale;
+  private final int[] palette;
+  private final int boardWidth;
+  private final int boardHeight;
 
-    private List<Quad> tiles;
-    private List<Vertex> verticies;
+  private List<Quad> tiles;
+  private List<Vertex> verticies;
 
-    private int rotY;
-    private int rotX;
+  private int rotY;
+  private int rotX;
 
-    private Map<Point, Matrix> precalcs = Constants.getPrecalcs();
-    private Map<Point, Matrix> reversePrecalcs = Constants.getReversePrecalcs();
-    private int translateY;
-    private int translateX;
-    EdgeTableTuple[] edgeTable = createEdgeTupleTable(screenHeight);
+  private Map<Point, Matrix> precalcs = Constants.getPrecalcs();
+  private Map<Point, Matrix> reversePrecalcs = Constants.getReversePrecalcs();
+  private int translateY;
+  private int translateX;
 
-    private EdgeTableTuple[] createEdgeTupleTable(int i) {
+  private List<EdgeEntry>[] edgeTable = createEdgeTupleTable(screenHeight);
 
-        var edgeTable = new EdgeTableTuple[i];
-        for (int x = 0; x < i; x++) {
-            edgeTable[x] = new EdgeTableTuple(-1);
-        }
-        return edgeTable;
+  private List<EdgeEntry>[] createEdgeTupleTable(int i) {
+
+    List<EdgeEntry>[] edgeTable = new List[i];
+    for (int x = 0; x < i; x++) {
+      edgeTable[x] = new ArrayList<>();
+    }
+    return edgeTable;
+  }
+
+
+  // Scanline Function
+  void initEdgeTable() {
+    int i;
+    for (i = 0; i < screenHeight; i++) {
+      edgeTable[i] = new ArrayList<>();
     }
 
-    EdgeTableTuple activeEdgeTuple = new EdgeTableTuple(-1);
+  }
 
-    // Scanline Function
-    void initEdgeTable() {
-        int i;
-        for (i = 0; i < screenHeight; i++) {
-            edgeTable[i].countEdgeBucket = 0;
-        }
 
-        activeEdgeTuple.countEdgeBucket = 0;
+  public BoardNew(int columns, int rows, int[] palette) {
+    this.boardWidth = columns * tileSize;
+    this.boardHeight = rows * tileSize;
+
+    this.palette = palette;
+    tiles = new ArrayList<>(rows * columns);
+
+    final Map<Point, Vertex> vertexMap = new HashMap<>();
+
+    for (int x = 0; x < columns; x++) {
+      for (int y = 0; y < rows; y++) {
+
+        var v1 = vertexMap.computeIfAbsent(new Point((x * tileSize), (y * tileSize)),
+            point -> new Vertex(point.x, point.y, 0));
+        var v2 = vertexMap.computeIfAbsent(new Point((x * tileSize), (y * tileSize) + tileSize),
+            point -> new Vertex(point.x, point.y, 0));
+        var v3 = vertexMap
+            .computeIfAbsent(new Point((x * tileSize) + tileSize, (y * tileSize) + tileSize),
+                point -> new Vertex(point.x, point.y, 0));
+        var v4 = vertexMap.computeIfAbsent(new Point((x * tileSize) + tileSize, (y * tileSize)),
+            point -> new Vertex(point.x, point.y, 0));
+
+        int paletteSize = palette.length;
+        int paletteColorIndex = ((y * tileSize + x) % paletteSize);
+
+        tiles.add(new Quad(v1, v2, v3, v4, palette[paletteColorIndex]));
+
+      }
+    }
+    verticies = new ArrayList<>(vertexMap.values());
+
+  }
+
+  //Calculate polygons for screen drawing
+  public void generateEdgeList() {
+    initEdgeTable();
+
+    tiles.forEach(quad -> {
+      int yMin = Maths.min(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
+      int yMax = Maths.max(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
+      int xMin = Maths.min(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
+      int xMax = Maths.max(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
+
+      if (yMax < 0 || yMin > screenHeight) {
+        //does not intersect with scan line
+        //System.out.println("Ejecting" + quad);
+        return;
+      }
+
+      if (xMax < 0 || xMin > screenWidth) {
+        //does not intersect with scan line
+        //System.out.println("Ejecting" + quad);
+        return;
+      }
+
+      var pair = quad.triangles();
+
+      storeTriangleInTable(pair.first);
+      storeTriangleInTable(pair.second);
+
+
+    });
+
+  }
+
+  private void storeTriangleInTable(Triangle poly) {
+    int color = poly.color();
+    if (poly.normal().z >= 0) {//skip polygons facing away
+      //System.out.println("normal backwards" + poly);
+      return;
     }
 
+    var v1 = poly.v1();
+    var v2 = poly.v2();
+    var v3 = poly.v3();
 
-    public BoardNew(int columns, int rows, int[] palette) {
-        this.boardWidth = columns * tileSize;
-        this.boardHeight = rows * tileSize;
+    Vertex first, second, third;
 
-        this.palette = palette;
-        tiles = new ArrayList<>(rows * columns);
-
-        final Map<Point, Vertex> vertexMap = new HashMap<>();
-
-        for (int x = 0; x < columns; x++) {
-            for (int y = 0; y < rows; y++) {
-
-                var v1 = vertexMap.computeIfAbsent(new Point((x * tileSize),  (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
-                var v2 = vertexMap.computeIfAbsent(new Point((x * tileSize) + tileSize,   (y * tileSize)), point -> new Vertex(point.x, point.y, 0));
-                var v3 = vertexMap.computeIfAbsent(new Point((x * tileSize),   (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
-                var v4 = vertexMap.computeIfAbsent(new Point((x * tileSize)  + tileSize,   (y * tileSize) + tileSize), point -> new Vertex(point.x, point.y, 0));
-
-                int paletteSize = palette.length;
-                int paletteColorIndex = ((y * tileSize + x) % paletteSize);
-
-                tiles.add(new Quad(v1, v2, v3, v4, palette[paletteColorIndex]));
-
-            }
-        }
-        verticies = new ArrayList<>(vertexMap.values());
-
-    }
-
-    //Calculate polygons for screen drawing
-    public void generateEdgeList() {
-        initEdgeTable();
-
-        tiles.forEach(quad -> {
-            int yMin = Maths.min(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
-            int yMax = Maths.max(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
-            int xMin = Maths.min(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
-            int xMax = Maths.max(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
-
-
-            if (yMax < -120 || yMin > 136) {
-                //does not intersect with scan line
-                return;
-            }
-
-            if (xMax < -96 || xMin > 1396) {
-                //does not intersect with scan line
-                return;
-            }
-
-            var pair = quad.edges();
-
-            pair.first.forEach(this::storeEdgeInTable);
-            pair.second.forEach(this::storeEdgeInTable);
-
-        });
-        //For Each Quad
-        //For each Edge calculate yMin and yMax
-        //if edge is horizontal, ignore it
-        // else if yMax on scan-lie, ignore it
-        // else if ymin<y<yMax add edge to scnalLine y's edge list
-        //add "lower" tiles with high z values to edge list
-    }
-
-    private void storeEdgeInTable(Edge edge) {
-        int x1 = edge.v1.x;
-        int y1 = edge.v1.y;
-        int x2 = edge.v2.x;
-        int y2 = edge.v2.y;
-
-        x1 = Maths.clamp(0, 255, x1);
-        x2 = Maths.clamp(0, 255, x2);
-        y1 = Maths.clamp(0, screenHeight, y1);
-        y2 = Maths.clamp(0, screenHeight, y2);
-
-        float m, minv;
-        int ymaxTS, xwithyminTS, scanline; //ts stands for to store
-
-        if (x2 == x1) {
-            minv = 0;
+    if (handleEqual(v1, v2, v3, color)) {
+      return;
+    } else {
+      if (v1.y > v2.y && v1.y > v3.y) {
+        first = v1;
+        if (v2.y > v3.y) {
+          second = v2;
+          third = v3;
         } else {
-            m = ((float) (y2 - y1)) / ((float) (x2 - x1));
-
-            // horizontal lines are not stored in edge table
-            if (y2 == y1)
-                return;
-
-            minv = (float) 1.0 / m;
-
+          second = v3;
+          third = v2;
         }
-
-        if (y1 > y2) {
-            scanline = y2;
-            ymaxTS = y1;
-            xwithyminTS = x2;
+      } else if (v2.y > v1.y && v2.y > v3.y) {
+        first = v2;
+        if (v1.y > v3.y) {
+          second = v1;
+          third = v3;
         } else {
-            scanline = y1;
-            ymaxTS = y2;
-            xwithyminTS = x1;
+          second = v3;
+          third = v1;
         }
-        // the assignment part is done..now storage..
-        storeEdgeInTuple(edgeTable[scanline], ymaxTS, xwithyminTS, minv,edge.polyId);
+      } else if (v3.y > v1.y && v3.y > v2.y) {
+        first = v3;
+        if (v1.y > v2.y) {
+          second = v1;
+          third = v2;
+        } else {
+          second = v2;
+          third = v1;
+        }
+      } else {
+        throw new RuntimeException("WTF " + v1 + v2 + v3);
+      }
+    }
+
+    float secondThirdSlopeInv;
+    float secondThirdYintercept;
+    if (second.x != third.x) {
+      secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
+      secondThirdYintercept = second.y - (float) (second.x / secondThirdSlopeInv);
+    } else {
+      secondThirdSlopeInv = 0;
+      secondThirdYintercept = 0;
+    }
+
+    float firstSecondSlopeInv;
+    float firstSecondYintercept = 0;
+    if (first.x != second.x) {
+      firstSecondSlopeInv = (float) (first.x - second.x) / (float) (first.y - second.y);
+      firstSecondYintercept = first.y - (float) (first.x / firstSecondSlopeInv);
+    } else {
+      firstSecondSlopeInv = 0;
+    }
+
+    float firstThirdSlopeInv;
+    float firstThirdYintercept;
+    if (third.x != first.x) {
+      firstThirdSlopeInv = (float) ((first.x - third.x)) / (float) ((first.y - third.y));
+      firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
+    } else {
+      firstThirdSlopeInv = 0;
+      firstThirdYintercept = 0;
+    }
+
+    for (int y = Math.min(screenHeight - 1, first.y); y >= Math.max(0, second.y); y--) {
+
+      float startX = Math.round(
+          firstSecondSlopeInv == 0 ? first.x : ((y - firstSecondYintercept) * firstSecondSlopeInv));
+      float endX = Math.round(
+          firstThirdSlopeInv == 0 ? third.x : ((y - firstThirdYintercept) * firstThirdSlopeInv));
+      if (startX > endX) {
+        var temp = endX;
+        endX = startX;
+        startX = temp;
+      }
+      EdgeEntry ee = new EdgeEntry((int) Math.max(startX, 0), (int) Math.min(screenWidth, endX), 0,
+          0, 0, color);
+      edgeTable[y].add(ee);
 
     }
 
-    private void storeEdgeInTuple(EdgeTableTuple receiver, int ym, int xm, float slopInv, int polyId) {
-        // both used for edgetable and active edge table..
-        // The edge tuple sorted in increasing ymax and x of the lower end.
-        (receiver.buckets[(receiver).countEdgeBucket]).ymax = ym;
-        (receiver.buckets[(receiver).countEdgeBucket]).xofymin = (float) xm;
-        (receiver.buckets[(receiver).countEdgeBucket]).slopeinverse = slopInv;
-        (receiver.buckets[(receiver).countEdgeBucket]).polyId = polyId;
+    for (int y = Math.min(screenHeight - 1, second.y); y >= Math.max(0, third.y); y--) {
 
-        // sort the buckets
-        insertionSort(receiver);
+      float endX = Math.round(
+          firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv));
+      float startX = Math.round(
+          secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv));
 
-        receiver.countEdgeBucket++;
+      if (startX > endX) {
+        var temp = endX;
+        endX = startX;
+        startX = temp;
+      }
+
+      EdgeEntry ee = new EdgeEntry((int) Math.max(startX, 0), (int) Math.min(screenWidth, endX), 0,
+          0, 0, color);
+      edgeTable[y].add(ee);
+
     }
 
-    /* Function to sort an array using insertion sort*/
-    void insertionSort(EdgeTableTuple ett) {
-        int i, j;
-        EdgeBucket temp = new EdgeBucket(0, 0, 0, -1);
 
-        for (i = 1; i < ett.countEdgeBucket; i++) {
-            temp.ymax = ett.buckets[i].ymax;
-            temp.xofymin = ett.buckets[i].xofymin;
-            temp.slopeinverse = ett.buckets[i].slopeinverse;
-            temp.polyId = ett.buckets[i].polyId;
-            j = i - 1;
+  }
 
-            while ((j >= 0) && (temp.xofymin < ett.buckets[j].xofymin)) {
-                ett.buckets[j + 1].ymax = ett.buckets[j].ymax;
-                ett.buckets[j + 1].xofymin = ett.buckets[j].xofymin;
-                ett.buckets[j + 1].slopeinverse = ett.buckets[j].slopeinverse;
-                ett.buckets[j + 1].polyId = ett.buckets[j].polyId;
-                j = j - 1;
+  /**
+   * This checks if it can handle the cases where there is a flat edge in the polygon
+   *
+   * @param v1 trangle point
+   * @param v2 trangle point
+   * @param v3 trangle point
+   * @param color draw color
+   * @return true if handled, false otherwise
+   */
+  private boolean handleEqual(Vertex v1, Vertex v2, Vertex v3, int color) {
+    float invLeftSlope, leftYintercept, invRightSlope, rightYintercept;
+    if (v1.y == v2.y) {
+
+      if (v1.y > v3.y) {
+        // handle \/
+
+        invLeftSlope = (v1.x - v3.x) / (v1.y - v3.y);
+        leftYintercept = invLeftSlope== 0 ?0:v1.y - v1.x / invLeftSlope;
+
+        invRightSlope = (v2.x - v3.x) / (v2.y - v3.y);
+        rightYintercept = invRightSlope==0?0:v2.y - v2.x / invRightSlope;
+
+        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+          float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+      } else if (v3.y > v1.y) {
+        // handle /\
+        invRightSlope = (v1.x - v3.x) / (v1.y - v3.y);
+        rightYintercept = (v1.y - v1.x) / invRightSlope;
+
+        invLeftSlope = (v2.x - v3.x) / (v2.y - v3.y);
+        leftYintercept = v2.y - v2.x / invLeftSlope;
+
+        for (int y = Math.min(screenHeight - 1, v3.y); y >= Math.max(0, v1.y); y--) {
+          float startX = invLeftSlope == 0 ? v3.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v1.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+      } else {
+        return true; //a line
+      }
+      return true;
+    } else if (v2.y == v3.y) {
+      if (v3.y > v1.y) {
+        //handle \/
+        invLeftSlope = (v2.x - v1.x) / (v2.y - v1.y);
+        leftYintercept = v1.y - (v1.x / invLeftSlope);
+
+        invRightSlope = (v1.x - v3.x) / (v1.y - v3.y);
+        rightYintercept = v3.y - (v3.x / invRightSlope);
+
+        for (int y = Math.min(screenHeight - 1, v3.y); y >= Math.max(0, v1.y); y--) {
+          float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v3.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+
+      } else {
+        // handle /\
+        invLeftSlope = (v1.x - v3.x) / (v1.y - v3.y);
+        leftYintercept = invLeftSlope == 0 ? 0: (v1.y - v1.x) / invLeftSlope;
+
+        invRightSlope = (v2.x - v1.x) / (v2.y - v1.y);
+        rightYintercept = invRightSlope == 0 ? 0 : (v2.y - v2.x) / invRightSlope;
+
+        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+          float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+      }
+      return true;//TODO Handle \/ and /\
+    } else if (v1.y == v3.y) {
+      if (v2.y > v1.y) {
+        //handle \/
+        invLeftSlope = (v2.x - v1.x) / (v2.y - v1.y);
+        leftYintercept = v1.y - (v1.x) / invLeftSlope;
+
+        invRightSlope = (v2.x - v3.x) / (v2.y - v3.y);
+        rightYintercept = v3.y - (v3.x) / invRightSlope;
+
+        for (int y = Math.min(screenHeight - 1, v2.y); y >= Math.max(0, v3.y); y--) {
+          float startX = invLeftSlope == 0 ? v2.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v3.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+
+      } else {
+        // handle /\
+        invLeftSlope = (v2.x - v3.x) / (v2.y - v3.y);
+        leftYintercept = (v2.y - v2.x) / invLeftSlope;
+
+        invRightSlope = (v2.x - v1.x) / (v2.y - v1.y);
+        rightYintercept = (v2.y - v2.x) / invRightSlope;
+
+        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+          float startX = invLeftSlope == 0 ? v2.x : ((y - leftYintercept) * invLeftSlope);
+          float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
+          EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
+          edgeTable[y].add(ee);
+        }
+      }
+      return true;
+    } else {
+
+      return false;
+
+    }
+
+  }
+
+
+  public BufferedImage draw() {
+
+    BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+    int i, j, x1, ymax1, x2, ymax2, FillFlag = 0, coordCount;
+
+    for (i = 0; i < screenHeight; i++) {
+      var line = edgeTable[screenHeight - i
+          - 1];//On the screen y is down, in the model y is up, so we have to reverse t
+      line.sort((e1, e2) -> {
+        return e1.startX - e2.startX;
+      });
+      if (line.size() == 0) {
+        for (int x = 0; x < screenWidth; x++) {
+          image.setRGB(x, i, Color.BLACK.getRGB());
+        }
+      } else {
+
+        var entry = line.remove(0);
+        Deque<EdgeEntry> entryDeque = new ArrayDeque<>();
+
+        if (line.isEmpty()) { //only one on the row
+          for (int x = 0; x < screenWidth; x++) {
+            if (x >= entry.startX && x < entry.endX) {
+              image.setRGB(x, i, entry.textureId);
             }
-            ett.buckets[j + 1].ymax = temp.ymax;
-            ett.buckets[j + 1].xofymin = temp.xofymin;
-            ett.buckets[j + 1].slopeinverse = temp.slopeinverse;
-            ett.buckets[j + 1].polyId = temp.polyId;
-        }
-    }
+          }
+        } else {
+          for (int x = 0; x < screenWidth; x++) {
+            if (x >= entry.startX && x <= entry.endX) {
+              while (!line.isEmpty() && line.get(0).startX <= x) {
+                entryDeque.push(entry);
+                entry = line.remove(0);
+              }
+              image.setRGB(x, i, entry.textureId);
 
-    /**
-     * Prepopulates the sets in the edge list
-     *
-     * @return
-     */
-    private List<Set<Quad>> newEdgeList() {
-        var list = new ArrayList<Set<Quad>>(screenHeight);
-        for (int i = 0; i < screenHeight; i++) {
-            list.add(new HashSet<>());
-        }
-        return list;
-    }
-
-
-    void removeEdgeByYmax(EdgeTableTuple Tup, int yy, int polyId) {
-        int i, j;
-        for (i = 0; i < Tup.countEdgeBucket; i++) {
-            if (Tup.buckets[i].ymax == yy && Tup.buckets[i].polyId == polyId) {
-
-
-                for (j = i; j < Tup.countEdgeBucket - 1; j++) {
-                    Tup.buckets[j].ymax = Tup.buckets[j + 1].ymax;
-                    Tup.buckets[j].xofymin = Tup.buckets[j + 1].xofymin;
-                    Tup.buckets[j].slopeinverse = Tup.buckets[j + 1].slopeinverse;
-                    Tup.buckets[j].polyId = Tup.buckets[j + 1].polyId;
+            } else if (x > entry.endX) {
+              if (entryDeque.isEmpty()) {
+                if (!line.isEmpty()) {
+                  entry = line.remove(0);
                 }
-                Tup.countEdgeBucket--;
-                i--;
-            }
-        }
-    }
-
-    public BufferedImage draw() {
-
-        BufferedImage image = new BufferedImage(256, screenHeight, BufferedImage.TYPE_INT_RGB);
-        int i, j, x1, ymax1, x2, ymax2, FillFlag = 0, coordCount;
-
-        // we will start from scanline 0;
-        // Repeat until last scanline:
-        for (i = 0; i < screenHeight; i++)//4. Increment y by 1 (next scan line)
-        {
-
-            // 1. Move from ET bucket y to the
-            // AET those edges whose ymin = y (entering edges)
-            for (j = 0; j < edgeTable[i].countEdgeBucket; j++) {
-                storeEdgeInTuple(activeEdgeTuple,
-                        edgeTable[i].buckets[j].ymax,
-                        (int) edgeTable[i].buckets[j].xofymin,
-                        edgeTable[i].buckets[j].slopeinverse,
-                        edgeTable[i].buckets[j].polyId);
-            }
-
-
-            // 2. Remove from AET those edges for
-            // which y=ymax (not involved in next scan line)
-            removeEdgeByYmax(activeEdgeTuple, i, activeEdgeTuple.polyId);
-
-            //sort AET (remember: ET is presorted)
-            insertionSort(activeEdgeTuple);
-
-
-            //3. Fill lines on scan line y by using pairs of x-coords from AET
-            j = 0;
-            FillFlag = 0;
-            coordCount = 0;
-            x1 = 0;
-            x2 = 0;
-            ymax1 = 0;
-            ymax2 = 0;
-            while (j < activeEdgeTuple.countEdgeBucket) {
-                if (coordCount % 2 == 0) {
-                    x1 = (int) (activeEdgeTuple.buckets[j].xofymin);
-                    ymax1 = activeEdgeTuple.buckets[j].ymax;
-                    if (x1 == x2) {
-				/* three cases can arrive-
-					1. lines are towards top of the intersection
-					2. lines are towards bottom
-					3. one line is towards top and other is towards bottom
-				*/
-                        if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
-                            x2 = x1;
-                            ymax2 = ymax1;
-                        } else {
-                            coordCount++;
-                        }
+              } else {
+                pop:
+                while (x > entry.endX) {
+                  if (entryDeque.isEmpty()) {
+                    image.setRGB(x, i, Color.BLUE.getRGB());
+                    break pop;
+                  } else {
+                    //image.setRGB(x, i, Color.GREEN.getRGB());
+                    entry = entryDeque.pop();
+                    if (entry.endX >=x) {
+                      image.setRGB(x, i, entry.textureId);
                     } else {
-                        coordCount++;
+                      image.setRGB(x, i, Color.GREEN.getRGB());
                     }
-                } else {
-                    x2 = (int) activeEdgeTuple.buckets[j].xofymin;
-                    ymax2 = activeEdgeTuple.buckets[j].ymax;
-
-                    FillFlag = 0;
-
-                    // checking for intersection...
-                    if (x1 == x2) {
-				/*three cases can arive-
-					1. lines are towards top of the intersection
-					2. lines are towards bottom
-					3. one line is towards top and other is towards bottom
-				*/
-                        if (((x1 == ymax1) && (x2 != ymax2)) || ((x1 != ymax1) && (x2 == ymax2))) {
-                            x1 = x2;
-                            ymax1 = ymax2;
-                        } else {
-                            coordCount++;
-                            FillFlag = 1;
-                        }
-                    } else {
-                        coordCount++;
-                        FillFlag = 1;
-                    }
-
-
-                    if (FillFlag != 0) {
-                        //drawing actual lines...
-                        var gfx = image.getGraphics();
-                        gfx.setColor(new Color(0.0f, 0.7f, 0.0f));
-                        gfx.drawLine(x1, i, x2, i);
-
-                        // printf("\nLine drawn from %d,%d to %d,%d",x1,i,x2,i);
-                    }
-
+                  }
                 }
+                if (!line.isEmpty()) {
+                  entry = line.remove(0);
+                }
+              }
 
-                j++;
+            } else if (x < entry.startX){
+              image.setRGB(x, i, Color.BLACK.getRGB());
+            } else {
+              image.setRGB(x, i, Color.WHITE.getRGB());
             }
-
-
-            // 5. For each nonvertical edge remaining in AET, update x for new y
-            updatexbyslopeinv(activeEdgeTuple);
+          }
         }
-        return image;
+
+      }
+
     }
+    return image;
+  }
 
 
-    void updatexbyslopeinv(EdgeTableTuple Tup) {
-        int i;
+  public BoardNew rotateY(int rotY) {
+    this.rotY = rotY;
+    verticies.forEach(tile -> tile.rotateY(rotY));
+    return this;
+  }
 
-        for (i = 0; i < Tup.countEdgeBucket; i++) {
-            (Tup.buckets[i]).xofymin = (Tup.buckets[i]).xofymin + (Tup.buckets[i]).slopeinverse;
-        }
-    }
+  public BoardNew rotateX(int rotX) {
+    this.rotX = rotX;
+    verticies.forEach(tile -> tile.rotateX(rotX));
+    return this;
+  }
 
-    public BoardNew rotateY(int rotY) {
-        this.rotY = rotY;
-        verticies.forEach(tile -> tile.rotateY(rotY));
-        return this;
-    }
+  public BoardNew translateX(int i) {
+    this.translateX = i;
+    verticies.forEach(tile -> tile.translateX(i));
+    return this;
+  }
 
-    public BoardNew rotateX(int rotX) {
-        this.rotX = rotX;
-        verticies.forEach(tile -> tile.rotateX(rotX));
-        return this;
-    }
+  public BoardNew translateY(int i) {
+    this.translateY = i;
+    verticies.forEach(tile -> tile.translateY(i));
+    return this;
+  }
 
-    public BoardNew translateX(int i) {
-        this.translateX = i;
-        verticies.forEach(tile -> tile.translateX(i));
-        return this;
-    }
+  public List<Vertex> getVerticies() {
+    return verticies;
+  }
 
-    public BoardNew translateY(int i) {
-        this.translateY = i;
-        verticies.forEach(tile -> tile.translateY(i));
-        return this;
-    }
+  public int getScreenHeight() {
+    return screenHeight;
+  }
 
-    public List<Vertex> getVerticies() {
-        return verticies;
-    }
+  public int getScreenWidth() {
+    return screenWidth;
+  }
 }
 

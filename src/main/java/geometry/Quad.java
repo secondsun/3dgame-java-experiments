@@ -61,17 +61,8 @@ public record Quad(Vertex v1, Vertex v2, Vertex v3, Vertex v4, int color) {
 
     }
 
-    public Pair<List<Edge>, List<Edge>> edges() {
-        System.out.println(this);
-        var polyId = RANDOM.nextInt();
-        Edge e1 = new Edge(v3,v1, polyId);
-        Edge e2 = new Edge(v3,v2, polyId);
-        Edge e3 = new Edge(v1,v2, polyId);
-
-        polyId = RANDOM.nextInt();
-        Edge e4 = new Edge(v3,v2, polyId);
-        Edge e5 = new Edge(v3,v4, polyId);
-        Edge e6 = new Edge(v4,v2, polyId);
-        return Pair.of(List.of(e1,e2,e3), List.of(e4, e5,e6));
+    public Pair<Triangle, Triangle> triangles() {
+        //System.out.println(this);
+        return Pair.of(new Triangle(v1,v2,v3, color), new Triangle(v1,v3,v4, color));
     }
 }
