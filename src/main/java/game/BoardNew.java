@@ -19,7 +19,7 @@ import org.la4j.Matrix;
 
 public class BoardNew {
 
-  private static final int scale = 1;
+  private static final int scale = 8;
   private static int tileSize = 8 * scale;
 
   private final int screenWidth = 256 * scale;
@@ -366,72 +366,38 @@ public class BoardNew {
     BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
     int i, j, x1, ymax1, x2, ymax2, FillFlag = 0, coordCount;
 
+    line:
     for (i = 0; i < screenHeight; i++) {
-      var line = edgeTable[screenHeight - i
-          - 1];//On the screen y is down, in the model y is up, so we have to reverse t
+      var line = edgeTable[screenHeight - i - 1];//On the screen y is down, in the model y is up, so we have to reverse t
       line.sort((e1, e2) -> {
         return e1.startX - e2.startX;
       });
-      if (line.size() == 0) {
+
+      if (!line.isEmpty()) {
+
         for (int x = 0; x < screenWidth; x++) {
-          image.setRGB(x, i, Color.BLACK.getRGB());
-        }
-      } else {
-
-        var entry = line.remove(0);
-        Deque<EdgeEntry> entryDeque = new ArrayDeque<>();
-
-        if (line.isEmpty()) { //only one on the row
-          for (int x = 0; x < screenWidth; x++) {
-            if (x >= entry.startX && x < entry.endX) {
-              image.setRGB(x, i, entry.textureId);
-            }
+          int lineIndex = 0;
+          EdgeEntry entry = null;
+          while (lineIndex < line.size() && x >= line.get(lineIndex).startX) {//finds "top" entry
+            entry = line.get(lineIndex);
+            if (x == entry.startX && entry.startX == entry.endX)
+            image.setRGB(x, i, entry.textureId);
+            lineIndex++;
           }
-        } else {
-          for (int x = 0; x < screenWidth; x++) {
-            if (x >= entry.startX && x <= entry.endX) {
-              while (!line.isEmpty() && line.get(0).startX <= x) {
-                entryDeque.push(entry);
-                entry = line.remove(0);
-              }
+          if (entry != null) {
+            for (; x < Math.min(screenWidth,entry.endX); x++) {
               image.setRGB(x, i, entry.textureId);
-
-            } else if (x > entry.endX) {
-              if (entryDeque.isEmpty()) {
-                if (!line.isEmpty()) {
-                  entry = line.remove(0);
-                }
-              } else {
-                pop:
-                while (x > entry.endX) {
-                  if (entryDeque.isEmpty()) {
-                    image.setRGB(x, i, Color.BLUE.getRGB());
-                    break pop;
-                  } else {
-                    //image.setRGB(x, i, Color.GREEN.getRGB());
-                    entry = entryDeque.pop();
-                    if (entry.endX >=x) {
-                      image.setRGB(x, i, entry.textureId);
-                    } else {
-                      image.setRGB(x, i, Color.GREEN.getRGB());
-                    }
-                  }
-                }
-                if (!line.isEmpty()) {
-                  entry = line.remove(0);
+              if (entry.endX == x) {
+                line.remove(entry);
+                lineIndex--;
+                if (lineIndex > 0) {
+                  entry = line.get(lineIndex);
                 }
               }
-
-            } else if (x < entry.startX){
-              image.setRGB(x, i, Color.BLACK.getRGB());
-            } else {
-              image.setRGB(x, i, Color.WHITE.getRGB());
             }
           }
         }
-
       }
-
     }
     return image;
   }
