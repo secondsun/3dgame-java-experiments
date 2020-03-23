@@ -6,17 +6,17 @@ import static java.lang.Math.toRadians;
 
 public class Vertex {
 
-    public int x;
-    public int y;
-    public int z;
+    public float x;
+    public float y;
+    public float z;
 
-    public Vertex(int x, int y, int z) {
+    public Vertex(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Vertex scale(int factor) {
+    public Vertex scale(float factor) {
         var v1 = new Vertex(x * factor, y * factor, z * factor);
         this.x = v1.x;
         this.y = v1.y;
@@ -25,7 +25,7 @@ public class Vertex {
         return this;
     }
 
-    public Vertex translateX(int translate) {
+    public Vertex translateX(float translate) {
         var v1 = new Vertex(x + translate, y, z);
         this.x = v1.x;
         this.y = v1.y;
@@ -34,7 +34,7 @@ public class Vertex {
         return this;
     }
 
-    public Vertex translateY(int translate) {
+    public Vertex translateY(float translate) {
 
         var v1 = new Vertex(x, y + translate, z);
         this.x = v1.x;
@@ -44,11 +44,11 @@ public class Vertex {
         return this;
     }
 
-    public Vertex rotateY(int rotY) {
+    public Vertex rotateY(float rotY) {
         var rotYRad = toRadians(rotY);
-        int newX = (int) (x * Math.cos(rotYRad) - z * Math.sin(rotYRad));
-        int newY = y;
-        int newZ = (int) (x * Math.sin(rotYRad) + z * Math.cos(rotYRad));
+        float newX = (float) (x * Math.cos(rotYRad) + z * Math.sin(rotYRad));
+        float newY = y;
+        float newZ = (float) (-x * Math.sin(rotYRad) + z * Math.cos(rotYRad));
 
         this.x = newX;
         this.y = newY;
@@ -59,11 +59,11 @@ public class Vertex {
 
     }
 
-    public Vertex rotateX(int rotX) {
+    public Vertex rotateX(float rotX) {
         var rotXRad = toRadians(rotX);
-        int newX = x;
-        int newY = (int) (z * Math.sin(rotXRad) + y * Math.cos(rotXRad));
-        int newZ = (int) (-y * Math.sin(rotXRad) + z * Math.cos(rotXRad));
+        float newX = x;
+        float newY = (float) (-z * Math.sin(rotXRad) + y * Math.cos(rotXRad));
+        float newZ = (float) (y * Math.sin(rotXRad) + z * Math.cos(rotXRad));
 
 
         this.x = newX;
@@ -89,8 +89,8 @@ public class Vertex {
 
     }
 
-    public int length() {
-        return (int) Math.sqrt(x * x + y * y + z * z);
+    public float length() {
+        return (float) Math.sqrt(x * x + y * y + z * z);
     }
 
     @Override

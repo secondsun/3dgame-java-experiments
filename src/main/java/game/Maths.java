@@ -21,6 +21,26 @@ public final class Maths {
         return toReturn;
     }
 
+    public static float min(float... y) {
+        float toReturn = Float.MAX_VALUE;
+        for (float min : y) {
+            if (min < toReturn) {
+                toReturn = min;
+            }
+        }
+        return toReturn;
+    }
+
+    public static float max(float... y) {
+        float toReturn = Float.MIN_VALUE;
+        for (float max : y) {
+            if (max > toReturn) {
+                toReturn = max;
+            }
+        }
+        return toReturn;
+    }
+
     public static int clamp(int min, int max, int val) {
         return Math.min(max, Math.max(min,val));
     }

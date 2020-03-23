@@ -19,7 +19,7 @@ import org.la4j.Matrix;
 
 public class BoardNew {
 
-  private static final int scale = 8;
+  private static final int scale = 2;
   private static int tileSize = 8 * scale;
 
   private final int screenWidth = 256 * scale;
@@ -83,10 +83,35 @@ public class BoardNew {
         var v4 = vertexMap.computeIfAbsent(new Point((x * tileSize) + tileSize, (y * tileSize)),
             point -> new Vertex(point.x, point.y, 0));
 
+        var v5 = vertexMap.computeIfAbsent(new Point((x * tileSize), (y * tileSize)),
+            point -> new Vertex(point.x, point.y, tileSize));
+        var v6 = vertexMap.computeIfAbsent(new Point((x * tileSize), (y * tileSize) + tileSize),
+            point -> new Vertex(point.x, point.y, tileSize));
+        var v7 = vertexMap
+            .computeIfAbsent(new Point((x * tileSize) + tileSize, (y * tileSize) + tileSize),
+                point -> new Vertex(point.x, point.y, tileSize));
+        var v8 = vertexMap.computeIfAbsent(new Point((x * tileSize) + tileSize, (y * tileSize)),
+            point -> new Vertex(point.x, point.y, tileSize));
+
+
         int paletteSize = palette.length;
         int paletteColorIndex = ((y * tileSize + x) % paletteSize);
 
-        tiles.add(new Quad(v1, v2, v3, v4, palette[paletteColorIndex]));
+        var cube = new Quad[] {
+            new Quad(v1, v2, v3, v4, palette[paletteColorIndex]),
+            new Quad(v1, v2, v5, v6, palette[paletteColorIndex]),
+            new Quad(v3, v7, v2, v6, palette[paletteColorIndex]),
+            new Quad(v4, v8, v3, v7, palette[paletteColorIndex]),
+            new Quad(v1, v5, v4, v8, palette[paletteColorIndex]),
+            new Quad(v5, v6, v7, v8, palette[paletteColorIndex]),
+
+        };
+
+        for (Quad q : cube) {
+          tiles.add(q);
+        }
+
+        //tiles.add(new Quad(v1, v2, v3, v4, palette[paletteColorIndex]));
 
       }
     }
@@ -99,10 +124,10 @@ public class BoardNew {
     initEdgeTable();
 
     tiles.forEach(quad -> {
-      int yMin = Maths.min(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
-      int yMax = Maths.max(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
-      int xMin = Maths.min(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
-      int xMax = Maths.max(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
+      float yMin = Maths.min(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
+      float yMax = Maths.max(quad.v1().y, quad.v2().y, quad.v3().y, quad.v4().y);
+      float xMin = Maths.min(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
+      float xMax = Maths.max(quad.v1().x, quad.v2().x, quad.v3().x, quad.v4().x);
 
       if (yMax < 0 || yMin > screenHeight) {
         //does not intersect with scan line
@@ -203,7 +228,7 @@ public class BoardNew {
       firstThirdYintercept = 0;
     }
 
-    for (int y = Math.min(screenHeight - 1, first.y); y >= Math.max(0, second.y); y--) {
+    for (int y = Math.round(Math.min(screenHeight - 1, first.y)); y >= Math.max(0, second.y); y--) {
 
       float startX = Math.round(
           firstSecondSlopeInv == 0 ? first.x : ((y - firstSecondYintercept) * firstSecondSlopeInv));
@@ -220,7 +245,7 @@ public class BoardNew {
 
     }
 
-    for (int y = Math.min(screenHeight - 1, second.y); y >= Math.max(0, third.y); y--) {
+    for (int y = Math.round(Math.min(screenHeight - 1, second.y)); y >= Math.max(0, third.y); y--) {
 
       float endX = Math.round(
           firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv));
@@ -264,7 +289,7 @@ public class BoardNew {
         invRightSlope = (v2.x - v3.x) / (v2.y - v3.y);
         rightYintercept = invRightSlope==0?0:v2.y - v2.x / invRightSlope;
 
-        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v1.y)); y >= Math.max(0, v3.y); y--) {
           float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -278,7 +303,7 @@ public class BoardNew {
         invLeftSlope = (v2.x - v3.x) / (v2.y - v3.y);
         leftYintercept = v2.y - v2.x / invLeftSlope;
 
-        for (int y = Math.min(screenHeight - 1, v3.y); y >= Math.max(0, v1.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v3.y)); y >= Math.max(0, v1.y); y--) {
           float startX = invLeftSlope == 0 ? v3.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v1.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -297,7 +322,7 @@ public class BoardNew {
         invRightSlope = (v1.x - v3.x) / (v1.y - v3.y);
         rightYintercept = v3.y - (v3.x / invRightSlope);
 
-        for (int y = Math.min(screenHeight - 1, v3.y); y >= Math.max(0, v1.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v3.y)); y >= Math.max(0, v1.y); y--) {
           float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v3.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -312,7 +337,7 @@ public class BoardNew {
         invRightSlope = (v2.x - v1.x) / (v2.y - v1.y);
         rightYintercept = invRightSlope == 0 ? 0 : (v2.y - v2.x) / invRightSlope;
 
-        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v1.y)); y >= Math.max(0, v3.y); y--) {
           float startX = invLeftSlope == 0 ? v1.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -329,7 +354,7 @@ public class BoardNew {
         invRightSlope = (v2.x - v3.x) / (v2.y - v3.y);
         rightYintercept = v3.y - (v3.x) / invRightSlope;
 
-        for (int y = Math.min(screenHeight - 1, v2.y); y >= Math.max(0, v3.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v2.y)); y >= Math.max(0, v3.y); y--) {
           float startX = invLeftSlope == 0 ? v2.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v3.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -344,7 +369,7 @@ public class BoardNew {
         invRightSlope = (v2.x - v1.x) / (v2.y - v1.y);
         rightYintercept = (v2.y - v2.x) / invRightSlope;
 
-        for (int y = Math.min(screenHeight - 1, v1.y); y >= Math.max(0, v3.y); y--) {
+        for (int y = Math.round(Math.min(screenHeight - 1, v1.y)); y >= Math.max(0, v3.y); y--) {
           float startX = invLeftSlope == 0 ? v2.x : ((y - leftYintercept) * invLeftSlope);
           float endX = invRightSlope == 0 ? v2.x : ((y - rightYintercept) * invRightSlope);
           EdgeEntry ee = new EdgeEntry((int) startX, (int) endX, 0, 0, 0, color);
@@ -372,6 +397,13 @@ public class BoardNew {
       line.sort((e1, e2) -> {
         return e1.startX - e2.startX;
       });
+
+      var finalI = i;
+//      line.forEach(edge -> {
+//        var g = image.getGraphics();
+//        g.setColor(new Color(edge.textureId));
+//        g.drawLine(edge.startX, finalI, edge.endX, finalI);
+//      });
 
       if (!line.isEmpty()) {
 

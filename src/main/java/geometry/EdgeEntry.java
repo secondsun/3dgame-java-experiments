@@ -22,4 +22,16 @@ public class EdgeEntry {
     this.textureVectorLength = textureVectorLength;
     this.textureId = textureId;
   }
+
+  @Override
+  public String toString() {
+    return "EdgeEntry{" +
+        "startX=" + startX +
+        ", endX=" + endX +
+        ", textureVectorX=" + textureVectorX +
+        ", textureVectorY=" + textureVectorY +
+        ", textureVectorLength=" + textureVectorLength +
+        ", textureId=" + textureId +
+        '}';
+  }
 }

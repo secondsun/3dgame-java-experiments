@@ -88,6 +88,9 @@ public class OLCEngine extends Component {
         }
     }
 
+    void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3, int color) {
+        drawTriangle(Math.round(x1), Math.round( y1), Math.round( x2), Math.round( y2), Math.round( x3), Math.round( y3),  color);
+    }
 
     void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int color) {
         drawLine(x1, y1, x2, y2, color);
@@ -158,7 +161,7 @@ public class OLCEngine extends Component {
     private int direction(Triangle face) {
         var normal = face.normal();
         var v1 = face.v1();
-        return v1.x * normal.x + v1.y*normal.y + v1.z * normal.z;
+        return Math.round(v1.x * normal.x + v1.y*normal.y + v1.z * normal.z);
     }
 
     private int randomColor() {
