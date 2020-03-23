@@ -33,4 +33,8 @@ public record Triangle(Vertex v1,Vertex v2,Vertex v3, int color) {
         return line1.cross(line2);
 
     }
+
+    public Vertex center() {
+        return new Vertex((v1.x+v2.x+v3.x)/3,(v1.y+v2.y+v3.y)/3,(v1.z+v2.z+v3.z)/3);
+    }
 }
