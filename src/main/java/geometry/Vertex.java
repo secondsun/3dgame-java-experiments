@@ -116,4 +116,14 @@ public class Vertex {
     public int hashCode() {
         return Objects.hash(x, y, z);
     }
+
+    public Vertex translateZ(int i) {
+        var v1 = new Vertex(x, y, z+i);
+        this.x = v1.x;
+        this.y = v1.y;
+        this.z = v1.z;
+
+        return this;
+
+    }
 }

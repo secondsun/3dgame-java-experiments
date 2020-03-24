@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 public class ScanLineEngine extends Component  {
 
     private BoardNew board = new BoardNew(16, 12, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-    int rotY = 00;
+    int rotY = 0;
     int rotX = 26;
     boolean pause = false;
 
@@ -31,7 +31,7 @@ public class ScanLineEngine extends Component  {
         //,218
         board = new BoardNew(32, 24, new int[]{0xfc49ab, 0xff7300, 0xe7ff00});
         System.out.println(rotX + "," + rotY);
-        board.translateX(-board.getScreenWidth()/2).translateY(-board.getScreenHeight()/2).rotateX(260).rotateY(rotY).translateX(board.getScreenWidth()/2).translateY(board.getScreenHeight()/2);
+        board.translateX(-board.getScreenWidth()/2).translateY(-board.getScreenHeight()/2).translateZ(-4).rotateX(rotX).rotateY(rotY).translateX(board.getScreenWidth()/2).translateY(board.getScreenHeight()/2);
         rotY += 2;
         rotX += 1;
 
