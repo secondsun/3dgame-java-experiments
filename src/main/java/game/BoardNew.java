@@ -1,25 +1,21 @@
 package game;
-//uses code from https://www.geeksforgeeks.org/scan-line-polygon-filling-using-opengl-c/
 
-import geometry.Constants;
 import geometry.EdgeEntry;
 import geometry.Quad;
 import geometry.Triangle;
 import geometry.Vertex;
-import java.awt.Color;
-import java.awt.Point;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.la4j.Matrix;
 
 public class BoardNew {
 
   private static final int scale = 2;
+
   private static int tileSize = 8 * scale;
 
   private final int screenWidth = 256 * scale;
@@ -34,8 +30,6 @@ public class BoardNew {
   private int rotY;
   private int rotX;
 
-  private Map<Point, Matrix> precalcs = Constants.getPrecalcs();
-  private Map<Point, Matrix> reversePrecalcs = Constants.getReversePrecalcs();
   private int translateY;
   private int translateX;
 

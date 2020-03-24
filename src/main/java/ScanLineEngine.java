@@ -41,11 +41,6 @@ public class ScanLineEngine extends Component  {
 
         g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST),0,0,null);
 
-        try {
-            Thread.sleep(1000/25);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         if (rotY > 360) {
             rotY = 0;
