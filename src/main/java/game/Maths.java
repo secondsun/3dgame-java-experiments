@@ -32,7 +32,7 @@ public final class Maths {
     }
 
     public static float max(float... y) {
-        float toReturn = Float.MIN_VALUE;
+        float toReturn = -999999999f;
         for (float max : y) {
             if (max > toReturn) {
                 toReturn = max;

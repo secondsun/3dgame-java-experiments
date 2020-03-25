@@ -14,8 +14,14 @@ public class EdgeEntry {
 
   public EdgeEntry(int startX, int endX,float z, float textureVectorX, float textureVectorY,
       float textureVectorLength, int textureId) {
-    this.startX = startX;
-    this.endX = endX;
+    if (endX - startX < 0) {
+      System.err.println("negative length startX:"+startX + " endX:" + endX);
+      this.startX = -1;
+      this.endX = -1;
+    } else {
+      this.startX = startX;
+      this.endX = endX;
+    }
     this.z = z;
     this.textureVectorX = textureVectorX;
     this.textureVectorY = textureVectorY;
