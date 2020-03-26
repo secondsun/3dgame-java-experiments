@@ -3,8 +3,7 @@ package geometry;
 import java.util.*;
 
 public class BoardNew implements Model{
-    private static final int scale = 1;
-    private static int tileSize = 8 * scale;
+
 
     private final int boardWidth;
     private final int boardHeight;
@@ -12,9 +11,11 @@ public class BoardNew implements Model{
     private List<Triangle> tiles;
     private List<Vertex> verticies;
 
-    public BoardNew(int columns, int rows, int[] palette) {
+    public BoardNew(int columns, int rows, int scale, int[] palette) {
         var random = new Random(columns);
-        this.boardWidth = columns * tileSize;
+
+        int tileSize = 8 * scale;
+        this.boardWidth = columns * tileSize ;
         this.boardHeight = rows * tileSize;
 
         tiles = new ArrayList<>(rows * columns);

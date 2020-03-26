@@ -2,11 +2,6 @@ package game;
 
 import geometry.*;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +9,18 @@ import java.util.List;
 public class ScanLineEngine implements Renderer {
 
 
-    private final int screenWidth = 256;
-    private final int screenHeight = 192;
+    private final int screenWidth;
+    private final int screenHeight;
     private final Model board;
-
+    private List<EdgeEntry>[] edgeTable;
     boolean pause = false;
 
 
-    public ScanLineEngine(Model board) {
+    public ScanLineEngine(int screenWidth, int screenHeight, Model board) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
         this.board = board;
+        this.edgeTable = createEdgeTupleTable(screenHeight);
     }
 
     //Calculate polygons for screen drawing
@@ -53,7 +51,7 @@ public class ScanLineEngine implements Renderer {
 
     }
 
-    private List<EdgeEntry>[] edgeTable = createEdgeTupleTable(screenHeight);
+
 
     private List<EdgeEntry>[] createEdgeTupleTable(int i) {
 
@@ -109,19 +107,19 @@ public class ScanLineEngine implements Renderer {
 
 
 
-
+        int lastY = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         if (first.y != second.y) {
-            drawTop(first, second, third, poly.center().z, color);
+            lastY = drawTop(first, second, third, poly.center().z, color);
         }
 
         if (third.y != second.y) {
-            drawBottom(first, second, third, poly.center().z, color);
+            drawBottom(first, second, third, poly.center().z, color, lastY );
         }
 
 
     }
 
-    private void drawBottom(Vertex first, Vertex second, Vertex third, float zIndex, int color) {
+    private void drawBottom(Vertex first, Vertex second, Vertex third, float zIndex, int color, int startY) {
         float secondThirdSlopeInv;
         float secondThirdYintercept;
         secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
@@ -133,8 +131,9 @@ public class ScanLineEngine implements Renderer {
         firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
 
 
+//int y = Math.round(Math.min(screenHeight - 1, second.y))-1
+        for (int y =startY; y >= Math.max(0, third.y); y--) {
 
-        for (int y = Math.round(Math.min(screenHeight - 1, second.y)); y >= Math.max(0, third.y); y--) {
             float startX;
             float endX;
             if (second.x > first.x) {
@@ -176,8 +175,8 @@ public class ScanLineEngine implements Renderer {
         }
     }
 
-    private void drawTop(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
-
+    private int drawTop(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
+        int toReturn = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         float firstSecondSlopeInv;
         float firstSecondYintercept = 0;
         firstSecondSlopeInv = (float) (first.x - second.x) / (float) (first.y - second.y);
@@ -190,6 +189,7 @@ public class ScanLineEngine implements Renderer {
         firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
 
         for (int y = (int) Math.floor(Math.min(screenHeight - 1, first.y)); y >= Math.max(0, second.y); y--) {
+
             float startX, endX;
             if (second.x > first.x) {
                 startX =
@@ -225,11 +225,13 @@ public class ScanLineEngine implements Renderer {
                 EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
                         0, 0, color);
                 edgeTable[y].add(ee);
+                toReturn = y-1;
             } catch (RuntimeException ex) {
                 throw ex;
             }
 
         }
+        return toReturn;
     }
 
     @Override
