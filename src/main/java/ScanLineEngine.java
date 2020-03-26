@@ -35,7 +35,7 @@ public class ScanLineEngine extends Component {
 
 
         var board = new BoardNew(32, 24, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-        //System.out.println(rotX + "," + rotY);
+        System.out.println(rotX + "," + rotY);
         board.translateX(-board.getScreenWidth() / 2).translateY(-board.getScreenHeight() / 2).rotateX(rotX).rotateY(rotY).translateX(board.getScreenWidth() / 2).translateY(board.getScreenHeight() / 2);
         rotY += 2;
 
@@ -53,11 +53,11 @@ public class ScanLineEngine extends Component {
 
             rotX = 0;
         }
-        try {
-            Thread.sleep(1000/20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000/20);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         repaint();
     }
 

@@ -18,6 +18,7 @@ public class EdgeEntry {
       System.err.println("negative length startX:"+startX + " endX:" + endX);
       this.startX = -1;
       this.endX = -1;
+      throw new RuntimeException("negative length startX:"+startX + " endX:" + endX);
     } else {
       this.startX = startX;
       this.endX = endX;

@@ -1,18 +1,16 @@
 package game;
 
 import geometry.EdgeEntry;
-import geometry.Quad;
 import geometry.Triangle;
 import geometry.Vertex;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
 public class BoardNew {
 
-    private static final int scale = 4;
+    private static final int scale = 3;
 
     private static int tileSize = 8 * scale;
 
@@ -69,7 +67,7 @@ public class BoardNew {
 
                 int paletteSize = palette.length;
                 int paletteColorIndex = ((y * tileSize + x) % paletteSize);
-                int zOff = random.nextInt(10)-5;
+                int zOff = random.nextInt(5);
                 var v1 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize), zOff * tileSize),
                         point -> new Vertex(point.x, point.y, point.z));
                 var v2 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize) + tileSize, zOff * tileSize),
@@ -167,123 +165,78 @@ public class BoardNew {
         }
 
 
-        Vertex first, second, third;
+        var sorted = new ArrayList<>(List.of(v1,v2,v3));
 
-        if (handleEqual(v1, v2, v3, color)) {
-            return;
-        } else {
-            if (v1.y > v2.y && v1.y > v3.y) {
-                first = v1;
-                if (v2.y > v3.y) {
-                    second = v2;
-                    third = v3;
-                } else {
-                    second = v3;
-                    third = v2;
-                }
-            } else if (v2.y > v1.y && v2.y > v3.y) {
-                first = v2;
-                if (v1.y > v3.y) {
-                    second = v1;
-                    third = v3;
-                } else {
-                    second = v3;
-                    third = v1;
-                }
-            } else if (v3.y > v1.y && v3.y > v2.y) {
-                first = v3;
-                if (v1.y > v2.y) {
-                    second = v1;
-                    third = v2;
-                } else {
-                    second = v2;
-                    third = v1;
-                }
+        sorted.sort((l,r) -> {var result = r.y-l.y;
+            if (result < 0 ) {
+                return -1;
+            } else if (result > 0) {
+                return 1;
             } else {
-                //throw new RuntimeException("WTF " + v1 + v2 + v3);
-                return;
+                return l.x-r.x<0?-1:1;
             }
+        });
+
+        var first = sorted.get(0);
+        var second = sorted.get(1);
+        var third = sorted.get(2);
+
+
+
+
+
+        if (first.y != second.y) {
+            drawTop(first, second, third, poly.center().z, color);
         }
 
+        if (third.y != second.y) {
+            drawBottom(first, second, third, poly.center().z, color);
+        }
+
+
+    }
+
+    private void drawBottom(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
         float secondThirdSlopeInv;
         float secondThirdYintercept;
-        if (second.x != third.x) {
-            secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
-            secondThirdYintercept = second.y - (float) (second.x / secondThirdSlopeInv);
-        } else {
-            secondThirdSlopeInv = 0;
-            secondThirdYintercept = 0;
-        }
+        secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
+        secondThirdYintercept = second.y - (float) (second.x / secondThirdSlopeInv);
+
 
         float firstSecondSlopeInv;
         float firstSecondYintercept = 0;
-        if (first.x != second.x) {
-            firstSecondSlopeInv = (float) (first.x - second.x) / (float) (first.y - second.y);
-            firstSecondYintercept = first.y - (float) (first.x / firstSecondSlopeInv);
-        } else {
-            firstSecondSlopeInv = 0;
-        }
+        firstSecondSlopeInv = (float) (first.x - second.x) / (float) (first.y - second.y);
+        firstSecondYintercept = first.y - (float) (first.x / firstSecondSlopeInv);
 
         float firstThirdSlopeInv;
         float firstThirdYintercept;
-        if (third.x != first.x) {
-            firstThirdSlopeInv = (float) ((first.x - third.x)) / (float) ((first.y - third.y));
-            firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
-        } else {
-            firstThirdSlopeInv = 0;
-            firstThirdYintercept = 0;
-        }
+        firstThirdSlopeInv = (float) ((first.x - third.x)) / (float) ((first.y - third.y));
+        firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
 
-        for (int y = (int) Math.floor(Math.min(screenHeight - 1, first.y)); y >= Math.ceil(Math.max(0, second.y)); y--) {
-            float startX, endX;
-            if (second.x > first.x) {
-                startX =
-                        firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
-                endX =
-                        firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
-            } else {
-                endX =
-                        firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
-                startX =
-                        firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
-            }
 
-          if (Math.abs(startX - endX) < 0.001) {
-            endX = startX;
-          }
-
-            try {
-                EdgeEntry ee = new EdgeEntry(Math.round(startX), Math.round(endX), poly.center().z, 0,
-                        0, 0, color);
-                edgeTable[y].add(ee);
-            } catch (RuntimeException ex) {
-                throw ex;
-            }
-
-        }
 
         for (int y = Math.round(Math.min(screenHeight - 1, second.y)); y >= Math.max(0, third.y); y--) {
             float startX;
-          float endX;
+            float endX;
             if (second.x > first.x) {
                 startX =
-                        firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
+                    firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 endX =
-                        secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
+                    secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
             } else {
                 endX =
-                        firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
+                    firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 startX =
-                        secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
+                    secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
             }
 
             if (Math.abs(startX - endX) < 0.001) {
-              endX = startX;
+                endX = startX;
             }
 
             try {
-                EdgeEntry ee = new EdgeEntry(Math.round(startX), Math.round(endX), poly.center().z, 0,
-                        0, 0, color);
+                EdgeEntry ee = new EdgeEntry(Math.round(startX), Math.round(endX), zIndex, 0,
+                    0, 0, color);
                 edgeTable[y].add(ee);
             } catch (RuntimeException ex) {
                 System.out.println(startX + " " + endX);
@@ -291,8 +244,56 @@ public class BoardNew {
                 throw ex;
             }
         }
+    }
+
+    private void drawTop(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
+
+        float firstSecondSlopeInv;
+        float firstSecondYintercept = 0;
+        firstSecondSlopeInv = (float) (first.x - second.x) / (float) (first.y - second.y);
+        firstSecondYintercept = first.y - (float) (first.x / firstSecondSlopeInv);
 
 
+        float firstThirdSlopeInv;
+        float firstThirdYintercept;
+        firstThirdSlopeInv = (float) ((first.x - third.x)) / (float) ((first.y - third.y));
+        firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
+
+        for (int y = (int) Math.floor(Math.min(screenHeight - 1, first.y)); y >= Math.max(0, second.y); y--) {
+            float startX, endX;
+            if (second.x > first.x) {
+                startX =
+                    firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
+                endX =
+                    firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
+            } else {
+                endX =
+                    firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
+                startX =
+                    firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
+            }
+
+            float diff = startX - endX;
+
+            if (diff > 0) {//Sometimes it is possible for very extreme triangles to round annoyingly.
+                var temp = startX;
+                startX = endX;
+                endX = temp;
+            }
+
+            if (Math.abs(diff) < 0.05) {
+                endX = startX;
+            }
+
+            try {
+                EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
+                    0, 0, color);
+                edgeTable[y].add(ee);
+            } catch (RuntimeException ex) {
+                throw ex;
+            }
+
+        }
     }
 
     /**
