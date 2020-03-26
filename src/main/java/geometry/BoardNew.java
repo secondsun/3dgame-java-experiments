@@ -28,7 +28,7 @@ public class BoardNew implements Model{
 
                 int paletteSize = palette.length;
                 int paletteColorIndex = ((y * tileSize + x) % paletteSize);
-                int zOff = random.nextInt(5);
+                int zOff = random.nextInt(7);
                 var v1 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize), zOff * tileSize),
                         point -> new Vertex(point.x - boardWidth/2, point.y - boardHeight/2, point.z));
                 var v2 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize) + tileSize, zOff * tileSize),
@@ -72,7 +72,9 @@ public class BoardNew implements Model{
                     tiles.add(q);
                 }
 
+
             }
+
         }
         verticies = new ArrayList<>(vertexMap.values());
 

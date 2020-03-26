@@ -21,7 +21,7 @@ public class Main {
 
 
     public static class Screen extends Component {
-        private final int scale = 3;
+        private final int scale = 1;
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
         private int rotY=272, rotX = 317;
