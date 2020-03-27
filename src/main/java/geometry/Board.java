@@ -2,7 +2,7 @@ package geometry;
 
 import java.util.*;
 
-public class BoardNew implements Model{
+public class Board implements Model{
 
 
     private final int boardWidth;
@@ -11,10 +11,10 @@ public class BoardNew implements Model{
     private List<Triangle> tiles;
     private List<Vertex> verticies;
 
-    public BoardNew(int columns, int rows, int scale, int[] palette) {
+    public Board(int columns, int rows, int scale, int[] palette) {
         var random = new Random(columns);
 
-        int tileSize = 8 * scale;
+        int tileSize = 16 * scale;
         this.boardWidth = columns * tileSize ;
         this.boardHeight = rows * tileSize;
 
@@ -28,7 +28,7 @@ public class BoardNew implements Model{
 
                 int paletteSize = palette.length;
                 int paletteColorIndex = ((y * tileSize + x) % paletteSize);
-                int zOff = random.nextInt(7);
+                int zOff = 1;//random.nextInt(7);
                 var v1 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize), zOff * tileSize),
                         point -> new Vertex(point.x - boardWidth/2, point.y - boardHeight/2, point.z));
                 var v2 = vertexMap.computeIfAbsent(new Vertex((x * tileSize), (y * tileSize) + tileSize, zOff * tileSize),

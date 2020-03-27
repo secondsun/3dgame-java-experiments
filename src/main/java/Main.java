@@ -1,8 +1,9 @@
 import game.Renderer;
 import game.ScanLineEngine;
-import geometry.BoardNew;
+import geometry.Board;
 import geometry.Cube;
 import geometry.Model;
+import geometry.WaterBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,17 +26,21 @@ public class Main {
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
         private int rotY=272, rotX = 317;
-
+        Model board;
+        {
+            board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
+            board.rotateY(180).translateX(screenWidth / 2).translateY(screenHeight / 2);
+        }
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new BoardNew(32, 24, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
+
             Model cube = new Cube();
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, cube);
 
             System.out.println(rotX + "," + rotY);
-            board.rotateX(rotX).rotateY(rotY).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            //board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateY(0).scale(1.0001).translateX(screenWidth / 2).translateY(screenHeight / 2);
             rotY += 1;
 
             var tiles = board.getTriangles();
@@ -53,12 +58,6 @@ public class Main {
             if (rotX > 360) {
 
                 rotX = 0;
-            }
-
-            try {
-                Thread.sleep(1000/100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
             repaint();

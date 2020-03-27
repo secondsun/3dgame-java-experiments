@@ -38,5 +38,13 @@ public interface Model {
         getVerticies().forEach(tile -> tile.translateZ(i));
         return this;
     }
-    
+
+    default Model scale(double v) {
+        getVerticies().forEach(tile -> {
+            tile.y*=v;
+            tile.x*=v;
+            tile.z*=v;
+        });
+        return this;
+    }
 }

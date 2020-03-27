@@ -6,6 +6,7 @@ import static java.lang.Math.toRadians;
 
 public class Vertex {
 
+    public static final Vertex ZERO = new Vertex(0, 0, 0);
     public float x;
     public float y;
     public float z;
