@@ -72,7 +72,7 @@ public class ScanLineEngine implements Renderer {
     }
 
     private void storeTriangleInTable(Triangle poly) {
-        int color = poly.color();
+        int color = poly.textureId();
         if (poly.normal().z > 0) {//skip polygons facing away
 //      System.out.println("normal backwards" + poly);
             return;
@@ -81,7 +81,7 @@ public class ScanLineEngine implements Renderer {
         var first = poly.v1();
         var second = poly.v2();
         var third = poly.v3();
-        var tex = Resources.getTexture(poly.color());
+        var tex = Resources.getTexture(poly.textureId());
 
         var texSecond = tex.origin();
         var texFirst = new Vertex(0, texSecond.y + tex.v(), 0);
@@ -120,17 +120,17 @@ public class ScanLineEngine implements Renderer {
 
         int lastY = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         if (first.y != second.y) {
-            lastY = drawTop(first, second, third, texFirst, texSecond, texThird, poly.center().z, color);
+            lastY = drawTop(poly, first, second, third, texFirst, texSecond, texThird, poly.center().z, color);
         }
 
         if (third.y != second.y) {
-            drawBottom(first, second, third, texFirst, texSecond, texThird, poly.center().z, color, lastY);
+            drawBottom(poly, first, second, third, texFirst, texSecond, texThird, poly.center().z, color, lastY);
         }
 
 
     }
 
-    private void drawBottom(Vertex first, Vertex second, Vertex third, Vertex texFirst, Vertex texSecond, Vertex texThird, float zIndex, int color, int startY) {
+    private void drawBottom(Triangle poly, Vertex first, Vertex second, Vertex third, Vertex texFirst, Vertex texSecond, Vertex texThird, float zIndex, int color, int startY) {
         float secondThirdSlopeInv;
         float secondThirdYintercept;
         secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
@@ -174,9 +174,28 @@ public class ScanLineEngine implements Renderer {
 
 
             try {
-                EdgeEntry ee = new EdgeEntry((int) Math.floor(startX), (int) Math.ceil(endX), zIndex, 0,
+
+                var tex = Resources.getTexture(color);
+                int start = (int) Math.floor(startX);
+                int end = (int) Math.ceil(endX);
+                if (tex == null) { //textureId is a color
+                    EdgeEntry ee = new EdgeEntry(start, end, zIndex, 0,
                         0, 0, color);
-                edgeTable[y].add(ee);
+                    edgeTable[y].add(ee);
+                } else {
+                    float tV = poly.dv() * ((int) Math.floor(first.y)-y);
+
+                    for (int i = start; i <= end; i++) {
+                        float tU = poly.du() * (i-start);
+                        BufferedImage image = Resources.getImage(tex.imageId());
+                        System.out.println(String.format("x = %d y = %d",(int)Math.max(0,(tex.origin().x  +tU)-1),(int)(Math.max(0,tex.origin().y +  tV-1))));
+                        var texColor = image.getRGB((int)Math.min(15, Math.max(0,(tex.origin().x  +tU)-1)),(int)Math.min(15,(Math.max(0,tex.origin().y +  tV-1))));
+                        EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
+                            0, 0, texColor);
+                        edgeTable[y].add(ee);
+
+                    }
+                }
             } catch (RuntimeException ex) {
                 System.out.println(startX + " " + endX);
                 System.out.println(String.format("Poly: ,v1:%s\n v2:%s\n v3:%s", first.toString(), second.toString(), third.toString()));
@@ -185,7 +204,7 @@ public class ScanLineEngine implements Renderer {
         }
     }
 
-    private int drawTop(Vertex first, Vertex second, Vertex third, Vertex texFirst, Vertex texSecond, Vertex texThird, float zIndex, int color) {
+    private int drawTop(Triangle poly, Vertex first, Vertex second, Vertex third, Vertex texFirst, Vertex texSecond, Vertex texThird, float zIndex, int color) {
         int toReturn = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         float firstSecondSlopeInv;
         float firstSecondYintercept = 0;
@@ -201,33 +220,18 @@ public class ScanLineEngine implements Renderer {
         for (int y = (int) Math.floor(Math.min(screenHeight - 1, first.y)); y >= Math.max(0, second.y); y--) {
 
             float startX, endX;
-            float texX,texY;
-            float dax_step,dbx_step;
-            float dxStart,dyStart,dxEnd,dyEnd;
+
             if (second.x > first.x) {
                 startX =
                         firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 endX =
                         firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
-                dax_step = firstThirdSlopeInv;
-                dbx_step = firstSecondSlopeInv;
-                dxStart = first.x - third.x;
-                dyStart = first.y - third.y;
-                dxEnd = first.x - second.x;
-                dyEnd = first.y - second.y;
-                //Because we are resolving to the scan line, we need to clip our geometry sometimes
 
             } else {
                 endX =
                         firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 startX =
                         firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
-                dbx_step = firstThirdSlopeInv;
-                dax_step = firstSecondSlopeInv;
-                dxStart = first.x - second.x;
-                dyStart = first.y - second.y;
-                dxEnd = first.x - third.x;
-                dyEnd = first.y - third.y;
             }
 
             float diff = startX - endX;
@@ -247,41 +251,26 @@ public class ScanLineEngine implements Renderer {
                 var tex = Resources.getTexture(color);
                 int start = (int) Math.floor(startX);
                 int end = (int) Math.ceil(endX);
-                if (tex == null) { //color is a color
+                if (tex == null) { //textureId is a color
                     EdgeEntry ee = new EdgeEntry(start, end, zIndex, 0,
                             0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    //interpolate are add E's
-                    Vertex texStart, texEnd;
-                    float du1Slope, dv1Slope,du2Slope, dv2Slope;
-
-                    du1Slope = tex.u()/dxStart;
-                    dv1Slope = tex.v()/dyStart;
-                    du2Slope = tex.u()/dxEnd;
-                    dv2Slope = tex.v()/dyEnd;
-
-                    texStart = new Vertex(tex.origin().x + (y - first.y) * du1Slope, tex.origin().y + (y - first.y) * dv1Slope,0);
-                    texEnd = new Vertex(tex.origin().x + (y - first.y) * du2Slope, tex.origin().y + (y - first.y) * dv2Slope,0);
-
-                    float tStepx = 1/(texEnd.x - texStart.x+1);
-                    float tStepy =1/(texEnd.y - texStart.y+1);
-                    float tU = texStart.x;
-                    float tV = texStart.y;
+                    float tV = poly.dv() * ((int) Math.floor(first.y)-y);
 
                     for (int i = start; i <= end; i++) {
+                        float tU = poly.du() * (i-start);
                         BufferedImage image = Resources.getImage(tex.imageId());
-                        var texColor = image.getRGB((int)(tex.origin().x + tex.u() +tU),(int)(tex.origin().y + tex.v() + tV));
+                        var texColor = image.getRGB((int)Math.min(15,Math.max(0,(tex.origin().x  +tU)-1)),(int)Math.min(15,(Math.max(0,tex.origin().y +  tV-1))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
                                 0, 0, texColor);
                         edgeTable[y].add(ee);
-                        tU += tStepx;
-                        tV += tStepy;
+
                     }
                 }
                 toReturn = y - 1;
             } catch (RuntimeException ex) {
-            //    throw ex;
+                throw ex;
             }
 
         }

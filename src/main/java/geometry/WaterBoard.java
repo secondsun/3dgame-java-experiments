@@ -72,13 +72,13 @@ public class WaterBoard implements Model {
                         point -> new Vertex(point.x - boardWidth / 2, point.y - boardHeight / 2, point.z));
 
 
-                var texId1 = Resources.setTexture(imageId, new Vertex(4, 0, 0), -4, 4);
-                var texId2 = Resources.setTexture(imageId, new Vertex(0, 4, 0), 4, -4);
+                var texId1 = Resources.setTexture(imageId, new Vertex(0, 15, 0), 15, -15);
+                var texId2 = Resources.setTexture(imageId, new Vertex(15, 0, 0), -15, 15);
 
 
                 var cube = new Triangle[]{
-//                        new Triangle(v1, v2, v3, Color.DARK_GRAY.getRGB()),//SOUTH
-//                        new Triangle(v1, v3, v4, Color.DARK_GRAY.getRGB()),//SOUTH
+                        new Triangle(v1, v2, v3, texId1),//SOUTH
+                        new Triangle( v3, v4,v1, texId2),//SOUTH
 //                        new Triangle(v4, v3, v7, Color.DARK_GRAY.getRGB()),//EAST
 //                        new Triangle(v4, v7, v8, Color.DARK_GRAY.getRGB()),//EAST
                         new Triangle(v8, v7, v6, texId1),//NORTH

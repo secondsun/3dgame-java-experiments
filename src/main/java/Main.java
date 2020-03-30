@@ -29,19 +29,19 @@ public class Main {
         Model board;
         {
             board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            board.rotateY(180).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.translateX(screenWidth / 2).translateY(screenHeight / 2);
         }
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
 
-            Model cube = new Cube();
-            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, cube);
 
-            System.out.println(rotX + "," + rotY);
-            //board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateY(0).scale(1.0001).translateX(screenWidth / 2).translateY(screenHeight / 2);
-            rotY += 1;
+            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
+
+
+            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateX(1).rotateY(2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+
 
             var tiles = board.getTriangles();
             var verticies = board.getVerticies();
@@ -50,17 +50,13 @@ public class Main {
 
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
-            if (rotY > 360) {
-                rotY = 0;
-
+            try {
+                Thread.sleep(1000/100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            rotX += 1;
-            if (rotX > 360) {
-
-                rotX = 0;
-            }
-
             repaint();
+
         }
     }
 }
