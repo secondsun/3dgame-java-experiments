@@ -11,6 +11,12 @@ public class Vertex {
     public float y;
     public float z;
 
+    public Vertex(Vertex toCopy) {
+        this.x = toCopy.x;
+        this.y = toCopy.y;
+        this.z = toCopy.z;
+    }
+
     public Vertex(float x, float y, float z) {
         this.x = x;
         this.y = y;

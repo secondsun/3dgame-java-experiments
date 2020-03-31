@@ -57,8 +57,4 @@ public class Cube implements Model {
         return tiles;
     }
 
-    @Override
-    public List<Vertex> getVerticies() {
-        return verticies;
-    }
 }

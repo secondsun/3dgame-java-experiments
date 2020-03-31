@@ -2,47 +2,106 @@ package geometry;
 
 import game.Resources;
 
-public record Triangle(Vertex v1, Vertex v2, Vertex v3, float du, float dv, int textureId, Texture texture) {
+public class Triangle{
 
+    public Vertex v1, v2,v3;
+    public Vertex2D du;
+    public Vertex2D dv;
+    public  int textureId;
+    public  Texture texture;
+
+    public Triangle(Vertex v1, Vertex v2, Vertex v3, Vertex2D du, Vertex2D dv, int textureId, Texture texture) {
+        this.v1 = new Vertex(v1);
+        this.v2 = new Vertex(v2);
+        this.v3 = new Vertex(v3);
+        this.du = du;
+        this.dv = dv;
+        this.textureId = textureId;
+        this.texture =texture;
+
+    }
 
     public Triangle(Vertex v1, Vertex v2, Vertex v3, int textureId) {
-        this(v1,v2,v3,
-            (Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),
-            (Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y),
-            textureId,
-            Resources.getTexture(textureId));
+        this(new Vertex(v1),new Vertex(v2),new Vertex(v3),
+                new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y)),
+                new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y)),
+                textureId,
+                Resources.getTexture(textureId));
     }
 
     public Triangle scale(int factor) {
-        return new Triangle(v1.scale(factor), v2.scale(factor), v3.scale(factor),(texture.origin().x-texture.u())/factor,(texture.origin().y-texture.v())/factor, textureId,texture);
+        var newTri = new Triangle(v1.scale(factor), v2.scale(factor), v3.scale(factor),du.scale(1/factor),dv.scale(1/factor), textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
     }
 
     public Triangle translateX(int translate) {
-        return new Triangle(v1.translateX(translate), v2.translateX(translate), v3.translateX(translate)
-            ,du, dv, textureId,texture);
+        var newTri = new Triangle(v1.translateX(translate), v2.translateX(translate), v3.translateX(translate)
+                ,du, dv, textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
+    }
+
+    public Triangle translateZ(int translate) {
+        var newTri = new Triangle(v1.translateZ(translate), v2.translateZ(translate), v3.translateZ(translate)
+                ,du, dv, textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
     }
 
     public Triangle translateY(int translate) {
-        return new Triangle(v1.translateY(translate), v2.translateY(translate), v3.translateY(translate)
-            ,du, dv, textureId,texture);
+        var newTri =  new Triangle(v1.translateY(translate), v2.translateY(translate), v3.translateY(translate)
+                ,du, dv, textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
     }
 
     public Triangle rotateY(int rotY) {
         var v1New = v1.rotateY(rotY);
         var v2New = v2.rotateY(rotY);
         var v3New = v3.rotateY(rotY);
-        var du = Math.abs(v2New.x - v3New.x)/(texture.origin().x-texture.u());
-        var dy = Math.abs(v2New.y - v1New.y)/(texture.origin().y-texture.v());
-        return new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        var du = new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y));
+        var dy = new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y));
+
+        var newTri =  new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
     }
 
     public Triangle rotateX(int rotX) {
         var v1New = v1.rotateX(rotX);
         var v2New = v2.rotateX(rotX);
         var v3New = v3.rotateX(rotX);
-        var du = Math.abs(v2New.x - v3New.x)/(texture.origin().x-texture.u());
-        var dy = Math.abs(v2New.y - v1New.y)/(texture.origin().y-texture.v());
-        return new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        var du = new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y));
+        var dy = new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y));
+
+        var newTri =  new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        this.v1 = newTri.v1;
+        this.v2 = newTri.v2;
+        this.v3 = newTri.v3;
+        this.du = newTri.du;
+        this.dv = newTri.dv;
+        return this;
     }
 
     public Vertex normal() {
@@ -64,3 +123,4 @@ public record Triangle(Vertex v1, Vertex v2, Vertex v3, float du, float dv, int 
 
 
 }
+

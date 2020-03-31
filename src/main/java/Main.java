@@ -40,13 +40,13 @@ public class Main {
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
 
-            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateX(1).rotateY(2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+           board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
 
             var tiles = board.getTriangles();
-            var verticies = board.getVerticies();
 
-            BufferedImage image = engine.draw(tiles, verticies);
+
+            BufferedImage image = engine.draw(tiles);
 
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 

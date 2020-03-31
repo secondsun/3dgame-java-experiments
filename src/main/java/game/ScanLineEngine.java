@@ -24,14 +24,14 @@ public class ScanLineEngine implements Renderer {
     }
 
     //Calculate polygons for screen drawing
-    private void generateEdgeList(List<Triangle> tiles, List<Vertex> verticies) {
+    private void generateEdgeList(List<Triangle> tiles) {
         initEdgeTable();
 
         tiles.forEach(triangle -> {
-            float yMin = Maths.min(triangle.v1().y, triangle.v2().y, triangle.v3().y);
-            float yMax = Maths.max(triangle.v1().y, triangle.v2().y, triangle.v3().y);
-            float xMin = Maths.min(triangle.v1().x, triangle.v2().x, triangle.v3().x);
-            float xMax = Maths.max(triangle.v1().x, triangle.v2().x, triangle.v3().x);
+            float yMin = Maths.min(triangle.v1.y, triangle.v2.y, triangle.v3.y);
+            float yMax = Maths.max(triangle.v1.y, triangle.v2.y, triangle.v3.y);
+            float xMin = Maths.min(triangle.v1.x, triangle.v2.x, triangle.v3.x);
+            float xMax = Maths.max(triangle.v1.x, triangle.v2.x, triangle.v3.x);
 
             if (yMax < 0 || yMin > screenHeight) {
                 //does not intersect with scan line
@@ -72,16 +72,16 @@ public class ScanLineEngine implements Renderer {
     }
 
     private void storeTriangleInTable(Triangle poly) {
-        int color = poly.textureId();
+        int color = poly.textureId;
         if (poly.normal().z > 0) {//skip polygons facing away
 //      System.out.println("normal backwards" + poly);
             return;
         }
 
-        var first = poly.v1();
-        var second = poly.v2();
-        var third = poly.v3();
-        var tex = Resources.getTexture(poly.textureId());
+        var first = poly.v1;
+        var second = poly.v2;
+        var third = poly.v3;
+        var tex = Resources.getTexture(poly.textureId);
 
         var texSecond = tex.origin();
         var texFirst = new Vertex(0, texSecond.y + tex.v(), 0);
@@ -147,16 +147,21 @@ public class ScanLineEngine implements Renderer {
 
             float startX;
             float endX;
+            boolean invertDu = false;
+
             if (second.x > first.x) {
                 startX =
                         firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 endX =
                         secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
+
+
             } else {
                 endX =
                         firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 startX =
                         secondThirdSlopeInv == 0 ? third.x : ((y - secondThirdYintercept) * secondThirdSlopeInv);
+                invertDu = true;
             }
 
 
@@ -180,19 +185,22 @@ public class ScanLineEngine implements Renderer {
                 int end = (int) Math.ceil(endX);
                 if (tex == null) { //textureId is a color
                     EdgeEntry ee = new EdgeEntry(start, end, zIndex, 0,
-                        0, 0, color);
+                            0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    float tV = poly.dv() * ((int) Math.floor(first.y)-y);
+                    float tV = poly.dv.length() * ((int) Math.floor(first.y) - y);
 
                     for (int i = start; i <= end; i++) {
-                        float tU = poly.du() * (i-start);
+                        float tU = poly.du.length() * (i - start);
                         BufferedImage image = Resources.getImage(tex.imageId());
-                        System.out.println(String.format("x = %d y = %d",(int)Math.max(0,(tex.origin().x  +tU)-1),(int)(Math.max(0,tex.origin().y +  tV-1))));
-                        var texColor = image.getRGB((int)Math.min(15, Math.max(0,(tex.origin().x  +tU)-1)),(int)Math.min(15,(Math.max(0,tex.origin().y +  tV-1))));
+                        if (invertDu) {
+                            tU = poly.du.length() * (end - i);
+                        }
+                        //System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)(tex.origin().y + tV)));
+                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU))), (int) Math.min(15, (Math.max(0, tex.origin().y + tV))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
-                            0, 0, texColor);
-                        edgeTable[y].add(ee);
+                                0, 0, texColor);
+                         //edgeTable[y].add(ee);
 
                     }
                 }
@@ -220,12 +228,13 @@ public class ScanLineEngine implements Renderer {
         for (int y = (int) Math.floor(Math.min(screenHeight - 1, first.y)); y >= Math.max(0, second.y); y--) {
 
             float startX, endX;
-
-            if (second.x > first.x) {
+            boolean invertDu = false;
+            if (second.x >= first.x) {
                 startX =
                         firstThirdSlopeInv == 0 ? first.x : ((y - firstThirdYintercept) * firstThirdSlopeInv);
                 endX =
                         firstSecondSlopeInv == 0 ? second.x : ((y - firstSecondYintercept) * firstSecondSlopeInv);
+                invertDu = true;
 
             } else {
                 endX =
@@ -256,12 +265,17 @@ public class ScanLineEngine implements Renderer {
                             0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    float tV = poly.dv() * ((int) Math.floor(first.y)-y);
+                    float tV = poly.dv.length() * ((int) Math.floor(y- second.y) );
 
                     for (int i = start; i <= end; i++) {
-                        float tU = poly.du() * (i-start);
+                        float tU = poly.du.length() * (i - start);
                         BufferedImage image = Resources.getImage(tex.imageId());
-                        var texColor = image.getRGB((int)Math.min(15,Math.max(0,(tex.origin().x  +tU)-1)),(int)Math.min(15,(Math.max(0,tex.origin().y +  tV-1))));
+                        if (invertDu) {
+                            tU = poly.du.length() * (end - i);
+                        }
+                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)(tex.origin().y + tV)));
+
+                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU) )), (int) Math.min(15, (Math.max(0, tex.origin().y + tV ))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
                                 0, 0, texColor);
                         edgeTable[y].add(ee);
@@ -278,8 +292,8 @@ public class ScanLineEngine implements Renderer {
     }
 
     @Override
-    public BufferedImage draw(List<Triangle> tiles, List<Vertex> verticies) {
-        generateEdgeList(tiles, verticies);
+    public BufferedImage draw(List<Triangle> tiles) {
+        generateEdgeList(tiles);
         BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
         int i;
 

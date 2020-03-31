@@ -16,7 +16,6 @@ public class WaterBoard implements Model {
     private final int boardHeight;
 
     private List<Triangle> tiles;
-    private List<Vertex> verticies;
 
     private static BufferedImage waterTexture;
 
@@ -42,11 +41,11 @@ public class WaterBoard implements Model {
 
         tiles = new ArrayList<>(rows * columns);
 
-        final Map<Vertex, Vertex> vertexMap = new HashMap<>();
+        Map<Vertex, Vertex> vertexMap = new HashMap<>();
 
-        for (int x = 0; x < columns; x++) {
-            for (int y = 0; y < rows; y++) {
-
+        for (int x = columns/2-1; x < columns/2; x++) {
+            for (int y = rows/2-1; y < rows/2; y++) {
+                vertexMap = new HashMap<>();
 
                 int paletteSize = palette.length;
                 int paletteColorIndex = ((y * tileSize + x) % paletteSize);
@@ -72,13 +71,13 @@ public class WaterBoard implements Model {
                         point -> new Vertex(point.x - boardWidth / 2, point.y - boardHeight / 2, point.z));
 
 
-                var texId1 = Resources.setTexture(imageId, new Vertex(0, 15, 0), 15, -15);
-                var texId2 = Resources.setTexture(imageId, new Vertex(15, 0, 0), -15, 15);
+                var texId1 = Resources.setTexture(imageId, new Vertex(0, 16, 0), 16, -16);
+                var texId2 = Resources.setTexture(imageId, new Vertex(16, 0, 0), -16, 16);
 
 
                 var cube = new Triangle[]{
                         new Triangle(v1, v2, v3, texId1),//SOUTH
-                        new Triangle( v3, v4,v1, texId2),//SOUTH
+                        new Triangle( v3,v4, v1,  texId2),//SOUTH
 //                        new Triangle(v4, v3, v7, Color.DARK_GRAY.getRGB()),//EAST
 //                        new Triangle(v4, v7, v8, Color.DARK_GRAY.getRGB()),//EAST
                         new Triangle(v8, v7, v6, texId1),//NORTH
@@ -101,18 +100,13 @@ public class WaterBoard implements Model {
             }
 
         }
-        verticies = new ArrayList<>(vertexMap.values());
+
 
     }
 
     @Override
     public List<Triangle> getTriangles() {
         return tiles;
-    }
-
-    @Override
-    public List<Vertex> getVerticies() {
-        return verticies;
     }
 
 }
