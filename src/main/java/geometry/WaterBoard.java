@@ -43,8 +43,8 @@ public class WaterBoard implements Model {
 
         Map<Vertex, Vertex> vertexMap = new HashMap<>();
 
-        for (int x = columns/2-1; x < columns/2; x++) {
-            for (int y = rows/2-1; y < rows/2; y++) {
+        for (int x = 0; x < columns/2; x++) {
+            for (int y = 0; y < rows/2; y++) {
                 vertexMap = new HashMap<>();
 
                 int paletteSize = palette.length;
@@ -73,6 +73,8 @@ public class WaterBoard implements Model {
 
                 var texId1 = Resources.setTexture(imageId, new Vertex(0, 16, 0), 16, -16);
                 var texId2 = Resources.setTexture(imageId, new Vertex(16, 0, 0), -16, 16);
+                var texId3 = Resources.setTexture(imageId, new Vertex(16, 16, 0), -16, -16);
+                var texId4 = Resources.setTexture(imageId, new Vertex(0, 16, 0), 16, -16);
 
 
                 var cube = new Triangle[]{
@@ -80,8 +82,8 @@ public class WaterBoard implements Model {
                         new Triangle( v3,v4, v1,  texId2),//SOUTH
 //                        new Triangle(v4, v3, v7, Color.DARK_GRAY.getRGB()),//EAST
 //                        new Triangle(v4, v7, v8, Color.DARK_GRAY.getRGB()),//EAST
-                        new Triangle(v8, v7, v6, texId1),//NORTH
-                        new Triangle(v8, v6, v5, texId2),//NORTH
+                        new Triangle(v8, v7, v6, texId3),//NORTH
+                        new Triangle(v6,v5,v8,   texId4),//NORTH
 //                        new Triangle(v5, v6, v2, Color.DARK_GRAY.getRGB()),//WEST
 //                        new Triangle(v5, v2, v1, Color.DARK_GRAY.getRGB()),//WEST
 //                        new Triangle(v2, v6, v7, Color.DARK_GRAY.getRGB()),//TOP
@@ -106,7 +108,7 @@ public class WaterBoard implements Model {
 
     @Override
     public List<Triangle> getTriangles() {
-        return tiles;
+        return new ArrayList<>(tiles);
     }
 
 }

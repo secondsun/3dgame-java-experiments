@@ -26,10 +26,12 @@ public class Main {
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
         private int rotY=272, rotX = 317;
-        Model board;
+        Model board, board2;
         {
             board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
+            board2 = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
             board.translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board2.translateX(screenWidth / 2 - (2*scale*16)).translateY(screenHeight / 2);
         }
         @Override
         public void paint(Graphics g) {
@@ -40,10 +42,11 @@ public class Main {
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
 
-           board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+           board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateY(3).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
 
             var tiles = board.getTriangles();
+            //tiles.addAll(board2.getTriangles());
 
 
             BufferedImage image = engine.draw(tiles);
@@ -51,7 +54,7 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000/100);
+                Thread.sleep(1000/30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
