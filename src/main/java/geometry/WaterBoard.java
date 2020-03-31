@@ -43,8 +43,8 @@ public class WaterBoard implements Model {
 
         Map<Vertex, Vertex> vertexMap = new HashMap<>();
 
-        for (int x = 0; x < columns/2; x++) {
-            for (int y = 0; y < rows/2; y++) {
+        for (int x = 0; x < columns ; x++) {
+            for (int y = 0; y < rows ; y++) {
                 vertexMap = new HashMap<>();
 
                 int paletteSize = palette.length;
@@ -77,21 +77,30 @@ public class WaterBoard implements Model {
                 var texId4 = Resources.setTexture(imageId, new Vertex(0, 16, 0), 16, -16);
 
 
-                var cube = new Triangle[]{
+                var cube = new ArrayList<>(List.of(
                         new Triangle(v1, v2, v3, texId1),//SOUTH
-                        new Triangle( v3,v4, v1,  texId2),//SOUTH
-//                        new Triangle(v4, v3, v7, Color.DARK_GRAY.getRGB()),//EAST
-//                        new Triangle(v4, v7, v8, Color.DARK_GRAY.getRGB()),//EAST
+                        new Triangle(v3, v4, v1, texId2),//SOUTH
                         new Triangle(v8, v7, v6, texId3),//NORTH
-                        new Triangle(v6,v5,v8,   texId4),//NORTH
-//                        new Triangle(v5, v6, v2, Color.DARK_GRAY.getRGB()),//WEST
-//                        new Triangle(v5, v2, v1, Color.DARK_GRAY.getRGB()),//WEST
-//                        new Triangle(v2, v6, v7, Color.DARK_GRAY.getRGB()),//TOP
-//                        new Triangle(v2, v7, v3, Color.DARK_GRAY.getRGB()),//TOP
-//                        new Triangle(v8, v5, v1, Color.DARK_GRAY.getRGB()),//BOTTOM
-//                        new Triangle(v8, v1, v4, Color.DARK_GRAY.getRGB()),//BOTTOM
+                        new Triangle(v6, v5, v8, texId4)//NORTH
+                ));
+                if (x == 0) {
 
-                };
+                    cube.add(new Triangle(v5, v6, v2, Color.DARK_GRAY.getRGB()));//WEST
+                    cube.add(new Triangle(v5, v2, v1, Color.DARK_GRAY.getRGB()));//WEST
+                }
+
+                if (y == 0) {
+                    cube.add(new Triangle(v8, v5, v1, Color.DARK_GRAY.getRGB()));//BOTTOM
+                    cube.add(new Triangle(v8, v1, v4, Color.DARK_GRAY.getRGB()));//BOTTOM
+                }
+                if (y == rows - 1) {
+                    cube.add(new Triangle(v2, v6, v7, Color.DARK_GRAY.getRGB()));//TOP
+                    cube.add(new Triangle(v2, v7, v3, Color.DARK_GRAY.getRGB()));//TOP
+                }
+                if (x == columns - 1) {
+                    cube.add(new Triangle(v4, v3, v7, Color.DARK_GRAY.getRGB()));//EAST
+                    cube.add(new Triangle(v4, v7, v8, Color.DARK_GRAY.getRGB()));//EAST
+                }
 
 
                 for (Triangle q : cube) {

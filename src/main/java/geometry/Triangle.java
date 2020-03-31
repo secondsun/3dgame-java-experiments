@@ -23,10 +23,14 @@ public class Triangle{
 
     public Triangle(Vertex v1, Vertex v2, Vertex v3, int textureId) {
         this(new Vertex(v1),new Vertex(v2),new Vertex(v3),
-                new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y)),
-                new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y)),
+                new Vertex2D(1,1),new Vertex2D(1,1),
                 textureId,
                 Resources.getTexture(textureId));
+        if (texture != null) {
+            this.du = new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y));
+        }
+
     }
 
     public Triangle scale(int factor) {
@@ -76,10 +80,11 @@ public class Triangle{
         var v1New = v1.rotateY(rotY);
         var v2New = v2.rotateY(rotY);
         var v3New = v3.rotateY(rotY);
-        var du = new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y));
-        var dy = new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y));
-
-        var newTri =  new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        if (texture != null) {
+            this.du = new Vertex2D((texture.u()) / Math.abs(v2.x - v3.x), (texture.u()) / Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((texture.v()) / Math.abs(v2.x - v1.x), (texture.v()) / Math.abs(v2.y - v1.y));
+        }
+        var newTri =  new Triangle(v1New, v2New, v3New,du,dv, textureId,texture);
         this.v1 = newTri.v1;
         this.v2 = newTri.v2;
         this.v3 = newTri.v3;
@@ -92,10 +97,11 @@ public class Triangle{
         var v1New = v1.rotateX(rotX);
         var v2New = v2.rotateX(rotX);
         var v3New = v3.rotateX(rotX);
-        var du = new Vertex2D((Resources.getTexture(textureId).u())/Math.abs(v2.x - v3.x),(Resources.getTexture(textureId).u())/Math.abs(v2.y - v3.y));
-        var dy = new Vertex2D((Resources.getTexture(textureId).v())/Math.abs(v2.x - v1.x),(Resources.getTexture(textureId).v())/Math.abs(v2.y - v1.y));
-
-        var newTri =  new Triangle(v1New, v2New, v3New,du,dy, textureId,texture);
+        if (texture != null) {
+            this.du = new Vertex2D((texture.u()) / Math.abs(v2.x - v3.x), (texture.u()) / Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((texture.v()) / Math.abs(v2.x - v1.x), (texture.v()) / Math.abs(v2.y - v1.y));
+        }
+        var newTri =  new Triangle(v1New, v2New, v3New,du,dv, textureId,texture);
         this.v1 = newTri.v1;
         this.v2 = newTri.v2;
         this.v3 = newTri.v3;

@@ -83,13 +83,20 @@ public class ScanLineEngine implements Renderer {
         var third = poly.v3;
         var tex = Resources.getTexture(poly.textureId);
 
-        var texSecond = tex.origin();
-        var texFirst = new Vertex(0, texSecond.y + tex.v(), 0);
-        var texThird = new Vertex(texSecond.x + tex.u(), 0, 0);
+        Vertex texSecond = null;
+        Vertex texFirst = null;
+        Vertex texThird = null;
+
+        if (tex != null) {
+            texSecond = tex.origin();
+            texFirst = new Vertex(0, texSecond.y + tex.v(), 0);
+            texThird = new Vertex(texSecond.x + tex.u(), 0, 0);
+        }
 
         if (first.equals(second) || second.equals(third) || third.equals(first)) {
             return;
         }
+
 
 
         if (second.y > first.y) {
@@ -197,7 +204,7 @@ public class ScanLineEngine implements Renderer {
                             tU = poly.du.length() * (end - i);
                         }
                         tU = poly.texture.u()<0?-tU:tU;
-                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)( tV)));
+//                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)( tV)));
                         var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU))), (int) Math.min(15, (Math.max(0,  tV))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
                                 0, 0, texColor);
@@ -275,7 +282,7 @@ public class ScanLineEngine implements Renderer {
                             tU = poly.du.length() * (end - i);
                         }
                         tU = poly.texture.u()<0?-tU:tU;
-                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)(tex.origin().y + tV)));
+                        //System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)(tex.origin().y + tV)));
 
                         var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU) )), (int) Math.min(15, (Math.max(0, tex.origin().y + tV ))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
