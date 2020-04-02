@@ -195,17 +195,13 @@ public class ScanLineEngine implements Renderer {
                             0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    float tV = poly.dv.length() * ((int) Math.floor(first.y) - y);
-
                     for (int i = start; i <= end; i++) {
-                        float tU = poly.du.length() * (i - start);
+                        float tU = (i - start) * poly.du.x;
+                        float ty = -(first.y-y)*poly.du.x+ (i-start) * poly.du.y;
                         BufferedImage image = Resources.getImage(tex.imageId());
-                        if (invertDu) {
-                            tU = poly.du.length() * (end - i);
-                        }
-                        tU = poly.texture.u()<0?-tU:tU;
+
 //                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)( tV)));
-                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU))), (int) Math.min(15, (Math.max(0,  tV))));
+                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU))), (int) Math.min(15, (Math.max(0,  tex.origin().y +ty))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
                                 0, 0, texColor);
                          edgeTable[y].add(ee);
@@ -273,18 +269,13 @@ public class ScanLineEngine implements Renderer {
                             0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    float tV = poly.dv.length() * ((int) Math.floor(y- second.y) );
-                    tV = poly.texture.v()<0?-tV:tV;
-                    for (int i = start; i <= end; i++) {
-                        float tU = poly.du.length() * (i - start);
-                        BufferedImage image = Resources.getImage(tex.imageId());
-                        if (invertDu) {
-                            tU = poly.du.length() * (end - i);
-                        }
-                        tU = poly.texture.u()<0?-tU:tU;
-                        //System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)(tex.origin().y + tV)));
 
-                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU) )), (int) Math.min(15, (Math.max(0, tex.origin().y + tV ))));
+                    for (int i = start; i <= end; i++) {
+                        float tU = (i - start) * poly.dv.y;
+                        float ty = -(first.y-y)*poly.dv.y+ (i-start) * poly.dv.x;
+                        BufferedImage image = Resources.getImage(tex.imageId());
+
+                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x +tU) )), (int) Math.min(15, (Math.max(0, poly.texture.origin().y+ty))));
                         EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
                                 0, 0, texColor);
                         edgeTable[y].add(ee);

@@ -21,7 +21,7 @@ public class Main {
 
 
     public static class Screen extends Component {
-        private final int scale = 4;
+        private final int scale = 1;
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
         private int rotY = 272, rotX = 317;
@@ -29,9 +29,9 @@ public class Main {
 
         {
             board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            board2 = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            board.translateX(screenWidth / 2).translateY(screenHeight / 2);
-            board2.translateX(screenWidth / 2 - (2 * scale * 16)).translateY(screenHeight / 2);
+            //board2 = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
+            board.rotateZ(0).translateX(screenWidth / 2).translateY(screenHeight / 2);
+
         }
 
         @Override
@@ -39,10 +39,12 @@ public class Main {
             super.paint(g);
 
 
+            //board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
 
-            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateY(-3).translateX(screenWidth / 2).translateY(screenHeight / 2);
+
 
 
             var tiles = board.getTriangles();

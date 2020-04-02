@@ -40,4 +40,9 @@ public interface Model {
         });
         return this;
     }
+
+    default Model rotateZ(int i) {
+        getTriangles().forEach(tile -> tile.rotateZ(i));
+        return this;
+    }
 }

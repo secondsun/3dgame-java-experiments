@@ -133,4 +133,21 @@ public class Vertex {
         return this;
 
     }
+
+    public Vertex rotateZ(int rotZ) {
+
+        var rotZRad = toRadians(rotZ);
+        float newX = (float) (x * Math.cos(rotZRad) - y * Math.sin(rotZRad));
+        float newY = (float) (x*Math.sin(rotZRad) + y*Math.cos(rotZRad));
+        float newZ = z;
+
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+
+        return this;
+//        x' = x*cos q - y*sin q
+//        y' = x*sin q + y*cos q
+//        z' = z
+    }
 }

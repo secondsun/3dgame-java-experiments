@@ -2,9 +2,14 @@ package geometry;
 
 import org.la4j.Matrix;
 
+import java.util.Objects;
+
 import static java.lang.Math.toRadians;
 
-public record Vertex2D(float x, float y) {
+public class Vertex2D {
+
+    public float x;
+    public float y;
 
     public Vertex2D(float x, float y){
         if (Float.isFinite(x)) {
@@ -20,29 +25,32 @@ public record Vertex2D(float x, float y) {
     }
 
     public Vertex2D scale(float factor) {
-        return new Vertex2D(x*factor, y*factor);
+        this.x *= factor;
+        this.y += factor;
+        return this;
     }
 
     public Vertex2D translateX(float translate) {
-        return new Vertex2D(x+translate, y);
+        this.x+=translate;return this;
     }
 
     public Vertex2D translateY(float translate) {
-        return new Vertex2D(x, y+translate);
+        this.y += translate; return this;
     }
 
     public Vertex2D rotateY(float rotY) {
         var rotYRad = toRadians(rotY);
         float newX = (float)(x * Math.cos(rotYRad) - Math.sin(rotYRad));
-        float newY = y;
-        return new Vertex2D(newX, newY);
+
+        this.x = newX;
+        return  this;
     }
 
     public Vertex2D rotateX(float rotX) {
         var rotXRad = toRadians(rotX);
-        float newX = x;
         float newY = (float)( Math.sin(rotXRad) + y*Math.cos(rotXRad));
-        return new Vertex2D(newX, newY);
+        this.y = newY;
+        return this;
     }
 
     public double[][] toMatrix() {
@@ -54,5 +62,38 @@ public record Vertex2D(float x, float y) {
 
     public float length() {
         return (float)Math.sqrt(x*x+y*y);
+    }
+
+    public Vertex2D rotateZ(int rotZ) {
+        var rotZRad = toRadians(rotZ);
+        float newX = (float) (x * Math.cos(rotZRad) - y * Math.sin(rotZRad));
+        float newY = (float) (x*Math.sin(rotZRad) + y*Math.cos(rotZRad));
+
+        this.x = newX;
+        this.y = newY;
+
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vertex2D vertex2D = (Vertex2D) o;
+        return Float.compare(vertex2D.x, x) == 0 &&
+                Float.compare(vertex2D.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "Vertex2D{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
