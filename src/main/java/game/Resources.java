@@ -22,8 +22,8 @@ public class Resources {
         return images.get(in);
     }
 
-    public static  int setTexture(int imageId, Vertex textureOrigin, float x, float y) {
-        var text = new Texture(imageId, textureOrigin, x, y);
+    public static  int setTexture(int imageId, Vertex textureOrigin, float u, float v) {
+        var text = new Texture(imageId, textureOrigin, u, v);
         var hash = text.hashCode();
         textures.put(hash,text);
         return hash;

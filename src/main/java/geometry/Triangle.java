@@ -27,8 +27,8 @@ public class Triangle{
                 textureId,
                 Resources.getTexture(textureId));
         if (texture != null) {
-            this.du = new Vertex2D(Math.abs(v2.x - v3.x)/(this.texture.u()),Math.abs(v2.y - v3.y)/(this.texture.u()));
-            this.dv = new Vertex2D(Math.abs(v2.x - v1.x)/(this.texture.v()),Math.abs(v2.y - v1.y)/(this.texture.v()));
+            this.du = new Vertex2D((this.texture.u()/Math.abs(v2.x - v3.x)),(this.texture.u())/Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((this.texture.v())/Math.abs(v2.x - v1.x),(this.texture.v())/Math.abs(v2.y - v1.y));
         }
 
     }
@@ -81,8 +81,8 @@ public class Triangle{
         var v2New = v2.rotateY(rotY);
         var v3New = v3.rotateY(rotY);
         if (texture != null) {
-            this.du = new Vertex2D(Math.abs(v2.x - v3.x)/(this.texture.u()),Math.abs(v2.y - v3.y)/(this.texture.u()));
-            this.dv = new Vertex2D(Math.abs(v2.x - v1.x)/(this.texture.v()),Math.abs(v2.y - v1.y)/(this.texture.v()));
+            this.du = new Vertex2D((this.texture.u()/Math.abs(v2.x - v3.x)),(this.texture.u())/Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((this.texture.v())/Math.abs(v2.x - v1.x),(this.texture.v())/Math.abs(v2.y - v1.y));
         }
         var newTri =  new Triangle(v1New, v2New, v3New,du,dv, textureId,texture);
         this.v1 = newTri.v1;
@@ -98,8 +98,8 @@ public class Triangle{
         var v2New = v2.rotateZ(rotZ);
         var v3New = v3.rotateZ(rotZ);
         if (texture != null) {
-            this.du = new Vertex2D(Math.abs(v2.x - v3.x)/(this.texture.u()),Math.abs(v2.y - v3.y)/(this.texture.u()));
-            this.dv = new Vertex2D(Math.abs(v2.x - v1.x)/(this.texture.v()),Math.abs(v2.y - v1.y)/(this.texture.v()));
+            this.du = new Vertex2D((this.texture.u()/Math.abs(v2.x - v3.x)),(this.texture.u())/Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((this.texture.v())/Math.abs(v2.x - v1.x),(this.texture.v())/Math.abs(v2.y - v1.y));
         }
         var newTri =  new Triangle(v1New, v2New, v3New,du,dv, textureId,texture);
         this.v1 = newTri.v1;
@@ -115,8 +115,8 @@ public class Triangle{
         var v2New = v2.rotateX(rotX);
         var v3New = v3.rotateX(rotX);
         if (texture != null) {
-            this.du = new Vertex2D(Math.abs(v2.x - v3.x)/(this.texture.u()),Math.abs(v2.y - v3.y)/(this.texture.u()));
-            this.dv = new Vertex2D(Math.abs(v2.x - v1.x)/(this.texture.v()),Math.abs(v2.y - v1.y)/(this.texture.v()));
+            this.du = new Vertex2D((this.texture.u()/Math.abs(v2.x - v3.x)),(this.texture.u())/Math.abs(v2.y - v3.y));
+            this.dv = new Vertex2D((this.texture.v())/Math.abs(v2.x - v1.x),(this.texture.v())/Math.abs(v2.y - v1.y));
         }
         var newTri =  new Triangle(v1New, v2New, v3New,du,dv, textureId,texture);
         this.v1 = newTri.v1;

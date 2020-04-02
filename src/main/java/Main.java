@@ -30,7 +30,7 @@ public class Main {
         {
             board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
             //board2 = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            board.rotateZ(0).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.rotateY(0).rotateZ(0).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
         }
 
@@ -39,7 +39,7 @@ public class Main {
             super.paint(g);
 
 
-            //board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
