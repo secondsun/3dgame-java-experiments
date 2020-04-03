@@ -197,7 +197,7 @@ public class ScanLineEngine implements Renderer {
                 } else {
                     for (int i = start; i <= end; i++) {
                         float tU = (i - start) * poly.du.x;
-                        float ty = tex.v()-(first.y-y)*poly.dv.y+ (end-i) * poly.dv.x;
+                        float ty = -(y-first.y)*poly.dv.y+ (end-i) * poly.dv.x;
                         //float ty = tex.v() - (first.y-y)*poly.dv.y+ (end - i) * poly.dv.x;
 
                         BufferedImage image = Resources.getImage(tex.imageId());
@@ -273,6 +273,7 @@ public class ScanLineEngine implements Renderer {
                 } else {
 
                     for (int i = start; i <= end; i++) {
+
                         float tU = (end - i) * poly.du.x;
                         float ty = tex.v() - (first.y-y)*poly.dv.y+ (end - i) * poly.dv.x;
                         BufferedImage image = Resources.getImage(tex.imageId());

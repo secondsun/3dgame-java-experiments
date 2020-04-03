@@ -30,7 +30,7 @@ public class Main {
         {
             board = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
             //board2 = new WaterBoard(12, 9, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            board.rotateY(0).rotateZ(0).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.scale(4).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
         }
 
@@ -39,7 +39,7 @@ public class Main {
             super.paint(g);
 
 
-            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.translateY(-screenHeight / 2).translateX(-screenWidth / 2).rotateZ(0).translateX(screenWidth / 2).translateY(screenHeight / 2);
 
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
@@ -56,7 +56,7 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000 / 100);
+                Thread.sleep(1000 / 30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
