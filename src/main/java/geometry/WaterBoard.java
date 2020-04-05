@@ -78,8 +78,8 @@ public class WaterBoard implements Model {
 
 
                 var cube = new ArrayList<>(List.of(
-                        new Triangle(v1, v2, v3, texId1),//SOUTH
-                        new Triangle(v3, v4, v1, texId2)//SOUTH
+                        new Triangle(v1, v2, v3, texId1)//,//SOUTH
+                        ,new Triangle(v3, v4, v1, texId2)//SOUTH
 //                        new Triangle(v8, v7, v6, texId3),//NORTH
 //                        new Triangle(v6, v5, v8, texId4)//NORTH
                 ));

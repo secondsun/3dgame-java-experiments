@@ -195,16 +195,17 @@ public class ScanLineEngine implements Renderer {
                             0, 0, color);
                     edgeTable[y].add(ee);
                 } else {
-                    for (int i = start; i <= end; i++) {
-                        float tU = (i - start) * poly.du.x;
-                        float ty = -(y-first.y)*poly.dv.y+ (end-i) * poly.dv.x;
+                    for (int x = start; x <= end; x++) {
+
+                        float tU = (x- poly.v2.x) * poly.du;
+                        float ty = -(y-poly.v2.y)*poly.dv;
                         //float ty = tex.v() - (first.y-y)*poly.dv.y+ (end - i) * poly.dv.x;
 
                         BufferedImage image = Resources.getImage(tex.imageId());
 
 //                        System.out.println(String.format("x = %d y = %d", (int)(tex.origin().x + tU), (int)( tV)));
                         var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x + tU))), Math.round(Math.min(15, (Math.max(0,  tex.origin().y +ty)))));
-                        EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
+                        EdgeEntry ee = new EdgeEntry(x, x, zIndex, 0,
                                 0, 0, texColor);
                          edgeTable[y].add(ee);
 
@@ -272,14 +273,15 @@ public class ScanLineEngine implements Renderer {
                     edgeTable[y].add(ee);
                 } else {
 
-                    for (int i = start; i <= end; i++) {
+                    for (int x = start; x <= end; x++) {
 
-                        float tU = (end - i) * poly.du.x;
-                        float ty = tex.v() - (first.y-y)*poly.dv.y+ (end - i) * poly.dv.x;
+                        float tU = (x- poly.v2.x) * poly.du;
+                        float ty = -(y-poly.v2.y)*poly.dv;
                         BufferedImage image = Resources.getImage(tex.imageId());
 
-                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tex.origin().x +tU) )), Math.round(Math.min(15, (Math.max(0, tex.origin().y+ty)))));
-                        EdgeEntry ee = new EdgeEntry(i, i, zIndex, 0,
+
+                        var texColor = image.getRGB((int) Math.min(15, Math.max(0, (tU) )), Math.round(Math.min(15, (Math.max(0, ty)))));
+                        EdgeEntry ee = new EdgeEntry(x, x, zIndex, 0,
                                 0, 0, texColor);
                         edgeTable[y].add(ee);
 
