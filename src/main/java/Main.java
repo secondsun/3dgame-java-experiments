@@ -3,6 +3,7 @@ import game.ScanLineEngine;
 import geometry.BoardNew;
 import geometry.Cube;
 import geometry.Model;
+import geometry.MonastaryPlayfield;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,12 +31,11 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new BoardNew(32, 24, scale, new int[]{0xfc49ab, 0xff7300, 0xe7ff00, 0x5fe8ff, 0x64ff00});
-            Model cube = new Cube();
-            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, cube);
+            var board = new MonastaryPlayfield();
+            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
             System.out.println(rotX + "," + rotY);
-            board.rotateX(rotX).rotateY(rotY).translateX(screenWidth / 2).translateY(screenHeight / 2);
+            board.scale(.5);
             rotY += 1;
 
             var tiles = board.getTriangles();
