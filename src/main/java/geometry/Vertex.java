@@ -6,9 +6,16 @@ import static java.lang.Math.toRadians;
 
 public class Vertex {
 
+    public static final Vertex ZERO = new Vertex(0, 0, 0);
     public float x;
     public float y;
     public float z;
+
+    public Vertex(Vertex toCopy) {
+        this.x = toCopy.x;
+        this.y = toCopy.y;
+        this.z = toCopy.z;
+    }
 
     public Vertex(float x, float y, float z) {
         this.x = x;
@@ -125,5 +132,22 @@ public class Vertex {
 
         return this;
 
+    }
+
+    public Vertex rotateZ(int rotZ) {
+
+        var rotZRad = toRadians(rotZ);
+        float newX = (float) (x * Math.cos(rotZRad) - y * Math.sin(rotZRad));
+        float newY = (float) (x*Math.sin(rotZRad) + y*Math.cos(rotZRad));
+        float newZ = z;
+
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+
+        return this;
+//        x' = x*cos q - y*sin q
+//        y' = x*sin q + y*cos q
+//        z' = z
     }
 }
