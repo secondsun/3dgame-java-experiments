@@ -24,14 +24,14 @@ public class ScanLineEngine implements Renderer {
     }
 
     //Calculate polygons for screen drawing
-    private void generateEdgeList(List<Triangle> tiles, List<Vertex> verticies) {
+    private void generateEdgeList(List<Triangle> tiles) {
         initEdgeTable();
 
         tiles.forEach(triangle -> {
-            float yMin = Maths.min(triangle.v1().y, triangle.v2().y, triangle.v3().y);
-            float yMax = Maths.max(triangle.v1().y, triangle.v2().y, triangle.v3().y);
-            float xMin = Maths.min(triangle.v1().x, triangle.v2().x, triangle.v3().x);
-            float xMax = Maths.max(triangle.v1().x, triangle.v2().x, triangle.v3().x);
+            float yMin = Maths.min(triangle.v1.y, triangle.v2.y, triangle.v3.y);
+            float yMax = Maths.max(triangle.v1.y, triangle.v2.y, triangle.v3.y);
+            float xMin = Maths.min(triangle.v1.x, triangle.v2.x, triangle.v3.x);
+            float xMax = Maths.max(triangle.v1.x, triangle.v2.x, triangle.v3.x);
 
             if (yMax < 0 || yMin > screenHeight) {
                 //does not intersect with scan line
@@ -73,15 +73,15 @@ public class ScanLineEngine implements Renderer {
     }
 
     private void storeTriangleInTable(Triangle poly) {
-        int color = poly.color();
+        int color = poly.textureId;
         if (poly.normal().z > 0) {//skip polygons facing away
 //      System.out.println("normal backwards" + poly);
             return;
         }
 
-        var v1 = poly.v1();
-        var v2 = poly.v2();
-        var v3 = poly.v3();
+        var v1 = poly.v1;
+        var v2 = poly.v2;
+        var v3 = poly.v3;
 
         if (v1.equals(v2) || v2.equals(v3) || v3.equals(v1)) {
             return;
@@ -235,8 +235,8 @@ public class ScanLineEngine implements Renderer {
     }
 
     @Override
-    public BufferedImage draw(List<Triangle> tiles, List<Vertex> verticies) {
-        generateEdgeList(tiles, verticies);
+    public BufferedImage draw(List<Triangle> tiles) {
+        generateEdgeList(tiles);
         BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
         int i;
 

@@ -39,9 +39,8 @@ public class Main {
             rotY += 1;
 
             var tiles = board.getTriangles();
-            var verticies = board.getVerticies();
 
-            BufferedImage image = engine.draw(tiles, verticies);
+            BufferedImage image = engine.draw(tiles);
 
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 

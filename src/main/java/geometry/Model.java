@@ -8,34 +8,30 @@ public interface Model {
      */
     List<Triangle> getTriangles();
 
-    /**
-     * returns the triangles that make up this model
-     */
-    List<Vertex> getVerticies();
 
 
     default Model rotateY(int rotY) {
-        getVerticies().forEach(tile -> tile.rotateY(rotY));
+        getTriangles().forEach(tile -> tile.rotateY(rotY));
         return this;
     }
 
     default Model rotateX(int rotX) {
-        getVerticies().forEach(tile -> tile.rotateX(rotX));
+        getTriangles().forEach(tile -> tile.rotateX(rotX));
         return this;
     }
 
     default Model translateX(int i) {
-        getVerticies().forEach(tile -> tile.translateX(i));
+        getTriangles().forEach(tile -> tile.translateX(i));
         return this;
     }
 
     default Model translateY(int i) {
-        getVerticies().forEach(tile -> tile.translateY(i));
+        getTriangles().forEach(tile -> tile.translateY(i));
         return this;
     }
 
     default Model translateZ(int i) {
-        getVerticies().forEach(tile -> tile.translateZ(i));
+        getTriangles().forEach(tile -> tile.translateZ(i));
         return this;
     }
     

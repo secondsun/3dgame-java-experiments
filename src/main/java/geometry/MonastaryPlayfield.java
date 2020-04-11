@@ -14,8 +14,4 @@ public class MonastaryPlayfield  implements Model{
         return null;
     }
 
-    @Override
-    public List<Vertex> getVerticies() {
-        return null;
-    }
 }

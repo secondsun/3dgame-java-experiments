@@ -9,7 +9,7 @@ public class BoardNew implements Model{
     private final int boardHeight;
 
     private List<Triangle> tiles;
-    private List<Vertex> verticies;
+
 
     public BoardNew(int columns, int rows, int scale, int[] palette) {
         var random = new Random(columns);
@@ -76,7 +76,7 @@ public class BoardNew implements Model{
             }
 
         }
-        verticies = new ArrayList<>(vertexMap.values());
+        
 
     }
 
@@ -85,10 +85,6 @@ public class BoardNew implements Model{
         return tiles;
     }
 
-    @Override
-    public List<Vertex> getVerticies() {
-        return verticies;
-    }
 
 }
 
