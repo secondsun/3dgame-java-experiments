@@ -33,7 +33,7 @@ public class Triangle{
 
     }
 
-    public Triangle scale(int factor) {
+    public Triangle scale(float factor) {
         var newTri = new Triangle(v1.scale(factor), v2.scale(factor), v3.scale(factor),du.scale(1/factor),dv.scale(1/factor), textureId,texture);
         this.v1 = newTri.v1;
         this.v2 = newTri.v2;

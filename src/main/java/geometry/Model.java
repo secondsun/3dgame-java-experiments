@@ -9,7 +9,6 @@ public interface Model {
     List<Triangle> getTriangles();
 
 
-
     default Model rotateY(int rotY) {
         getTriangles().forEach(tile -> tile.rotateY(rotY));
         return this;
@@ -34,5 +33,16 @@ public interface Model {
         getTriangles().forEach(tile -> tile.translateZ(i));
         return this;
     }
-    
+
+    default Model scale(float v) {
+        getTriangles().forEach(tile -> {
+            tile.scale(v);
+        });
+        return this;
+    }
+
+    default Model rotateZ(int i) {
+        getTriangles().forEach(tile -> tile.rotateZ(i));
+        return this;
+    }
 }

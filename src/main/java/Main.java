@@ -22,10 +22,10 @@ public class Main {
 
 
     public static class Screen extends Component {
-        private final int scale = 1;
+        private final int scale = 3;
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
-        private int rotY=272, rotX = 317;
+        private int rotY=272, rotX = 0;
 
         @Override
         public void paint(Graphics g) {
@@ -35,7 +35,7 @@ public class Main {
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
             System.out.println(rotX + "," + rotY);
-            board.scale(.5);
+            board.scale(scale).translateX(-screenWidth/2).translateY(-screenHeight/2).rotateZ(rotX).rotateX(-45).translateX(screenWidth/2).translateY(screenHeight/2);
             rotY += 1;
 
             var tiles = board.getTriangles();
@@ -55,7 +55,7 @@ public class Main {
             }
 
             try {
-                Thread.sleep(1000/100);
+                Thread.sleep(1000/200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
