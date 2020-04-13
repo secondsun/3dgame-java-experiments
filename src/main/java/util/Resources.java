@@ -1,4 +1,4 @@
-package game;
+package util;
 
 import geometry.Texture;
 import geometry.Vertex;

@@ -1,6 +1,7 @@
 package game;
 
 import geometry.*;
+import util.Maths;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

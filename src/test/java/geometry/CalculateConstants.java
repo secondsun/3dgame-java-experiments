@@ -1,3 +1,5 @@
+package geometry;
+
 import geometry.BoardNew;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

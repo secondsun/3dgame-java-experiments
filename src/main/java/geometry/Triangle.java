@@ -1,6 +1,6 @@
 package geometry;
 
-import game.Resources;
+import util.Resources;
 
 public class Triangle{
 

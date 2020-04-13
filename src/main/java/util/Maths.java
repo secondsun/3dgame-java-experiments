@@ -1,4 +1,4 @@
-package game;
+package util;
 
 public final class Maths {
     public static int min(int... y) {
