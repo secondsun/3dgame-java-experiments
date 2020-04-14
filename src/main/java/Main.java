@@ -1,9 +1,6 @@
 import game.Renderer;
 import game.ScanLineEngine;
-import geometry.BoardNew;
-import geometry.Cube;
-import geometry.Model;
-import geometry.MonastaryPlayfield;
+import geometry.MonasteryPlayfield;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +28,7 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new MonastaryPlayfield();
+            var board = new MonasteryPlayfield();
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
             System.out.println(rotX + "," + rotY);

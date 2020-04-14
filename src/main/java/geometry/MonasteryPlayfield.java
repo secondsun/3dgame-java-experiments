@@ -4,13 +4,17 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonastaryPlayfield  implements Model{
+public class MonasteryPlayfield implements Model{
 
     private final List<Triangle> triangles = new ArrayList<>();
     private static final int TILE_LENGTH = 16;
+    private List<Triangle> ground = new ArrayList<>();
+    private List<Triangle> path = new ArrayList<>();
+    private List<Triangle> castle = new ArrayList<>();
+    private List<Triangle> roof = new ArrayList<>();
 
 
-    public MonastaryPlayfield() {
+    public MonasteryPlayfield() {
 
         drawField();
         drawPath();
@@ -34,7 +38,7 @@ public class MonastaryPlayfield  implements Model{
         );
 
         triangles.add(tile);
-
+        roof.add(tile);
         tile = new Triangle(
 
                 new Vertex((8.5f) * TILE_LENGTH, (11) * TILE_LENGTH, TILE_LENGTH * 6),
@@ -44,7 +48,7 @@ public class MonastaryPlayfield  implements Model{
         );
 
         triangles.add(tile);
-
+        roof.add(tile);
         tile = new Triangle(
 
                 new Vertex((8.5f) * TILE_LENGTH, (11) * TILE_LENGTH, TILE_LENGTH * 6),
@@ -54,7 +58,7 @@ public class MonastaryPlayfield  implements Model{
         );
 
         triangles.add(tile);
-
+        roof.add(tile);
         tile = new Triangle(
                 new Vertex((8.5f) * TILE_LENGTH, (11) * TILE_LENGTH, TILE_LENGTH * 6),
                 new Vertex(13 * TILE_LENGTH, (8) * TILE_LENGTH, TILE_LENGTH * 3),
@@ -63,7 +67,7 @@ public class MonastaryPlayfield  implements Model{
         );
 
         triangles.add(tile);
-
+        roof.add(tile);
     }
 
     private void drawCastle() {
@@ -106,7 +110,8 @@ public class MonastaryPlayfield  implements Model{
 
                 triangles.add(northWest);
                 triangles.add(southEast);
-
+                castle.add(northWest);
+                castle.add(southEast);
                 if (x==6) {//draw "wall" of path
 
                     northWest = new Triangle(
@@ -125,7 +130,8 @@ public class MonastaryPlayfield  implements Model{
 
                     triangles.add(northWest);
                     triangles.add(southEast);
-
+                    castle.add(northWest);
+                    castle.add(southEast);
                 } else if (x==11){
                     northWest = new Triangle(
                             new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,TILE_LENGTH*3),
@@ -143,6 +149,8 @@ public class MonastaryPlayfield  implements Model{
 
                     triangles.add(northWest);
                     triangles.add(southEast);
+                    castle.add(northWest);
+                    castle.add(southEast);
                 }
 
             }
@@ -165,7 +173,8 @@ public class MonastaryPlayfield  implements Model{
 
             triangles.add(northWest);
             triangles.add(southEast);
-
+            castle.add(northWest);
+            castle.add(southEast);
             northWest = new Triangle(
                     new Vertex((x)* TILE_LENGTH, (9)* TILE_LENGTH,0),
                     new Vertex(x* TILE_LENGTH, (9)* TILE_LENGTH,TILE_LENGTH*3),
@@ -182,6 +191,8 @@ public class MonastaryPlayfield  implements Model{
 
             triangles.add(northWest);
             triangles.add(southEast);
+            castle.add(northWest);
+            castle.add(southEast);
             northWest = new Triangle(
                     new Vertex((x+1)* TILE_LENGTH, 14* TILE_LENGTH,TILE_LENGTH*3),
                     new Vertex(x* TILE_LENGTH, (14)* TILE_LENGTH,TILE_LENGTH*3),
@@ -198,6 +209,8 @@ public class MonastaryPlayfield  implements Model{
 
             triangles.add(northWest);
             triangles.add(southEast);
+            castle.add(northWest);
+            castle.add(southEast);
         }
     }
 
@@ -241,7 +254,8 @@ public class MonastaryPlayfield  implements Model{
 
                 triangles.add(northWest);
                 triangles.add(southEast);
-
+                path.add(northWest);
+                path.add(southEast);
                 if (isOddColumn) {//draw "wall" of path
 
                     northWest = new Triangle(
@@ -260,7 +274,8 @@ public class MonastaryPlayfield  implements Model{
 
                     triangles.add(northWest);
                     triangles.add(southEast);
-
+                    path.add(northWest);
+                    path.add(southEast);
                 } else {
                     northWest = new Triangle(
                             new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,4),
@@ -279,6 +294,8 @@ public class MonastaryPlayfield  implements Model{
 
                     triangles.add(northWest);
                     triangles.add(southEast);
+                    path.add(northWest);
+                    path.add(southEast);
                 }
 
             }
@@ -299,7 +316,8 @@ public class MonastaryPlayfield  implements Model{
 
             triangles.add(northWest);
             triangles.add(southEast);
-
+            path.add(northWest);
+            path.add(southEast);
 
 
         }
@@ -342,7 +360,8 @@ public class MonastaryPlayfield  implements Model{
 
                 triangles.add(northWest);
                 triangles.add(southEast);
-
+                ground.add(northWest);
+                ground.add(southEast);
 
             }
 
@@ -356,4 +375,19 @@ public class MonastaryPlayfield  implements Model{
         return triangles;
     }
 
+    public Model field() {
+        return Model.of(this.ground);
+    }
+
+    public Model castle() {
+        return Model.of(this.castle);
+    }
+
+    public Model roof() {
+        return Model.of(this.roof);
+    }
+
+    public Model path() {
+        return Model.of(this.path);
+    }
 }

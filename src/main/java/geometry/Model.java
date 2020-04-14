@@ -3,6 +3,15 @@ package geometry;
 import java.util.List;
 
 public interface Model {
+    static Model of(List<Triangle> tris) {
+        return new Model() {
+            @Override
+            public List<Triangle> getTriangles() {
+                return tris;
+            }
+        };
+    }
+
     /**
      * returns the triangles that make up this model
      */
