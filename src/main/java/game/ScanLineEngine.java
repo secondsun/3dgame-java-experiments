@@ -15,6 +15,7 @@ public class ScanLineEngine implements Renderer {
     private final Model board;
     private List<EdgeEntry>[] edgeTable;
     boolean pause = false;
+    private Camera camera;
 
 
     public ScanLineEngine(int screenWidth, int screenHeight, Model board) {
@@ -285,6 +286,11 @@ public class ScanLineEngine implements Renderer {
             }
         }
         return image;
+    }
+
+    @Override
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
 }

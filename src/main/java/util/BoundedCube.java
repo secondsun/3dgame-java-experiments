@@ -57,4 +57,33 @@ public class BoundedCube {
     }
 
 
+    public boolean isBehind(Plane partition) {
+
+        for (Triangle tri : model.getTriangles()) {
+
+            if (!(tri.v1.isBehind(partition)
+                    && tri.v2.isBehind(partition)
+                    && tri.v3.isBehind(partition))) {
+                return false;
+            }
+
+        }
+        return true;
+
+
+    }
+
+    public boolean isInFront(Plane partition) {
+        for (Triangle tri : model.getTriangles()) {
+
+            if (!(tri.v1.isInFront(partition)
+                    && tri.v2.isInFront(partition)
+                    && tri.v3.isInFront(partition))) {
+                return false;
+            }
+
+        }
+        return true;
+
+    }
 }

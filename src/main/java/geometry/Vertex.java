@@ -1,5 +1,7 @@
 package geometry;
 
+import util.Plane;
+
 import java.util.Objects;
 
 import static java.lang.Math.toRadians;
@@ -87,12 +89,12 @@ public class Vertex {
                 z * other.x - x * other.z,
                 x * other.y - y * other.x
         );
+//
+//        this.x = v1.x;
+//        this.y = v1.y;
+//        this.z = v1.z;
 
-        this.x = v1.x;
-        this.y = v1.y;
-        this.z = v1.z;
-
-        return this;
+        return v1;
 
     }
 
@@ -125,7 +127,7 @@ public class Vertex {
     }
 
     public Vertex translateZ(int i) {
-        var v1 = new Vertex(x, y, z+i);
+        var v1 = new Vertex(x, y, z + i);
         this.x = v1.x;
         this.y = v1.y;
         this.z = v1.z;
@@ -138,7 +140,7 @@ public class Vertex {
 
         var rotZRad = toRadians(rotZ);
         float newX = (float) (x * Math.cos(rotZRad) - y * Math.sin(rotZRad));
-        float newY = (float) (x*Math.sin(rotZRad) + y*Math.cos(rotZRad));
+        float newY = (float) (x * Math.sin(rotZRad) + y * Math.cos(rotZRad));
         float newZ = z;
 
         this.x = newX;
@@ -149,5 +151,54 @@ public class Vertex {
 //        x' = x*cos q - y*sin q
 //        y' = x*sin q + y*cos q
 //        z' = z
+    }
+
+    public boolean isBehind(Plane partition) {
+        float d = -(partition.location.x * partition.normal.x +
+                partition.location.y * partition.normal.y +
+                partition.location.z * partition.normal.z);
+        float res = (x * partition.normal.x +
+                y * partition.normal.y +
+                z * partition.normal.z) + d;
+        if (res > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isInFront(Plane partition) {
+        float d = -(partition.location.x * partition.normal.x +
+                partition.location.y * partition.normal.y +
+                partition.location.z * partition.normal.z);
+        float res = (x * partition.normal.x +
+                y * partition.normal.y +
+                z * partition.normal.z) + d;
+        if (res < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public Vertex transform(float[][] matrix) {
+        var nx = x*matrix[0][0] +y*matrix[0][1] +z*matrix[0][2] + matrix[0][3];
+        var ny = x*matrix[1][0] +y*matrix[1][1] +z*matrix[1][2] + matrix[1][3];
+        var nz = x*matrix[2][0] +y*matrix[2][1] +z*matrix[2][2] + matrix[2][3];
+
+        this.x = nx;
+        this.y = ny;
+        this.z = nz;
+
+        return this;
+    }
+    public Vertex project(float[][] matrix) {
+        var nx = x*matrix[0][0] + matrix[0][2];
+        var ny = y*matrix[1][1]+ matrix[1][2];
+
+
+        this.x = nx;
+        this.y = ny;
+
+
+        return this;
     }
 }

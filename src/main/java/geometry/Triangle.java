@@ -144,6 +144,21 @@ public class Triangle{
         return new Vertex((v1.x + v2.x + v3.x) / 3, (v1.y + v2.y + v3.y) / 3, (v1.z + v2.z + v3.z) / 3);
     }
 
+    public Triangle transform(float[][] matrix) {
 
+        v1.transform(matrix);
+        v2.transform(matrix);
+        v3.transform(matrix);
+
+        return this;
+    }
+
+    public Triangle project(float[][] fovMatrix) {
+        v1.project(fovMatrix);
+        v2.project(fovMatrix);
+        v3.project(fovMatrix);
+
+        return this;
+    }
 }
 

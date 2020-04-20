@@ -7,7 +7,7 @@ import java.util.List;
 public class MonasteryPlayfield implements Model{
 
     private final List<Triangle> triangles = new ArrayList<>();
-    private static final int TILE_LENGTH = 16;
+    public static final int TILE_LENGTH = 16;
     private List<Triangle> ground = new ArrayList<>();
     private List<Triangle> path = new ArrayList<>();
     private List<Triangle> castle = new ArrayList<>();
@@ -23,10 +23,6 @@ public class MonasteryPlayfield implements Model{
     }
 
     private void drawRoof() {
-        for (int x = 5; x < 13; x++) {
-            for (int y = 8; y < 15; y++) {
-            }
-        }
 
         int color = Color.CYAN.getRGB();
 
@@ -220,7 +216,7 @@ public class MonasteryPlayfield implements Model{
             Triangle northWest;
             Triangle southEast;
             int color = 0;
-            for (int y = 9; y >= 0; y--) {
+            for (int y = 8; y >= 0; y--) {
 
                 boolean isOddRow = (y%2)==0;
 
@@ -363,11 +359,20 @@ public class MonasteryPlayfield implements Model{
                 ground.add(northWest);
                 ground.add(southEast);
 
+
             }
 
 
 
         }
+        Triangle planSortHelper = new Triangle(
+                new Vertex((4) * TILE_LENGTH, (4) * TILE_LENGTH, -1),
+                new Vertex((4) * TILE_LENGTH, (4) * TILE_LENGTH, -1),
+                new Vertex((4) * TILE_LENGTH, (4) * TILE_LENGTH, -1),
+                Color.black.getRGB()
+        );
+        triangles.add(planSortHelper);
+        ground.add(planSortHelper);
     }
 
     @Override

@@ -54,4 +54,12 @@ public interface Model {
         getTriangles().forEach(tile -> tile.rotateZ(i));
         return this;
     }
+
+    default Model lookAt(Camera camera, Vertex2D foV, Vertex2D worldCenter) {
+        var lookAt = camera.lookAt();
+        float[][] fovMatrix = {{foV.x,0,worldCenter.x}, {0,foV.y,worldCenter.y},{0,0,1}};
+        getTriangles().forEach(tile -> tile.transform(lookAt));
+        getTriangles().forEach(tile -> tile.project(fovMatrix));
+        return this;
+    }
 }
