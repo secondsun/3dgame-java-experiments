@@ -1,5 +1,7 @@
 package geometry;
 
+import util.BSPTree;
+
 import java.util.*;
 
 public class BoardNew implements Model{
@@ -83,6 +85,11 @@ public class BoardNew implements Model{
     @Override
     public List<Triangle> getTriangles() {
         return tiles;
+    }
+
+    @Override
+    public BSPTree getBSPTree() {
+        return null;
     }
 
 

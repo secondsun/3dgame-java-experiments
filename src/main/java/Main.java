@@ -25,8 +25,8 @@ public class Main {
         private final int scale = 3;
         private final int screenWidth = 256 * scale;
         private final int screenHeight = 192 * scale;
-        private int rotY=0, rotX = 0;
-
+        private int rotY=-300, rotX = 128;
+        private int theta = 0;
         @Override
         public void paint(Graphics g) {
             super.paint(g);
@@ -34,11 +34,13 @@ public class Main {
             var board = new MonasteryPlayfield();
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
-            var camera = new Camera(new Vertex(rotX,-rotY,100), new Vertex(0,0,-1));
-            board.lookAt(camera, new Vertex2D(2,2), new Vertex2D(0,0));
+            var camera = new Camera(new Vertex(rotX,rotY,128), new Vertex(128,128,10));
+            board.lookAt(camera, new Vertex2D(3f,3f), new Vertex2D(360,128));
 
 
             var tiles = board.getTriangles();
+            var tree = board.getBSPTree();
+            tiles = tree.order(tiles, camera);
             BufferedImage image = engine.draw(tiles);
 
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
@@ -49,16 +51,9 @@ public class Main {
                 e.printStackTrace();
             }
 
-            rotY++;
-            rotX++;
-            rotX++;
-            if (rotX > 300) {
-                rotX = 0;
-            }
-            if (rotY > 300) {
-                rotY = 1;
-            }
-
+            theta++;
+            rotX= (int) (128*Math.cos(Math.toRadians(theta)));
+            rotY= (int) (-300*Math.sin(Math.toRadians(theta)));
             repaint();
         }
     }

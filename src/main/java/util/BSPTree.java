@@ -1,12 +1,51 @@
 package util;
 
+import geometry.Camera;
+import geometry.Model;
 import geometry.Triangle;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BSPTree {
     public void add(BoundedCube object) {
         root.add(object);
+    }
+
+    /**
+     * Returns a list of tiles that are ordered front to back in draw order.
+     * @param tiles
+     * @param camera
+     * @return
+     */
+    public List<Triangle> order(List<Triangle> tiles, Camera camera) {
+        var toReturn = new ArrayList<Triangle>(tiles.size());
+
+        List<BoundedCube> modelsInOrder = this.getModelsInOrderFrom(getRoot(),camera);
+
+        toReturn.addAll(modelsInOrder.stream().flatMap((boundedCube -> {return boundedCube.model.getTriangles().stream();})).collect(Collectors.toList()));
+
+        return toReturn;
+    }
+
+    private List<BoundedCube> getModelsInOrderFrom(Node node, Camera camera) {
+        ArrayList<BoundedCube> cubes = new ArrayList<>();
+
+        if (node.bounds != null) {
+            cubes.add(node.bounds);
+        } else {
+            if (camera.getFrom().isBehind(node.partition)) {
+                cubes.addAll(getModelsInOrderFrom(node.behind, camera));
+                cubes.addAll(getModelsInOrderFrom(node.front, camera));
+            } else {
+                cubes.addAll(getModelsInOrderFrom(node.front, camera));
+                cubes.addAll(getModelsInOrderFrom(node.behind, camera));
+            }
+        }
+
+        return cubes;
     }
 
     public static class Node {

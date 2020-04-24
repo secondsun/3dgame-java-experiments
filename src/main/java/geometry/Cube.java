@@ -2,6 +2,8 @@ package geometry;
 
 
 
+import util.BSPTree;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +57,11 @@ public class Cube implements Model {
     @Override
     public List<Triangle> getTriangles() {
         return tiles;
+    }
+
+    @Override
+    public BSPTree getBSPTree() {
+        return new BSPTree(new BSPTree.Node());
     }
 
 }

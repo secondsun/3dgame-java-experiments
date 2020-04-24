@@ -5,7 +5,7 @@ import util.Maths;
 public class Camera {
     private Vertex from,to;
 
-    private final Vertex UP = new Vertex(0,1,0);
+    private final Vertex UP = new Vertex(0,0,1);
 
     public Camera(Vertex from, Vertex to) {
         this.from = from;

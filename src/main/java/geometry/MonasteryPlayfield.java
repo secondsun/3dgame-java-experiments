@@ -1,10 +1,14 @@
 package geometry;
 
+import util.BSPTree;
+import util.BoundedCube;
+import util.Plane;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonasteryPlayfield implements Model{
+public class MonasteryPlayfield implements Model {
 
     private final List<Triangle> triangles = new ArrayList<>();
     public static final int TILE_LENGTH = 16;
@@ -12,6 +16,7 @@ public class MonasteryPlayfield implements Model{
     private List<Triangle> path = new ArrayList<>();
     private List<Triangle> castle = new ArrayList<>();
     private List<Triangle> roof = new ArrayList<>();
+    private BSPTree tree;
 
 
     public MonasteryPlayfield() {
@@ -20,6 +25,29 @@ public class MonasteryPlayfield implements Model{
         drawPath();
         drawCastle();
         drawRoof();
+        makeTree();
+    }
+
+    private void makeTree() {
+        var playfield = this;
+        var ground = new BoundedCube(playfield.field());
+        var building = new BoundedCube(playfield.castle());
+        var roof = new BoundedCube(playfield.roof());
+        var path = new BoundedCube(playfield.path());
+
+        Plane roofPlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
+        Plane groundPlane = new Plane(new Vertex(0, 0, 0), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
+        Plane castlePlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, -1, 0));//this is the plane that splits the castle and roof facing up
+        BSPTree tree = new BSPTree(new BSPTree.Node());
+        tree.add(groundPlane);
+        tree.add(roofPlane);
+        tree.add(castlePlane);
+        tree.add(roof);
+        tree.add(path);
+        tree.add(ground);
+        tree.add(building);
+
+        this.tree =tree;
     }
 
     private void drawRoof() {
@@ -68,13 +96,13 @@ public class MonasteryPlayfield implements Model{
 
     private void drawCastle() {
         for (int x = 6; x < 12; x++) {
-            boolean isOddColumn = (x%2)==0;
+            boolean isOddColumn = (x % 2) == 0;
             Triangle northWest;
             Triangle southEast;
             int color = 0;
             for (int y = 9; y < 14; y++) {
 
-                boolean isOddRow = (y%2)==0;
+                boolean isOddRow = (y % 2) == 0;
 
                 if (isOddColumn) {
                     if (isOddRow) {
@@ -91,16 +119,16 @@ public class MonasteryPlayfield implements Model{
                 }
 
                 northWest = new Triangle(
-                        new Vertex(x* TILE_LENGTH, y* TILE_LENGTH,TILE_LENGTH*3),
-                        new Vertex(x* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
+                        new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, TILE_LENGTH * 3),
+                        new Vertex(x * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
                         color
                 );
 
                 southEast = new Triangle(
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
-                        new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,TILE_LENGTH*3),
-                        new Vertex((x)* TILE_LENGTH, (y)* TILE_LENGTH,TILE_LENGTH*3),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
+                        new Vertex((x + 1) * TILE_LENGTH, (y) * TILE_LENGTH, TILE_LENGTH * 3),
+                        new Vertex((x) * TILE_LENGTH, (y) * TILE_LENGTH, TILE_LENGTH * 3),
                         color
                 );
 
@@ -108,19 +136,19 @@ public class MonasteryPlayfield implements Model{
                 triangles.add(southEast);
                 castle.add(northWest);
                 castle.add(southEast);
-                if (x==6) {//draw "wall" of path
+                if (x == 6) {//draw "wall" of path
 
                     northWest = new Triangle(
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
-                            new Vertex(x* TILE_LENGTH, (y)* TILE_LENGTH,TILE_LENGTH*3),
-                            new Vertex(x* TILE_LENGTH, y* TILE_LENGTH,0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
+                            new Vertex(x * TILE_LENGTH, (y) * TILE_LENGTH, TILE_LENGTH * 3),
+                            new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 0),
                             color
                     );
 
                     southEast = new Triangle(
-                            new Vertex((x)* TILE_LENGTH, (y)* TILE_LENGTH,0),
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
+                            new Vertex((x) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
                             color
                     );
 
@@ -128,18 +156,18 @@ public class MonasteryPlayfield implements Model{
                     triangles.add(southEast);
                     castle.add(northWest);
                     castle.add(southEast);
-                } else if (x==11){
+                } else if (x == 11) {
                     northWest = new Triangle(
-                            new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,TILE_LENGTH*3),
-                            new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
-                            new Vertex((x+1)* TILE_LENGTH, y* TILE_LENGTH,0),
+                            new Vertex((x + 1) * TILE_LENGTH, (y) * TILE_LENGTH, TILE_LENGTH * 3),
+                            new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
+                            new Vertex((x + 1) * TILE_LENGTH, y * TILE_LENGTH, 0),
                             color
                     );
 
                     southEast = new Triangle(
-                            new Vertex(((x+1))* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                            new Vertex(((x+1))* TILE_LENGTH, (y)* TILE_LENGTH,0),
-                            new Vertex(((x+1))* TILE_LENGTH, (y+1)* TILE_LENGTH,TILE_LENGTH*3),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y + 1) * TILE_LENGTH, TILE_LENGTH * 3),
                             color
                     );
 
@@ -152,18 +180,17 @@ public class MonasteryPlayfield implements Model{
             }
 
 
-
             northWest = new Triangle(
-                    new Vertex((x)* TILE_LENGTH, (9)* TILE_LENGTH,0),
-                    new Vertex(x* TILE_LENGTH, (9)* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex((x+1)* TILE_LENGTH, 9* TILE_LENGTH,TILE_LENGTH*3),
+                    new Vertex((x) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
+                    new Vertex(x * TILE_LENGTH, (9) * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex((x + 1) * TILE_LENGTH, 9 * TILE_LENGTH, TILE_LENGTH * 3),
                     color
             );
 
             southEast = new Triangle(
-                    new Vertex((x+1)* TILE_LENGTH, (9)* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex((x+1)* TILE_LENGTH, (9)* TILE_LENGTH,0),
-                    new Vertex((x)* TILE_LENGTH, (9)* TILE_LENGTH,0),
+                    new Vertex((x + 1) * TILE_LENGTH, (9) * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex((x + 1) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
+                    new Vertex((x) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
                     color
             );
 
@@ -172,16 +199,16 @@ public class MonasteryPlayfield implements Model{
             castle.add(northWest);
             castle.add(southEast);
             northWest = new Triangle(
-                    new Vertex((x)* TILE_LENGTH, (9)* TILE_LENGTH,0),
-                    new Vertex(x* TILE_LENGTH, (9)* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex((x+1)* TILE_LENGTH, 9* TILE_LENGTH,TILE_LENGTH*3),
+                    new Vertex((x) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
+                    new Vertex(x * TILE_LENGTH, (9) * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex((x + 1) * TILE_LENGTH, 9 * TILE_LENGTH, TILE_LENGTH * 3),
                     color
             );
 
             southEast = new Triangle(
-                    new Vertex((x+1)* TILE_LENGTH, (9)* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex((x+1)* TILE_LENGTH, (9)* TILE_LENGTH,0),
-                    new Vertex((x)* TILE_LENGTH, (9)* TILE_LENGTH,0),
+                    new Vertex((x + 1) * TILE_LENGTH, (9) * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex((x + 1) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
+                    new Vertex((x) * TILE_LENGTH, (9) * TILE_LENGTH, 0),
                     color
             );
 
@@ -190,16 +217,16 @@ public class MonasteryPlayfield implements Model{
             castle.add(northWest);
             castle.add(southEast);
             northWest = new Triangle(
-                    new Vertex((x+1)* TILE_LENGTH, 14* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex(x* TILE_LENGTH, (14)* TILE_LENGTH,TILE_LENGTH*3),
-                    new Vertex((x)* TILE_LENGTH, (14)* TILE_LENGTH,0),
+                    new Vertex((x + 1) * TILE_LENGTH, 14 * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex(x * TILE_LENGTH, (14) * TILE_LENGTH, TILE_LENGTH * 3),
+                    new Vertex((x) * TILE_LENGTH, (14) * TILE_LENGTH, 0),
                     color
             );
 
             southEast = new Triangle(
-                    new Vertex((x)* TILE_LENGTH, (14)* TILE_LENGTH,0),
-                    new Vertex((x+1)* TILE_LENGTH, (14)* TILE_LENGTH,0),
-                    new Vertex((x+1)* TILE_LENGTH, (14)* TILE_LENGTH,TILE_LENGTH*3),
+                    new Vertex((x) * TILE_LENGTH, (14) * TILE_LENGTH, 0),
+                    new Vertex((x + 1) * TILE_LENGTH, (14) * TILE_LENGTH, 0),
+                    new Vertex((x + 1) * TILE_LENGTH, (14) * TILE_LENGTH, TILE_LENGTH * 3),
                     color
             );
 
@@ -212,13 +239,13 @@ public class MonasteryPlayfield implements Model{
 
     private void drawPath() {
         for (int x = 8; x < 10; x++) {
-            boolean isOddColumn = (x%2)==0;
+            boolean isOddColumn = (x % 2) == 0;
             Triangle northWest;
             Triangle southEast;
             int color = 0;
             for (int y = 8; y >= 0; y--) {
 
-                boolean isOddRow = (y%2)==0;
+                boolean isOddRow = (y % 2) == 0;
 
                 if (isOddColumn) {
                     if (isOddRow) {
@@ -235,16 +262,16 @@ public class MonasteryPlayfield implements Model{
                 }
 
                 northWest = new Triangle(
-                        new Vertex(x* TILE_LENGTH, y* TILE_LENGTH,4),
-                        new Vertex(x* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
+                        new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 4),
+                        new Vertex(x * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
                         color
                 );
 
                 southEast = new Triangle(
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
-                        new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,4),
-                        new Vertex((x)* TILE_LENGTH, (y)* TILE_LENGTH,4),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
+                        new Vertex((x + 1) * TILE_LENGTH, (y) * TILE_LENGTH, 4),
+                        new Vertex((x) * TILE_LENGTH, (y) * TILE_LENGTH, 4),
                         color
                 );
 
@@ -255,16 +282,16 @@ public class MonasteryPlayfield implements Model{
                 if (isOddColumn) {//draw "wall" of path
 
                     northWest = new Triangle(
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
-                            new Vertex(x* TILE_LENGTH, (y)* TILE_LENGTH,4),
-                            new Vertex(x* TILE_LENGTH, y* TILE_LENGTH,0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
+                            new Vertex(x * TILE_LENGTH, (y) * TILE_LENGTH, 4),
+                            new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 0),
                             color
                     );
 
                     southEast = new Triangle(
-                            new Vertex((x)* TILE_LENGTH, (y)* TILE_LENGTH,0),
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                            new Vertex((x)* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
+                            new Vertex((x) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                            new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
                             color
                     );
 
@@ -274,17 +301,17 @@ public class MonasteryPlayfield implements Model{
                     path.add(southEast);
                 } else {
                     northWest = new Triangle(
-                            new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,4),
-                            new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
-                            new Vertex((x+1)* TILE_LENGTH, y* TILE_LENGTH,0),
+                            new Vertex((x + 1) * TILE_LENGTH, (y) * TILE_LENGTH, 4),
+                            new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
+                            new Vertex((x + 1) * TILE_LENGTH, y * TILE_LENGTH, 0),
 
                             color
                     );
 
                     southEast = new Triangle(
-                            new Vertex(((x+1))* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                            new Vertex(((x+1))* TILE_LENGTH, (y)* TILE_LENGTH,0),
-                            new Vertex(((x+1))* TILE_LENGTH, (y+1)* TILE_LENGTH,4),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
+                            new Vertex(((x + 1)) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
                             color
                     );
 
@@ -297,16 +324,16 @@ public class MonasteryPlayfield implements Model{
             }
 
             northWest = new Triangle(
-                    new Vertex((x)* TILE_LENGTH, (0)* TILE_LENGTH,0),
-                    new Vertex(x* TILE_LENGTH, (0)* TILE_LENGTH,4),
-                    new Vertex((x+1)* TILE_LENGTH, 0* TILE_LENGTH,4),
+                    new Vertex((x) * TILE_LENGTH, (0) * TILE_LENGTH, 0),
+                    new Vertex(x * TILE_LENGTH, (0) * TILE_LENGTH, 4),
+                    new Vertex((x + 1) * TILE_LENGTH, 0 * TILE_LENGTH, 4),
                     color
             );
 
             southEast = new Triangle(
-                    new Vertex((x+1)* TILE_LENGTH, (0)* TILE_LENGTH,4),
-                    new Vertex((x+1)* TILE_LENGTH, (0)* TILE_LENGTH,0),
-                    new Vertex((x)* TILE_LENGTH, (0)* TILE_LENGTH,0),
+                    new Vertex((x + 1) * TILE_LENGTH, (0) * TILE_LENGTH, 4),
+                    new Vertex((x + 1) * TILE_LENGTH, (0) * TILE_LENGTH, 0),
+                    new Vertex((x) * TILE_LENGTH, (0) * TILE_LENGTH, 0),
                     color
             );
 
@@ -324,33 +351,33 @@ public class MonasteryPlayfield implements Model{
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
                 int color = 0;
-                boolean isOddRow = (y%2)==0;
-                boolean isOddColumn = (x%2)==0;
+                boolean isOddRow = (y % 2) == 0;
+                boolean isOddColumn = (x % 2) == 0;
                 if (isOddColumn) {
                     if (isOddRow) {
                         color = Color.GREEN.getRGB();
                     } else {
-                        color = new Color(0,128,0).getRGB();
+                        color = new Color(0, 128, 0).getRGB();
                     }
                 } else {
                     if (isOddRow) {
-                        color = new Color(0,128,0).getRGB();
+                        color = new Color(0, 128, 0).getRGB();
                     } else {
                         color = Color.GREEN.getRGB();
                     }
                 }
 
                 Triangle northWest = new Triangle(
-                        new Vertex(x* TILE_LENGTH, y* TILE_LENGTH,0),
-                        new Vertex(x* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
+                        new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 0),
+                        new Vertex(x * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
                         color
                 );
 
                 Triangle southEast = new Triangle(
-                        new Vertex((x+1)* TILE_LENGTH, (y+1)* TILE_LENGTH,0),
-                        new Vertex((x+1)* TILE_LENGTH, (y)* TILE_LENGTH,0),
-                        new Vertex((x)* TILE_LENGTH, (y)* TILE_LENGTH,0),
+                        new Vertex((x + 1) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 0),
+                        new Vertex((x + 1) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
+                        new Vertex((x) * TILE_LENGTH, (y) * TILE_LENGTH, 0),
                         color
                 );
 
@@ -361,7 +388,6 @@ public class MonasteryPlayfield implements Model{
 
 
             }
-
 
 
         }
@@ -379,6 +405,13 @@ public class MonasteryPlayfield implements Model{
     public List<Triangle> getTriangles() {
         return triangles;
     }
+
+    @Override
+    public BSPTree getBSPTree() {
+        return this.tree;
+    }
+
+
 
     public Model field() {
         return Model.of(this.ground);

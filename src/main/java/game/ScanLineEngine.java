@@ -134,6 +134,7 @@ public class ScanLineEngine implements Renderer {
 
 
 //int y = Math.round(Math.min(screenHeight - 1, second.y))-1
+        line:
         for (int y =startY; y >= Math.max(0, third.y); y--) {
 
             float startX;
@@ -168,13 +169,43 @@ public class ScanLineEngine implements Renderer {
             try {
                 EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
                         0, 0, color);
-                edgeTable[y].add(ee);
+                addEdge(ee, y);
             } catch (RuntimeException ex) {
                 System.out.println(startX + " " + endX);
                 System.out.println(String.format("Poly: ,v1:%s\n v2:%s\n v3:%s", first.toString(), second.toString(), third.toString()));
                 throw ex;
             }
         }
+    }
+
+    private void addEdge(EdgeEntry ee, int y) {
+
+
+        for (EdgeEntry entry : edgeTable[y]) {
+            if (entry.endX < ee.startX) {//entry ends before this one starts, do nothing
+
+            } else if (entry.startX > ee.endX) {//new entry starts after existing one ends, do nothing
+
+            } else {//danger zone, there may be overlap
+                if (entry.startX > ee.startX && entry.endX < ee.endX) {//we need to split the new entry
+                    EdgeEntry eeLeft = new EdgeEntry(ee.startX, entry.startX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId);
+                    EdgeEntry eeRight = new EdgeEntry(entry.endX, ee.endX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId);
+                    addEdge(eeLeft, y);
+                    addEdge(eeRight, y);
+                    return;
+                } else if (entry.startX > ee.startX && entry.endX >= ee.endX){//clip ee.end to entry.start
+                    ee.endX = entry.startX;
+                } else if (entry.startX <= ee.startX && entry.endX < ee.endX) {
+                    ee.startX = entry.endX;
+                } else if (entry.startX <= ee.startX && entry.endX >= ee.endX){//this new entry is covered, skip it
+                    return;
+                } else {
+                    System.out.println("WTF");
+                }
+            }
+        }
+
+        edgeTable[y].add(ee);
     }
 
     private int drawTop(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
@@ -226,7 +257,8 @@ public class ScanLineEngine implements Renderer {
             try {
                 EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
                         0, 0, color);
-                edgeTable[y].add(ee);
+                addEdge(ee, y);
+
                 toReturn = y-1;
             } catch (RuntimeException ex) {
                 throw ex;
@@ -286,11 +318,6 @@ public class ScanLineEngine implements Renderer {
             }
         }
         return image;
-    }
-
-    @Override
-    public void setCamera(Camera camera) {
-        this.camera = camera;
     }
 
 }

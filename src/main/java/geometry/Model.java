@@ -1,5 +1,7 @@
 package geometry;
 
+import util.BSPTree;
+
 import java.util.List;
 
 public interface Model {
@@ -9,14 +11,27 @@ public interface Model {
             public List<Triangle> getTriangles() {
                 return tris;
             }
+
+            @Override
+            public BSPTree getBSPTree() {
+                return new BSPTree(new BSPTree.Node());
+            }
         };
     }
+
+
 
     /**
      * returns the triangles that make up this model
      */
     List<Triangle> getTriangles();
 
+    /**
+     * Returns a BSP tree of the model for hidden surface removal
+     *
+     * @return bspTree
+     */
+    BSPTree getBSPTree();
 
     default Model rotateY(int rotY) {
         getTriangles().forEach(tile -> tile.rotateY(rotY));

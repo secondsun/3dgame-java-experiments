@@ -13,7 +13,7 @@ import geometry.Vertex;
  */
 public class BoundedCube {
 
-    private final Model model;
+    public final Model model;
     public float top = -1000000f, bottom = 1000000f, left = 1000000f, right = -1000000f, near = -1000000f, far = 1000000f;
 
     public BoundedCube(Model model) {
