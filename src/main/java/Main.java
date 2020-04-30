@@ -23,10 +23,10 @@ public class Main {
 
     public static class Screen extends Component {
         private final int scale = 3;
-        private final int screenWidth = 256 * scale;
-        private final int screenHeight = 192 * scale;
-        private int rotY=-300, rotX = 128;
-        private int theta = 0;
+        private final int screenWidth = 800;//256 * scale;
+        private final int screenHeight = 450;//192 * scale;
+        private int rotY=0, rotX = 0;
+        private int theta = 1;
         @Override
         public void paint(Graphics g) {
             super.paint(g);

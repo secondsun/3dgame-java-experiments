@@ -90,9 +90,9 @@ public class Vertex {
                 x * other.y - y * other.x
         );
 //
-//        this.x = v1.x;
-//        this.y = v1.y;
-//        this.z = v1.z;
+//        this.x = A.x;
+//        this.y = A.y;
+//        this.z = A.z;
 
         return v1;
 

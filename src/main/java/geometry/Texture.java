@@ -1,4 +1,4 @@
 package geometry;
 
-public record Texture(int imageId, Vertex origin, float u, float v) {
+public record Texture(int imageId, Vertex2D origin, float u, float v) {
 }

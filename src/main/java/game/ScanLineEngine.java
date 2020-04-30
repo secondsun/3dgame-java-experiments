@@ -2,10 +2,13 @@ package game;
 
 import geometry.*;
 import util.Maths;
+import util.Resources;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class ScanLineEngine implements Renderer {
 
@@ -54,7 +57,6 @@ public class ScanLineEngine implements Renderer {
     }
 
 
-
     private List<EdgeEntry>[] createEdgeTupleTable(int i) {
 
         List<EdgeEntry>[] edgeTable = new List[i];
@@ -90,15 +92,16 @@ public class ScanLineEngine implements Renderer {
         }
 
 
-        var sorted = new ArrayList<>(List.of(v1,v2,v3));
+        var sorted = new ArrayList<>(List.of(v1, v2, v3));
 
-        sorted.sort((l,r) -> {var result = r.y-l.y;
-            if (result < 0 ) {
+        sorted.sort((l, r) -> {
+            var result = r.y - l.y;
+            if (result < 0) {
                 return -1;
             } else if (result > 0) {
                 return 1;
             } else {
-                return l.x-r.x<0?-1:1;
+                return l.x - r.x < 0 ? -1 : 1;
             }
         });
 
@@ -107,21 +110,19 @@ public class ScanLineEngine implements Renderer {
         var third = sorted.get(2);
 
 
-
-
         int lastY = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         if (first.y != second.y) {
-            lastY = drawTop(first, second, third, poly.center().z, color);
+            lastY = drawTop(first, second, third, poly.center().z, color, poly);
         }
 
         if (third.y != second.y) {
-            drawBottom(first, second, third, poly.center().z, color, lastY );
+            drawBottom(first, second, third, poly.center().z, color, lastY, poly);
         }
 
 
     }
 
-    private void drawBottom(Vertex first, Vertex second, Vertex third, float zIndex, int color, int startY) {
+    private void drawBottom(Vertex first, Vertex second, Vertex third, float zIndex, int color, int startY, Triangle poly) {
         float secondThirdSlopeInv;
         float secondThirdYintercept;
         secondThirdSlopeInv = (float) (second.x - third.x) / (float) (second.y - third.y);
@@ -135,7 +136,7 @@ public class ScanLineEngine implements Renderer {
 
 //int y = Math.round(Math.min(screenHeight - 1, second.y))-1
         line:
-        for (int y =startY; y >= Math.max(0, third.y); y--) {
+        for (int y = startY; y >= Math.max(0, third.y); y--) {
 
             float startX;
             float endX;
@@ -165,14 +166,13 @@ public class ScanLineEngine implements Renderer {
             }
 
 
-
             try {
-                EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
-                        0, 0, color);
+                EdgeEntry ee = new EdgeEntry((int) Math.floor(startX), (int) Math.ceil(endX), zIndex, 0,
+                        0, 0, color, poly);
                 addEdge(ee, y);
             } catch (RuntimeException ex) {
                 System.out.println(startX + " " + endX);
-                System.out.println(String.format("Poly: ,v1:%s\n v2:%s\n v3:%s", first.toString(), second.toString(), third.toString()));
+                System.out.println(String.format("Poly: ,A:%s\n B:%s\n C:%s", first.toString(), second.toString(), third.toString()));
                 throw ex;
             }
         }
@@ -188,16 +188,16 @@ public class ScanLineEngine implements Renderer {
 
             } else {//danger zone, there may be overlap
                 if (entry.startX > ee.startX && entry.endX < ee.endX) {//we need to split the new entry
-                    EdgeEntry eeLeft = new EdgeEntry(ee.startX, entry.startX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId);
-                    EdgeEntry eeRight = new EdgeEntry(entry.endX, ee.endX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId);
+                    EdgeEntry eeLeft = new EdgeEntry(ee.startX, entry.startX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId, ee.triangle);
+                    EdgeEntry eeRight = new EdgeEntry(entry.endX, ee.endX, ee.z, ee.textureVectorX, ee.textureVectorY, ee.textureVectorLength, ee.textureId, ee.triangle);
                     addEdge(eeLeft, y);
                     addEdge(eeRight, y);
                     return;
-                } else if (entry.startX > ee.startX && entry.endX >= ee.endX){//clip ee.end to entry.start
+                } else if (entry.startX > ee.startX && entry.endX >= ee.endX) {//clip ee.end to entry.start
                     ee.endX = entry.startX;
                 } else if (entry.startX <= ee.startX && entry.endX < ee.endX) {
                     ee.startX = entry.endX;
-                } else if (entry.startX <= ee.startX && entry.endX >= ee.endX){//this new entry is covered, skip it
+                } else if (entry.startX <= ee.startX && entry.endX >= ee.endX) {//this new entry is covered, skip it
                     return;
                 } else {
                     System.out.println("WTF");
@@ -208,7 +208,7 @@ public class ScanLineEngine implements Renderer {
         edgeTable[y].add(ee);
     }
 
-    private int drawTop(Vertex first, Vertex second, Vertex third,float zIndex, int color) {
+    private int drawTop(Vertex first, Vertex second, Vertex third, float zIndex, int color, Triangle poly) {
         int toReturn = (int) Math.floor(Math.min(screenHeight - 1, first.y));
         float firstSecondSlopeInv;
         float firstSecondYintercept = 0;
@@ -255,11 +255,11 @@ public class ScanLineEngine implements Renderer {
             }
 
             try {
-                EdgeEntry ee = new EdgeEntry((int)Math.floor(startX), (int)Math.ceil(endX), zIndex, 0,
-                        0, 0, color);
+                EdgeEntry ee = new EdgeEntry((int) Math.floor(startX), (int) Math.ceil(endX), zIndex, 0,
+                        0, 0, color, poly);
                 addEdge(ee, y);
 
-                toReturn = y-1;
+                toReturn = y - 1;
             } catch (RuntimeException ex) {
                 throw ex;
             }
@@ -276,6 +276,7 @@ public class ScanLineEngine implements Renderer {
 
         line:
         for (i = 0; i < screenHeight; i++) {
+            int y = screenHeight - i - 1;
             var line = edgeTable[screenHeight - i - 1];//On the screen y is down, in the model y is up, so we have to reverse t
             line.sort((e1, e2) -> {
                 return e1.startX - e2.startX;
@@ -302,10 +303,38 @@ public class ScanLineEngine implements Renderer {
                         }
                         lineIndex++;
                     }
+                    Texture text;
+                    if ((text = Resources.getTexture(entry.textureId)) != null) {
+                        Vertex2D uv;
+                        if (text.u() > 0) {//triangle.v2 is top left
+                            var c = Maths.add(Maths.add(entry.triangle.v2, Maths.subtract(entry.triangle.v3,entry.triangle.v2)),Maths.subtract(entry.triangle.v1,entry.triangle.v2));
+                            Quad quad = new Quad(
+                                    new Vertex2D(entry.triangle.v2.x, entry.triangle.v2.y),
+                                    new Vertex2D(entry.triangle.v3.x, entry.triangle.v3.y),
+                                    new Vertex2D(c.x, c.y),
+                                    new Vertex2D(entry.triangle.v1.x, entry.triangle.v1.y)
+                                    );
+                            uv = Maths.reverseBilinear(new Vertex2D(x, y), quad);
+                        } else {//triangle.v2 is bottom right
+                            var a = Maths.add(Maths.add(entry.triangle.v2, Maths.subtract(entry.triangle.v3,entry.triangle.v2)),Maths.subtract(entry.triangle.v1,entry.triangle.v2));
+                            Quad quad = new Quad(
+                                    new Vertex2D(a.x, a.y),
+                                    new Vertex2D(entry.triangle.v1.x, entry.triangle.v1.y),
+                                    new Vertex2D(entry.triangle.v2.x, entry.triangle.v2.y),
+                                    new Vertex2D(entry.triangle.v3.x, entry.triangle.v3.y));
+                            uv = Maths.reverseBilinear(new Vertex2D(x, y), quad);
+                           // uv =new Vertex2D(.6f,.5f);
+                        }
+                        var texture = Resources.getImage(text.imageId());
+                        try {
+                            image.setRGB(x, i, texture.getRGB((int) Math.abs(uv.x *16), (int) Math.abs(uv.y *16)));
+                        } catch (ArrayIndexOutOfBoundsException ex) {
 
-
-                    image.setRGB(x, i, entry.textureId);
-
+                            image.setRGB(x, i, Color.BLACK.getRGB());
+                        }
+                    } else {
+                        image.setRGB(x, i, entry.textureId);
+                    }
                     lineIndex = 0;
                     while (lineIndex < line.size() && x >= line.get(lineIndex).startX) {//finds "top" entry
                         if (line.get(lineIndex).endX < x) {

@@ -14,7 +14,7 @@ public class Edge {
         this.v2 = v2;
         this.polyId = polyId;
         if (v1 == null || v2 == null) {
-            throw new NullPointerException("v1 or v2 was null");
+            throw new NullPointerException("A or B was null");
         }
     }
 

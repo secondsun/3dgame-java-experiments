@@ -11,9 +11,10 @@ public class EdgeEntry {
   public float textureVectorY;
   public float textureVectorLength;
   public int textureId;
+  public Triangle triangle;
 
-  public EdgeEntry(int startX, int endX,float z, float textureVectorX, float textureVectorY,
-      float textureVectorLength, int textureId) {
+    public EdgeEntry(int startX, int endX,float z, float textureVectorX, float textureVectorY,
+      float textureVectorLength, int textureId,Triangle triangle) {
     if (endX - startX < 0) {
       System.err.println("negative length startX:"+startX + " endX:" + endX);
       this.startX = -1;
@@ -28,6 +29,7 @@ public class EdgeEntry {
     this.textureVectorY = textureVectorY;
     this.textureVectorLength = textureVectorLength;
     this.textureId = textureId;
+    this.triangle = triangle;
   }
 
   @Override

@@ -3,7 +3,11 @@ package geometry;
 
 
 import util.BSPTree;
+import util.BoundedCube;
+import util.Resources;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,10 +19,21 @@ public class Cube implements Model {
 
     private final List<Vertex> verticies;
     private final List<Triangle> tiles = new ArrayList<>();
+    private final int textureId1;
+    private final int textureId2;
 
     public Cube() {
 
 
+        try {
+            int imageID = Resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
+            textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),1,1);
+            textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-1,-1);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         var v1 = new Vertex(-scale, -scale, -scale);
         var v2 = new Vertex(-scale, scale, -scale);
         var v3 = new Vertex(scale, scale, -scale);
@@ -30,18 +45,18 @@ public class Cube implements Model {
 
 
         var cube = new Triangle[]{
-                new Triangle(v1, v2, v3, Color.WHITE.getRGB()),//SOUTH
-                new Triangle(v1, v3, v4, Color.WHITE.getRGB()),//SOUTH
-                new Triangle(v4, v3, v7, Color.WHITE.getRGB()),//EAST
-                new Triangle(v4, v7, v8, Color.WHITE.getRGB()),//EAST
-                new Triangle(v8, v7, v6, Color.WHITE.getRGB()),//NORTH
-                new Triangle(v8, v6, v5, Color.WHITE.getRGB()),//NORTH
-                new Triangle(v5, v6, v2, Color.WHITE.getRGB()),//WEST
-                new Triangle(v5, v2, v1, Color.WHITE.getRGB()),//WEST
-                new Triangle(v2, v6, v7, Color.WHITE.getRGB()),//TOP
-                new Triangle(v2, v7, v3, Color.WHITE.getRGB()),//TOP
-                new Triangle(v8, v5, v1, Color.WHITE.getRGB()),//BOTTOM
-                new Triangle(v8, v1, v4, Color.WHITE.getRGB()),//BOTTOM
+                new Triangle(v1, v2, v3, textureId1),//SOUTH
+                new Triangle(v1, v3, v4, textureId2),//SOUTH
+                new Triangle(v4, v3, v7, textureId1),//EAST
+                new Triangle(v4, v7, v8, textureId2),//EAST
+                new Triangle(v8, v7, v6, textureId1),//NORTH
+                new Triangle(v8, v6, v5, textureId2),//NORTH
+                new Triangle(v5, v6, v2, textureId1),//WEST
+                new Triangle(v5, v2, v1, textureId2),//WEST
+                new Triangle(v2, v6, v7, textureId1),//TOP
+                new Triangle(v2, v7, v3, textureId2),//TOP
+                new Triangle(v8, v5, v1, textureId1),//BOTTOM
+                new Triangle(v8, v1, v4, textureId2),//BOTTOM
 
         };
 
@@ -61,7 +76,9 @@ public class Cube implements Model {
 
     @Override
     public BSPTree getBSPTree() {
-        return new BSPTree(new BSPTree.Node());
+        var node = new BSPTree.Node();
+        node.bounds=new BoundedCube(this);
+        return new BSPTree(node);
     }
 
 }
