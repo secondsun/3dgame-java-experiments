@@ -26,8 +26,8 @@ public class MonasteryPlayfield implements Model {
 
         try {
             int imageID = Resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
-             textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),1,1);
-             textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-1,-1);
+             textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),15,15);
+             textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-15,-15);
 
         } catch (IOException e) {
             e.printStackTrace();

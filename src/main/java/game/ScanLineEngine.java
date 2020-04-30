@@ -327,9 +327,9 @@ public class ScanLineEngine implements Renderer {
                         }
                         var texture = Resources.getImage(text.imageId());
                         try {
-                            image.setRGB(x, i, texture.getRGB((int) Math.abs(uv.x *16), (int) Math.abs(uv.y *16)));
+                            image.setRGB(x, i, texture.getRGB((int) Math.abs(uv.x * text.u())%text.u(), (int) Math.abs(uv.y *text.v())%text.v()));
                         } catch (ArrayIndexOutOfBoundsException ex) {
-
+                            System.out.println(uv);
                             image.setRGB(x, i, Color.BLACK.getRGB());
                         }
                     } else {
