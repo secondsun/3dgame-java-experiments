@@ -26,8 +26,8 @@ public class MonasteryPlayfield implements Model {
 
         try {
             int imageID = Resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
-             textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),1,1);
-             textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-1,-1);
+             textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),15,15);
+             textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-15,-15);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -260,24 +260,8 @@ public class MonasteryPlayfield implements Model {
             for (int y = 8; y >= 0; y--) {
 
                 boolean isOddRow = (y % 2) == 0;
-
-                if (isOddColumn) {
-                    if (isOddRow) {
-                        color1 = textureId1;
-                        color2 = textureId2;
-                    } else {
-                        color1 = Color.LIGHT_GRAY.getRGB();
-                        color2 = Color.LIGHT_GRAY.getRGB();
-                    }
-                } else {
-                    if (isOddRow) {
-                        color1 = Color.LIGHT_GRAY.getRGB();
-                        color2 = Color.LIGHT_GRAY.getRGB();
-                    } else {
-                        color1 = Color.DARK_GRAY.getRGB();
-                        color2 = Color.DARK_GRAY.getRGB();
-                    }
-                }
+                color1 = textureId1;
+                color2 = textureId2;
 
                 northWest = new Triangle(
                         new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 4),
@@ -300,9 +284,10 @@ public class MonasteryPlayfield implements Model {
                 if (isOddColumn) {//draw "wall" of path
 
                     northWest = new Triangle(
+                            new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 0),
                             new Vertex((x) * TILE_LENGTH, (y + 1) * TILE_LENGTH, 4),
                             new Vertex(x * TILE_LENGTH, (y) * TILE_LENGTH, 4),
-                            new Vertex(x * TILE_LENGTH, y * TILE_LENGTH, 0),
+
                             color1
                     );
 

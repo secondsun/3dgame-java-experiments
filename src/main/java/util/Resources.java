@@ -23,7 +23,7 @@ public class Resources {
         return images.get(in);
     }
 
-    public static  int setTexture(int imageId, Vertex2D textureOrigin, float u, float v) {
+    public static  int setTexture(int imageId, Vertex2D textureOrigin, int u, int v) {
         var text = new Texture(imageId, textureOrigin, u, v);
         var hash = text.hashCode();
         textures.put(hash,text);

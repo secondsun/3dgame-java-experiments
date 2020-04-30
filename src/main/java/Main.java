@@ -52,7 +52,7 @@ public class Main {
             }
 
             theta++;
-            rotX= (int) (128*Math.cos(Math.toRadians(theta)));
+            rotX= (int) (300*Math.cos(Math.toRadians(theta)));
             rotY= (int) (-300*Math.sin(Math.toRadians(theta)));
             repaint();
         }
