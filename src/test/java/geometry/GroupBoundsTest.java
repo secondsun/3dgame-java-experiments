@@ -1,12 +1,13 @@
 package geometry;
 
+import geometry.playfield.MonasteryPlayfield;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import util.BSPTree;
 import util.BoundedCube;
 import util.Plane;
 
-import static geometry.MonasteryPlayfield.TILE_LENGTH;
+import static geometry.playfield.MonasteryPlayfield.TILE_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

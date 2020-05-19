@@ -1,10 +1,13 @@
-package geometry;
+package geometry.playfield;
 
+import geometry.Model;
+import geometry.Triangle;
+import geometry.Vertex;
 import util.BSPTree;
 
 import java.util.*;
 
-public class BoardNew implements Model{
+public class BoardNew implements Model {
 
 
     private final int boardWidth;

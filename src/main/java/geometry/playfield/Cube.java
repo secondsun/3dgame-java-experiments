@@ -1,7 +1,11 @@
-package geometry;
+package geometry.playfield;
 
 
 
+import geometry.Model;
+import geometry.Triangle;
+import geometry.Vertex;
+import geometry.Vertex2D;
 import util.BSPTree;
 import util.BoundedCube;
 import util.Resources;
@@ -9,9 +13,7 @@ import util.Resources;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.awt.Color;
 
 public class Cube implements Model {
 

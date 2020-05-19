@@ -1,5 +1,9 @@
-package geometry;
+package geometry.playfield;
 
+import geometry.Model;
+import geometry.Triangle;
+import geometry.Vertex;
+import geometry.Vertex2D;
 import util.BSPTree;
 import util.BoundedCube;
 import util.Plane;

@@ -1,7 +1,8 @@
 import game.Renderer;
 import game.ScanLineEngine;
 import geometry.Camera;
-import geometry.MonasteryPlayfield;
+import geometry.playfield.Bookshelf;
+import geometry.playfield.MonasteryPlayfield;
 import geometry.Vertex;
 import geometry.Vertex2D;
 
@@ -25,17 +26,17 @@ public class Main {
         private final int scale = 3;
         private final int screenWidth = 800;//256 * scale;
         private final int screenHeight = 450;//192 * scale;
-        private int rotY=0, rotX = 0;
-        private int theta = 1;
+        private int rotY=32, rotX = 100;
+        private int theta = 45;
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new MonasteryPlayfield();
+            var board = new Bookshelf();
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
-            var camera = new Camera(new Vertex(rotX,rotY,128), new Vertex(128,128,10));
-            board.lookAt(camera, new Vertex2D(3f,3f), new Vertex2D(360,128));
+            var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(64,64,0));
+            board.lookAt(camera, new Vertex2D(2f,2f), new Vertex2D(172,220));
 
 
             var tiles = board.getTriangles();
@@ -52,8 +53,8 @@ public class Main {
             }
 
             theta++;
-            rotX= (int) (300*Math.cos(Math.toRadians(theta)));
-            rotY= (int) (-300*Math.sin(Math.toRadians(theta)));
+            rotX= (int) (300*Math.cos(Math.toRadians(theta)) + 100);
+            rotY= (int) (-300*Math.sin(Math.toRadians(theta)) + 32);
             repaint();
         }
     }
