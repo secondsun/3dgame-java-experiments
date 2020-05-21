@@ -52,13 +52,13 @@ public class MonasteryPlayfield implements Model {
         var roof = new BoundedCube(playfield.roof());
         var path = new BoundedCube(playfield.path());
 
-        Plane roofPlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
-        Plane groundPlane = new Plane(new Vertex(0, 0, 0), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
-        Plane castlePlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, -1, 0));//this is the plane that splits the castle and roof facing up
+//        Plane roofPlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
+//        Plane groundPlane = new Plane(new Vertex(0, 0, 0), new Vertex(0, 0, 1));//this is the plane that splits the castle and roof facing up
+//        Plane castlePlane = new Plane(new Vertex(0, 9 * TILE_LENGTH, 3 * TILE_LENGTH), new Vertex(0, -1, 0));//this is the plane that splits the castle and roof facing up
         BSPTree tree = new BSPTree(new BSPTree.Node());
-        tree.add(groundPlane);
-        tree.add(roofPlane);
-        tree.add(castlePlane);
+//        tree.add(groundPlane);
+//        tree.add(roofPlane);
+//        tree.add(castlePlane);
         tree.add(roof);
         tree.add(path);
         tree.add(ground);

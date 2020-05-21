@@ -66,15 +66,15 @@ public class GroupBoundsTest {
         var  roof = new BoundedCube(playfield.roof());
         var  path = new BoundedCube(playfield.path());
 
-        Plane plane = new Plane(new Vertex(0,0,4), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
+        //Plane plane = new Plane(new Vertex(0,0,4), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
 
         BSPTree tree = new BSPTree(new BSPTree.Node());
-        tree.add(plane);
-        tree.add(roof);
+
         tree.add(path);
+        tree.add(roof);
 
 
-        assertEquals(tree.getRoot().partition, plane);
+        //assertEquals(tree.getRoot().partition, plane);
         assertEquals(tree.getRoot().behind.bounds, path);
         assertEquals(tree.getRoot().front.bounds, roof);
     }
@@ -88,29 +88,27 @@ public class GroupBoundsTest {
         var  roof = new BoundedCube(playfield.roof());
         var  path = new BoundedCube(playfield.path());
 
-        Plane roofPlane = new Plane(new Vertex(0,9*TILE_LENGTH,3*TILE_LENGTH), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
-        Plane groundPlane = new Plane(new Vertex(0,0,0), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
-        Plane castlePlane = new Plane(new Vertex(0,9*TILE_LENGTH,3*TILE_LENGTH), new Vertex(0,-1,0));//this is the plane that splits the castle and roof facing up
+//        Plane roofPlane = new Plane(new Vertex(0,9*TILE_LENGTH,3*TILE_LENGTH), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
+//        Plane groundPlane = new Plane(new Vertex(0,0,0), new Vertex(0,0,1));//this is the plane that splits the castle and roof facing up
+//        Plane castlePlane = new Plane(new Vertex(0,9*TILE_LENGTH,3*TILE_LENGTH), new Vertex(0,-1,0));//this is the plane that splits the castle and roof facing up
         BSPTree tree = new BSPTree(new BSPTree.Node());
-        tree.add(groundPlane);
-        tree.add(roofPlane);
-        tree.add(castlePlane);
-        tree.add(roof);
-        tree.add(path);
+//        tree.add(groundPlane);
+//        tree.add(roofPlane);
+//        tree.add(castlePlane);
+
         tree.add(ground);
+        tree.add(path);
         tree.add(building);
+        tree.add(roof);
 
-
-        assertEquals(tree.getRoot().partition, groundPlane);
         assertEquals(tree.getRoot().behind.bounds, ground);
         assertEquals(tree.getRoot().front.bounds, null);
-        assertEquals(tree.getRoot().front.partition, roofPlane);
-        assertEquals(tree.getRoot().front.front.bounds, roof);
-        assertEquals(tree.getRoot().front.behind.partition, castlePlane);
-        assertEquals(tree.getRoot().front.behind.bounds, null);
-        assertEquals(tree.getRoot().front.behind.behind.partition, null);
-        assertEquals(tree.getRoot().front.behind.behind.bounds, building);
-        assertEquals(tree.getRoot().front.behind.front.bounds, path);
+        assertEquals(tree.getRoot().front.front.bounds, null);
+        assertEquals(tree.getRoot().front.front.front.bounds, roof);
+        assertEquals(tree.getRoot().front.behind.bounds, path);
+        assertEquals(tree.getRoot().front.front.behind.partition, null);
+        assertEquals(tree.getRoot().front.front.behind.bounds, building);
+
     }
 
 }

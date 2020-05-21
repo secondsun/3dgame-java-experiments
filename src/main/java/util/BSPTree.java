@@ -3,6 +3,7 @@ package util;
 import geometry.Camera;
 import geometry.Model;
 import geometry.Triangle;
+import geometry.Vertex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,8 +11,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BSPTree {
+
+    public BSPTree() {
+    }
+
     public void add(BoundedCube object) {
-        root.add(object);
+        if (root == null) {
+            root = new Node(object);
+        } else {
+            root.add(object);
+        }
     }
 
     /**
@@ -54,54 +63,58 @@ public class BSPTree {
         public Plane partition;
         public BoundedCube bounds;
 
-        public void add(Plane object) {
-            if (partition == null && bounds == null) {
-                partition = object;
-            } else {
-                if (object.location.isBehind(partition)) {
-                    if (behind == null) {
-                        behind = new Node();
-                        behind.partition = object;
-                    } else {
-                        behind.add(object);
-                    }
-                } else if (object.location.isInFront(partition)) {
-                    if (front == null) {
-                        front = new Node();
-                        front.partition = object;
-                    } else {
-                        front.add(object);
-                    }
-                } else {
-                    throw new IllegalStateException("Should be behind or in front");
-                }
-            }
+        public  Node(BoundedCube object) {
+            this.add(object);
+        }
 
+        public Node() {
         }
 
         public void add(BoundedCube object) {
             if (partition == null && bounds == null) {
                 bounds = object;
-            } else {
-                if (object.isBehind(partition)) {
-                    if (behind == null) {
-                        behind = new Node();
-                        behind.bounds = object;
-                    } else {
-                        behind.add(object);
-                    }
-                } else if (object.isInFront(partition)) {
-                    if (front == null) {
-                        front = new Node();
-                        front.bounds = object;
-                    } else {
-                        front.add(object);
-                    }
-                } else {
-                    throw new IllegalStateException("Should be behind or in front");
-                }
+            } else if (partition == null){ //turn into two nodes and create a partition
+                var behindObject = this.bounds;//As a rule we add objects from front to back
+                Plane partition = findPartition (behindObject, object);
+                this.bounds = null;
+                this.partition = partition;
+                behind = new Node();
+                behind.bounds = behindObject;
+                front = new Node();
+                front.bounds = object;
+            } else {//by definition we add to the front.
+                front.add(object);
             }
 
+        }
+
+        private Plane findPartition(BoundedCube behindObject, BoundedCube frontObject) {
+            var nearTestPlane = new Plane(new Vertex(0,0,behindObject.near), new Vertex(0,0,1));
+            var farTestPlane = new Plane(new Vertex(0,0,behindObject.far), new Vertex(0,0,-1));
+            var leftTestPlane = new Plane(new Vertex(behindObject.left,0,0), new Vertex(-1,0,0));
+            var rightTestPlane = new Plane(new Vertex(behindObject.right,0,0), new Vertex(1,0,0));
+            var topTestPlane = new Plane(new Vertex(0,behindObject.top,0), new Vertex(0,1,0));
+            var bottomTestPlane = new Plane(new Vertex(0,behindObject.bottom,0), new Vertex(0,-1,0));
+
+            if (frontObject.isInFront(nearTestPlane)) {
+                return nearTestPlane;
+            }
+            if (frontObject.isInFront(farTestPlane)) {
+                return farTestPlane;
+            }
+            if (frontObject.isInFront(topTestPlane)) {
+                return topTestPlane;
+            }
+            if (frontObject.isInFront(bottomTestPlane)) {
+                return bottomTestPlane;
+            }
+            if (frontObject.isInFront(leftTestPlane)) {
+                return leftTestPlane;
+            }
+            if (frontObject.isInFront(rightTestPlane)) {
+                return rightTestPlane;
+            }
+            throw new IllegalStateException("can't place object" + behindObject.toString() + "\n" + frontObject.toString());
         }
     }
 
@@ -119,9 +132,5 @@ public class BSPTree {
         return root;
     }
 
-    public void add(Plane plane) {
-        root.add(plane);
-
-    }
 
 }

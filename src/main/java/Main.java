@@ -1,8 +1,7 @@
 import game.Renderer;
 import game.ScanLineEngine;
 import geometry.Camera;
-import geometry.playfield.Bookshelf;
-import geometry.playfield.MonasteryPlayfield;
+import geometry.playfield.DormRoom;
 import geometry.Vertex;
 import geometry.Vertex2D;
 
@@ -24,19 +23,19 @@ public class Main {
 
     public static class Screen extends Component {
         private final int scale = 3;
-        private final int screenWidth = 800;//256 * scale;
-        private final int screenHeight = 450;//192 * scale;
+        private final int screenWidth = 256*4;//256 * scale;
+        private final int screenHeight = 192*4;//192 * scale;
         private int rotY=32, rotX = 100;
         private int theta = 45;
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new Bookshelf();
+            var board = new DormRoom();
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
             var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(64,64,0));
-            board.lookAt(camera, new Vertex2D(2f,2f), new Vertex2D(172,220));
+            board.lookAt(camera, new Vertex2D(8f,8f), new Vertex2D(120*4,80*4));
 
 
             var tiles = board.getTriangles();
@@ -47,7 +46,7 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000/100);
+                Thread.sleep(1000/30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
