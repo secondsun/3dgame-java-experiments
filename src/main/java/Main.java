@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
 
@@ -24,13 +23,11 @@ public class Main {
 
 
     public static class Screen extends Component {
-        private List<Triangle> tris = ImportMain.calc("MAP056.48").stream().map(tri -> tri.scale(.025f)).collect(Collectors.toList());
 
-
-        private final int screenWidth = 256 * 4;//256 * scale;
-        private final int screenHeight = 192 * 4;//192 * scale;
-        private int rotY = 120, rotX = 120;
-        private int theta = 45;
+        private final int screenWidth = 256;//256 * scale;
+        private final int screenHeight = 160;//192 * scale;
+        private int rotY = 3, rotX = 25;
+        private int theta = 0;
 
         public Screen() throws IOException {
         }
@@ -40,6 +37,15 @@ public class Main {
             super.paint(g);
 
             Model board = null;
+            List<Triangle> tris;
+
+            try {
+                (tris = ImportMain.calc("MAP056.48")).forEach(tri -> tri.scale(.005f).rotateZ(90));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
             board = new Model() {
 
                 @Override
@@ -57,7 +63,7 @@ public class Main {
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
 
             var camera = new Camera(new Vertex(rotX, rotY, 200), new Vertex(0, 0, 0));
-            board.lookAt(camera, new Vertex2D(100f, 100f), new Vertex2D(0,0));
+            board.lookAt(camera, new Vertex2D(100f, 100f), new Vertex2D(0, 0));
 
 
             var tiles = board.getTriangles();
@@ -68,14 +74,15 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000 / 30);
+                Thread.sleep(1000 / 60);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            //theta++;
-            //rotX = (int) (300 * Math.cos(Math.toRadians(theta)) + 100);
-            //rotY = (int) (-300 * Math.sin(Math.toRadians(theta)) + 32);
+            System.out.println(" " + theta);
+            theta++;
+            rotX = (int) (25 * Math.cos(Math.toRadians(theta)));
+           // rotY = (int) (5 * Math.sin(Math.toRadians(theta)));
             repaint();
         }
     }

@@ -27,9 +27,9 @@ public class ImportMain {
 
         for (int i = 0; i < texturedTriangleCount; i++) {
             var tri = new Triangle(
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
                     Color.RED.getRGB()
             );
             triangles.add(tri);
@@ -37,17 +37,17 @@ public class ImportMain {
 
         for (int i = 0; i < texturedQuadCount; i++) {
             var tri = new Triangle(
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
                     Color.RED.getRGB()
             );
             triangles.add(tri);
 
             tri = new Triangle(
+                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
                     tri.v3,
-                    new Vertex(readSignedShort(bytes), readSignedShort(bytes), readSignedShort(bytes)),
-                    tri.v1,
+                    tri.v2,
                     Color.RED.getRGB()
             );
             triangles.add(tri);
