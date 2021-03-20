@@ -4,6 +4,8 @@ import geometry.Model;
 import geometry.Triangle;
 import geometry.Vertex;
 
+import java.util.List;
+
 /**
  * This class will create an axis aligned BSP tree bounding box around a model.
  * <p>
@@ -15,6 +17,57 @@ public class BoundedCube {
 
     public final Model model;
     public float top = -1000000f, bottom = 1000000f, left = 1000000f, right = -1000000f, near = -1000000f, far = 1000000f;
+
+    public BoundedCube(List<Triangle> triangles) {
+        this.model = new Model() {
+            @Override
+            public List<Triangle> getTriangles() {
+                return triangles;
+            }
+
+            @Override
+            public BSPTree getBSPTree() {
+                return null;
+            }
+        };
+
+        for (Triangle tri : model.getTriangles()) {
+            float maxX = Maths.max(tri.v1.x, tri.v2.x, tri.v3.x);
+            float minX = Maths.min(tri.v1.x, tri.v2.x, tri.v3.x);
+
+            float maxY = Maths.max(tri.v1.y, tri.v2.y, tri.v3.y);
+            float minY = Maths.min(tri.v1.y, tri.v2.y, tri.v3.y);
+
+            float maxZ = Maths.max(tri.v1.z, tri.v2.z, tri.v3.z);
+            float minZ = Maths.min(tri.v1.z, tri.v2.z, tri.v3.z);
+
+            if (maxX > right) {
+                right = maxX;
+            }
+            if (minX < left) {
+                left = minX;
+            }
+
+
+            if (maxY > top) {
+                top = maxY;
+            }
+            if (minY < bottom) {
+                bottom = minY;
+            }
+
+
+            if (maxZ >= near) {
+                near = maxZ;
+            }
+            if (minZ < far) {
+                far = minZ;
+            }
+
+        }
+
+    }
+
 
     public BoundedCube(Model model) {
         this.model = model;
