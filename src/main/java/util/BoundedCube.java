@@ -139,4 +139,17 @@ public class BoundedCube {
         return true;
 
     }
+
+    @Override
+    public String toString() {
+        return "BoundedCube{" +
+                "model=" + model +
+                ", top=" + top +
+                ", bottom=" + bottom +
+                ", left=" + left +
+                ", right=" + right +
+                ", near=" + near +
+                ", far=" + far +
+                '}';
+    }
 }

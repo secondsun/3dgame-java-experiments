@@ -118,6 +118,12 @@ public class BSPTree {
         }
     }
 
+    @Override
+    public String toString() {
+        return "BSPTree{" +
+                "root=" + root +
+                '}';
+    }
 
     private Node root;
 

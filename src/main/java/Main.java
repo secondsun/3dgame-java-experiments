@@ -26,7 +26,7 @@ public class Main {
 
         private final int screenWidth = 256;//256 * scale;
         private final int screenHeight = 160;//192 * scale;
-        private int rotY = 3, rotX = 25;
+        private int rotY = 3, rotX = 25, rotZ=200;
         private int theta = 0;
 
         public Screen() throws IOException {
@@ -61,8 +61,9 @@ public class Main {
             };
 
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
+            System.out.println(" " + board.getBSPTree().getRoot().bounds);
 
-            var camera = new Camera(new Vertex(rotX, rotY, 200), new Vertex(0, 0, 0));
+            var camera = new Camera(new Vertex(rotX, 50, rotZ), new Vertex(0, 0, 0));
             board.lookAt(camera, new Vertex2D(100f, 100f), new Vertex2D(0, 0));
 
 
@@ -79,10 +80,9 @@ public class Main {
                 e.printStackTrace();
             }
 
-            System.out.println(" " + theta);
             theta++;
-            rotX = (int) (25 * Math.cos(Math.toRadians(theta)));
-           // rotY = (int) (5 * Math.sin(Math.toRadians(theta)));
+            rotX = (int) (50 * Math.cos(Math.toRadians(theta))+25);
+            rotZ = (int) (200 * Math.sin(Math.toRadians(theta)));
             repaint();
         }
     }
