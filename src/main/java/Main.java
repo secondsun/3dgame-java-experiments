@@ -27,7 +27,7 @@ public class Main {
         private final int screenWidth = 256;//256 * scale;
         private final int screenHeight = 160;//192 * scale;
         private int rotY = 0, rotX = 25, rotZ=200;
-        private int theta = 1;
+        private int theta = 511;
 
         public Screen() throws IOException {
         }
@@ -40,7 +40,7 @@ public class Main {
             List<Triangle> tris;
 
             try {
-                (tris = ImportMain.calc("MAP056.48")).forEach(tri -> tri.scale(.5f));//.translateX(-117).rotateY(rotY).translateX(117)
+                tris = ImportMain.calc("MAP056.48");//.translateX(-117).rotateY(rotY).translateX(117)
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -61,11 +61,11 @@ public class Main {
             };
 
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
-
-            var camera = new Camera(new Vertex(rotX, 117, rotZ), new Vertex(35, 0, 0));
-            board.lookAt(camera, new Vertex2D(1f, 1f), new Vertex2D(0, 0));
             System.out.println(" " + board.getBSPTree().getRoot().bounds);
 
+            var camera = new Camera(new Vertex(rotX, -420, rotZ), new Vertex(140, 0, 196));
+            board.lookAt(camera, new Vertex2D(.5f, .5f), new Vertex2D(0, 0));
+            tris.forEach(tri->tri.translateX(80));
 
             var tiles = board.getTriangles();
             var tree = board.getBSPTree();
@@ -82,8 +82,8 @@ public class Main {
 
             System.out.println(theta+ "@" + rotX + "," + rotZ);
             theta++;
-            rotX = (int) (140 * Math.cos(Math.toRadians(theta)));
-            rotZ = (int) (234 * Math.sin(Math.toRadians(theta)));
+            rotX = (int) (280 * Math.cos(Math.toRadians(theta))+140);
+            rotZ = (int) (392 * Math.sin(Math.toRadians(theta))+196);
             rotY++;
             repaint();
         }

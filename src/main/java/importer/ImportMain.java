@@ -12,24 +12,27 @@ public class ImportMain {
     private static byte[] bytes;
     private static int pointer;
 
-    public static ArrayList<Triangle> calc(String arg) throws IOException {
-        var mapStream = ImportMain.class.getClassLoader().getResourceAsStream(arg);
-        var bytes = mapStream.readAllBytes();
+    public static ArrayList<Triangle> calc(String meshFile, String textureFile) throws IOException {
+        var mapStream = ImportMain.class.getClassLoader().getResourceAsStream(meshFile);
+        var textureStream = ImportMain.class.getClassLoader().getResourceAsStream(textureFile);
+        var textureBytes = textureStream.readAllBytes();
+        var meshBytes = mapStream.readAllBytes();
+        
         pointer = 0x40;
-        pointer = readInt(bytes);
+        pointer = readInt(meshBytes);
         System.out.println((pointer & 0x0FF) + " " + pointer);
-        var texturedTriangleCount = readUnsignedShort(bytes);
-        var texturedQuadCount = readUnsignedShort(bytes );
-        var untexturedTriangleCount = readUnsignedShort(bytes );
-        var untexturedQuadCount = readUnsignedShort(bytes );
+        var texturedTriangleCount = readUnsignedShort(meshBytes);
+        var texturedQuadCount = readUnsignedShort(meshBytes );
+        var untexturedTriangleCount = readUnsignedShort(meshBytes );
+        var untexturedQuadCount = readUnsignedShort(meshBytes );
 
         var triangles = new ArrayList<Triangle>();
 
         for (int i = 0; i < texturedTriangleCount; i++) {
             var tri = new Triangle(
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
                     Color.RED.getRGB()
             );
             triangles.add(tri);
@@ -37,20 +40,49 @@ public class ImportMain {
 
         for (int i = 0; i < texturedQuadCount; i++) {
             var tri = new Triangle(
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
                     Color.RED.getRGB()
             );
             triangles.add(tri);
 
             tri = new Triangle(
-                    new Vertex(readSignedShort(bytes), -readSignedShort(bytes), readSignedShort(bytes)),
+                    new Vertex(readSignedShort(meshBytes), -readSignedShort(meshBytes), readSignedShort(meshBytes)),
                     tri.v3,
                     tri.v2,
                     Color.RED.getRGB()
             );
             triangles.add(tri);
+
+        }
+
+        for (int i = 0; i < texturedTriangleCount; i++) {
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+
+        }
+
+        for (int i = 0; i < texturedQuadCount; i++) {
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
+            readSignedShort(meshBytes);
 
         }
 
