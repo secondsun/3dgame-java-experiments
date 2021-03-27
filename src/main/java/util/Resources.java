@@ -18,6 +18,10 @@ public class Resources {
         images.put(hash,in);
         return hash;
     }
+    public static  void setImage(BufferedImage in, int index) {
+        var hash = in.hashCode();
+        images.put(index,in);
+    }
 
     public static BufferedImage getImage(int in) {
         return images.get(in);

@@ -24,10 +24,10 @@ public class Main {
 
     public static class Screen extends Component {
 
-        private final int screenWidth = 256;//256 * scale;
+        private final int screenWidth = 128;//256 * scale;
         private final int screenHeight = 160;//192 * scale;
         private int rotY = 0, rotX = 25, rotZ=200;
-        private int theta = 511;
+        private int theta = 1493;
 
         public Screen() throws IOException {
         }
@@ -40,7 +40,7 @@ public class Main {
             List<Triangle> tris;
 
             try {
-                tris = ImportMain.calc("MAP056.48");//.translateX(-117).rotateY(rotY).translateX(117)
+                tris = ImportMain.calc("MAP056.48","MAP056.47");//.translateX(-117).rotateY(rotY).translateX(117)
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -81,7 +81,7 @@ public class Main {
             }
 
             System.out.println(theta+ "@" + rotX + "," + rotZ);
-            theta++;
+           // theta++;
             rotX = (int) (280 * Math.cos(Math.toRadians(theta))+140);
             rotZ = (int) (392 * Math.sin(Math.toRadians(theta))+196);
             rotY++;
