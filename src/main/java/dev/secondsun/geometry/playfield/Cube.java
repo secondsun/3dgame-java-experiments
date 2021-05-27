@@ -25,7 +25,7 @@ public class Cube implements Model {
     private int textureId2;
 
     public Cube(){
-        tyhis(10f);
+        this(10f);
     }
 
     public Cube(float scale) {
