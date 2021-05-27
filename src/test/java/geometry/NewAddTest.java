@@ -1,10 +1,10 @@
-package geometry;
+package dev.secondsun.geometry;
 
-import geometry.playfield.DormRoom;
+import dev.secondsun.geometry.playfield.DormRoom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import util.BSPTree;
-import util.BoundedCube;
+import dev.secondsun.util.BSPTree;
+import dev.secondsun.util.BoundedCube;
 
 public class NewAddTest {
 

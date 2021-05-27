@@ -1,7 +1,8 @@
-package dev.secondsun.game;
+package dev.secondsun.util;
 
 import dev.secondsun.geometry.Texture;
 import dev.secondsun.geometry.Vertex;
+import dev.secondsun.geometry.Vertex2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,7 +23,7 @@ public class Resources {
         return images.get(in);
     }
 
-    public static  int setTexture(int imageId, Vertex textureOrigin, float u, float v) {
+    public static  int setTexture(int imageId, Vertex2D textureOrigin, int u, int v) {
         var text = new Texture(imageId, textureOrigin, u, v);
         var hash = text.hashCode();
         textures.put(hash,text);

@@ -1,13 +1,13 @@
-package geometry;
+package dev.secondsun.geometry;
 
-import geometry.playfield.MonasteryPlayfield;
+import dev.secondsun.geometry.playfield.MonasteryPlayfield;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import util.BSPTree;
-import util.BoundedCube;
-import util.Plane;
+import dev.secondsun.util.BSPTree;
+import dev.secondsun.util.BoundedCube;
+import dev.secondsun.util.Plane;
 
-import static geometry.playfield.MonasteryPlayfield.TILE_LENGTH;
+import static dev.secondsun.geometry.playfield.MonasteryPlayfield.TILE_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

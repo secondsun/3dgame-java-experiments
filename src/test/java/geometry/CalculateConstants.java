@@ -1,4 +1,4 @@
-package geometry;
+package dev.secondsun.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
