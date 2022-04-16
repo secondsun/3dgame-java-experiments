@@ -1,6 +1,5 @@
 package dev.secondsun.geometry;
 
-import java.util.List;
 
 public class Pair<T, T1> {
     public T first;

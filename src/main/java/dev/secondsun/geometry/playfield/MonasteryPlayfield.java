@@ -6,7 +6,6 @@ import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
 import dev.secondsun.util.BSPTree;
 import dev.secondsun.util.BoundedCube;
-import dev.secondsun.util.Plane;
 import dev.secondsun.util.Resources;
 
 import javax.imageio.ImageIO;
@@ -17,6 +16,7 @@ import java.util.List;
 
 public class MonasteryPlayfield implements Model {
 
+    private final Resources resources;
     private final List<Triangle> triangles = new ArrayList<>();
     public static final int TILE_LENGTH = 16;
     private List<Triangle> ground = new ArrayList<>();
@@ -26,12 +26,12 @@ public class MonasteryPlayfield implements Model {
     private BSPTree tree;
     private int textureId1, textureId2;
 
-    public MonasteryPlayfield() {
-
+    public MonasteryPlayfield(Resources resources) {
+        this.resources = resources;
         try {
-            int imageID = Resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
-             textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),15,15);
-             textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-15,-15);
+            int imageID = resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
+             textureId1 = resources.setTexture(imageID, new Vertex2D(0,0),15,15);
+             textureId2 = resources.setTexture(imageID, new Vertex2D(1,1),-15,-15);
 
         } catch (IOException e) {
             e.printStackTrace();

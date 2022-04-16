@@ -20,32 +20,44 @@ public class DormRoom implements Model {
     private static final int TILE_LENGTH = 16;
     private final BSPTree root;
     private List<Triangle> triangles;
-    private static final Integer woodId1,woodId2,booksId1,booksId2;
+    private  final Integer woodId1,woodId2,booksId1,booksId2;
+    private final Resources resources;
+    private  final int floorId2, floorId1,bedId2, bedId1,bedUpId2, bedUpId1;
 
-    private static final int floorId2, floorId1,bedId2, bedId1,bedUpId2, bedUpId1;
-
-    static {
+     public DormRoom(Resources resources) {
+         this.resources = resources;
         //loadTextures and resources
         try {
-            int woodID = Resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/wood.png")));
-            int booksID = Resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/books.png")));
-            int floorID = Resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/floor.png")));
-            int bedID = Resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/bed.png")));
-            int bedUpID = Resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/bedUp.png")));
+            int woodID = resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/wood.png")));
+            int booksID = resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/books.png")));
+            int floorID = resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/floor.png")));
+            int bedID = resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/bed.png")));
+            int bedUpID = resources.setImage(ImageIO.read(DormRoom.class.getClassLoader().getResourceAsStream("dormroom/bedUp.png")));
 
-            woodId1 = Resources.setTexture(woodID, new Vertex2D(0,0),15,15);
-            woodId2 = Resources.setTexture(woodID, new Vertex2D(15,15),-15,-15);
+            woodId1 = resources.setTexture(woodID, new Vertex2D(0,0),15,15);
+            woodId2 = resources.setTexture(woodID, new Vertex2D(15,15),-15,-15);
 
-            booksId1 = Resources.setTexture(booksID, new Vertex2D(0,0),32,47);
-            booksId2 = Resources.setTexture(booksID, new Vertex2D(32,47),-32,-47);
-            floorId1 = Resources.setTexture(floorID, new Vertex2D(0,0),100,100);
-            floorId2 = Resources.setTexture(floorID, new Vertex2D(100,100),-100,-100);
+            booksId1 = resources.setTexture(booksID, new Vertex2D(0,0),32,47);
+            booksId2 = resources.setTexture(booksID, new Vertex2D(32,47),-32,-47);
+            floorId1 = resources.setTexture(floorID, new Vertex2D(0,0),100,100);
+            floorId2 = resources.setTexture(floorID, new Vertex2D(100,100),-100,-100);
 
 
-            bedId1 = Resources.setTexture(bedID, new Vertex2D(0,0),15,31);
-            bedId2 = Resources.setTexture(bedID, new Vertex2D(15,31),-15,-31);
-            bedUpId1 = Resources.setTexture(bedUpID, new Vertex2D(0,0),31,15);
-            bedUpId2 = Resources.setTexture(bedUpID, new Vertex2D(31,15),-31,-15);
+            bedId1 = resources.setTexture(bedID, new Vertex2D(0,0),15,31);
+            bedId2 = resources.setTexture(bedID, new Vertex2D(15,31),-15,-31);
+            bedUpId1 = resources.setTexture(bedUpID, new Vertex2D(0,0),31,15);
+            bedUpId2 = resources.setTexture(bedUpID, new Vertex2D(31,15),-31,-15);
+
+            triangles = new ArrayList<>();
+            bookshelf();
+            bed();
+            floor();
+    
+            this.root = new BSPTree();
+            root.add(new BoundedCube(floorModel()));
+            root.add(new BoundedCube(bookshelfModel()));
+            root.add(new BoundedCube(bedModel()));
+    
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -57,19 +69,6 @@ public class DormRoom implements Model {
     private ArrayList<Triangle> bookshelfTriangles;
     private ArrayList<Triangle> bedLegsTriangles;
     private ArrayList<Triangle> bedTries;
-
-    public DormRoom() {
-        triangles = new ArrayList<>();
-        bookshelf();
-        bed();
-        floor();
-
-        this.root = new BSPTree();
-        root.add(new BoundedCube(floorModel()));
-        root.add(new BoundedCube(bookshelfModel()));
-        root.add(new BoundedCube(bedModel()));
-
-    }
 
     private void floor() {
         this.floorTris = new ArrayList<Triangle>();

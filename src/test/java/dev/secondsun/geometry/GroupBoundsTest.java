@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import dev.secondsun.util.BSPTree;
 import dev.secondsun.util.BoundedCube;
 import dev.secondsun.util.Plane;
+import dev.secondsun.util.Resources;
 
-import static dev.secondsun.geometry.playfield.MonasteryPlayfield.TILE_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -16,7 +16,9 @@ public class GroupBoundsTest {
     @Test
     @DisplayName("Create a basic cube around a Model")
     public void createsBoundedCube() {
-        BoundedCube boundedGroup = new BoundedCube(new MonasteryPlayfield());
+        var resources = new Resources();
+
+        BoundedCube boundedGroup = new BoundedCube(new MonasteryPlayfield(resources));
 
 
         assertEquals(0,boundedGroup.left);
@@ -34,7 +36,8 @@ public class GroupBoundsTest {
     @Test
     @DisplayName("The Monastery should have the parts in cubes")
     public void createsBoundedMonastery() {
-        var playfield = new MonasteryPlayfield();
+        var resources = new Resources();
+        var playfield = new MonasteryPlayfield(resources);
         var  ground = new BoundedCube(playfield.field());
         var  building = new BoundedCube(playfield.castle());
         var  roof = new BoundedCube(playfield.roof());
@@ -61,8 +64,8 @@ public class GroupBoundsTest {
     @Test
     @DisplayName("Test BSP tree")
     public void bspTreeTests() {
-
-        var playfield = new MonasteryPlayfield();
+        var resources = new Resources();
+        var playfield = new MonasteryPlayfield(resources);
         var  roof = new BoundedCube(playfield.roof());
         var  path = new BoundedCube(playfield.path());
 
@@ -81,8 +84,8 @@ public class GroupBoundsTest {
     @Test
     @DisplayName("Test BSP tree again")
     public void bspTreeTests2() {
-
-        var playfield = new MonasteryPlayfield();
+        var resources = new Resources();
+        var playfield = new MonasteryPlayfield(resources);
         var  ground = new BoundedCube(playfield.field());
         var  building = new BoundedCube(playfield.castle());
         var  roof = new BoundedCube(playfield.roof());

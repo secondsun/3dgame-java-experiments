@@ -4,6 +4,7 @@ import dev.secondsun.game.Renderer;
 import dev.secondsun.game.ScanLineEngine;
 import dev.secondsun.geometry.Camera;
 import dev.secondsun.geometry.playfield.DormRoom;
+import dev.secondsun.util.Resources;
 import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
 
@@ -24,8 +25,9 @@ public class Main {
 
 
     public static class Screen extends Component {
+        private final Resources resources = new Resources();
         private final int scale = 1;
-        private final int screenWidth = 256 ;
+        private final int screenWidth = 128 ;
         private final int screenHeight = 160 ;
         private int rotY=64, rotX = 100;
         private int theta = 45;
@@ -33,8 +35,8 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new DormRoom();
-            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board);
+            var board = new DormRoom(resources);
+            Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
             var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(96,32,50));
             board.lookAt(camera, new Vertex2D(1.5f,1.5f), new Vertex2D(120,80));

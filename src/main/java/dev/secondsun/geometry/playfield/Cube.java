@@ -18,23 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cube implements Model {
-
-    private final List<Vertex> verticies;
+    private final Resources resources;
     private final List<Triangle> tiles = new ArrayList<>();
     private int textureId1;
     private int textureId2;
 
-    public Cube(){
-        this(10f);
+    public Cube(Resources resources){
+        this(10f, resources);
     }
 
-    public Cube(float scale) {
-
+    public Cube(float scale,Resources resources) {
+        this.resources = resources;
 
         try {
-            int imageID = Resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
-            textureId1 = Resources.setTexture(imageID, new Vertex2D(0,0),1,1);
-            textureId2 = Resources.setTexture(imageID, new Vertex2D(1,1),-1,-1);
+            int imageID = resources.setImage(ImageIO.read(MonasteryPlayfield.class.getClassLoader().getResourceAsStream("water_texture.png")));
+            textureId1 = resources.setTexture(imageID, new Vertex2D(0,0),1,1);
+            textureId2 = resources.setTexture(imageID, new Vertex2D(1,1),-1,-1);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +70,6 @@ public class Cube implements Model {
         for (Triangle q : cube) {
             tiles.add(q);
         }
-        verticies = List.of(v1, v2, v3, v4, v5, v6, v7, v8);
 
     }
 

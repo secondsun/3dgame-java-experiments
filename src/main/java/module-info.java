@@ -1,7 +1,7 @@
 open module dev.secondsun.javaisoengine {
 
-  requires org.la4j;
-  requires java.desktop;
+  requires transitive org.la4j;
+  requires transitive java.desktop;
   requires java.base;
 
   exports dev.secondsun.game;

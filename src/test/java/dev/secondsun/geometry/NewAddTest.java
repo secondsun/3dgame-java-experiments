@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import dev.secondsun.util.BSPTree;
 import dev.secondsun.util.BoundedCube;
+import dev.secondsun.util.Resources;
 
 public class NewAddTest {
 
@@ -12,9 +13,10 @@ public class NewAddTest {
 
     @Test
     public void testNewBspTreeAdd() {
+        var resources = new Resources();
         var tree = new BSPTree();
 
-        var dorm = new DormRoom();
+        var dorm = new DormRoom(resources);
         var floor = dorm.floorModel();
 
         tree.add(new BoundedCube(floor));
@@ -25,8 +27,9 @@ public class NewAddTest {
     @Test
     public void testNewBspTreeAddMultiple() {
         var tree = new BSPTree();
+        var resources = new Resources();
 
-        var dorm = new DormRoom();
+        var dorm = new DormRoom(resources);
         var floor = dorm.floorModel();
         var bed = dorm.bedModel();
         var bookshelf = dorm.bookshelfModel();

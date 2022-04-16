@@ -12,20 +12,21 @@ import java.util.Vector;
 
 public class ScanLineEngine implements Renderer {
 
-
     private final int screenWidth;
     private final int screenHeight;
     private final Model board;
     private List<EdgeEntry>[] edgeTable;
     boolean pause = false;
     private Camera camera;
+    private final Resources resources;
 
 
-    public ScanLineEngine(int screenWidth, int screenHeight, Model board) {
+    public ScanLineEngine(int screenWidth, int screenHeight, Model board, Resources resources) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.board = board;
         this.edgeTable = createEdgeTupleTable(screenHeight);
+        this.resources = resources;
     }
 
     //Calculate polygons for screen drawing
@@ -304,7 +305,7 @@ public class ScanLineEngine implements Renderer {
                         lineIndex++;
                     }
                     Texture text;
-                    if ((text = Resources.getTexture(entry.textureId)) != null) {
+                    if ((text = resources.getTexture(entry.textureId)) != null) {
                         Vertex2D uv;
                         if (text.u() > 0) {//triangle.v2 is top left
                             var c = Maths.add(Maths.add(entry.triangle.v2, Maths.subtract(entry.triangle.v3,entry.triangle.v2)),Maths.subtract(entry.triangle.v1,entry.triangle.v2));
@@ -325,7 +326,7 @@ public class ScanLineEngine implements Renderer {
                             uv = Maths.reverseBilinear(new Vertex2D(x, y), quad);
                            // uv =new Vertex2D(.6f,.5f);
                         }
-                        var texture = Resources.getImage(text.imageId());
+                        var texture = resources.getImage(text.imageId());
                         try {
                             image.setRGB(x, i, texture.getRGB((int) Math.abs(uv.x * text.u())%text.u(), (int) Math.abs(uv.y *text.v())%text.v()));
                         } catch (ArrayIndexOutOfBoundsException ex) {

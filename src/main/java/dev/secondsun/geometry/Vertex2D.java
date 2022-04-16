@@ -1,7 +1,5 @@
 package dev.secondsun.geometry;
 
-import org.la4j.Matrix;
-
 import java.util.Objects;
 
 import static java.lang.Math.toRadians;

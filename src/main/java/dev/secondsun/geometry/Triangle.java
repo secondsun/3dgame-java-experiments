@@ -1,6 +1,5 @@
 package dev.secondsun.geometry;
 
-import dev.secondsun.util.Resources;
 
 public class Triangle{
 
