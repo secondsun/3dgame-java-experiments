@@ -10,7 +10,7 @@ To include this library in your project use the following maven dependency :
 <dependency>
     <groupId>dev.secondsun</groupId>
     <artifactId>java-isoengine</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 </dependency>
 ```
 
@@ -23,4 +23,4 @@ If you are using jpms modules :
 # Deployment
 
 To deploy this artifact to Maven Central 
-`mvn deploy` with your credentials set for ossrh / Sonatype. 
+`mvn deploy -Prelease` with your credentials set for ossrh / Sonatype. 
