@@ -4,7 +4,9 @@ import java.util.Objects;
 
 import static java.lang.Math.toRadians;
 
-public class Vertex2D {
+import java.io.Serializable;
+
+public class Vertex2D implements Serializable {
 
     public float x;
     public float y;
