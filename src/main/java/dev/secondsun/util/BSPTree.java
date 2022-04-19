@@ -85,6 +85,49 @@ public class BSPTree {
 
         }
 
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((behind == null) ? 0 : behind.hashCode());
+            result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
+            result = prime * result + ((front == null) ? 0 : front.hashCode());
+            result = prime * result + ((partition == null) ? 0 : partition.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Node other = (Node) obj;
+            if (behind == null) {
+                if (other.behind != null)
+                    return false;
+            } else if (!behind.equals(other.behind))
+                return false;
+            if (bounds == null) {
+                if (other.bounds != null)
+                    return false;
+            } else if (!bounds.equals(other.bounds))
+                return false;
+            if (front == null) {
+                if (other.front != null)
+                    return false;
+            } else if (!front.equals(other.front))
+                return false;
+            if (partition == null) {
+                if (other.partition != null)
+                    return false;
+            } else if (!partition.equals(other.partition))
+                return false;
+            return true;
+        }
+
         private Plane findPartition(BoundedCube behindObject, BoundedCube frontObject) {
             var nearTestPlane = new Plane(new Vertex(0,0,behindObject.near), new Vertex(0,0,1));
             var farTestPlane = new Plane(new Vertex(0,0,behindObject.far), new Vertex(0,0,-1));
@@ -128,6 +171,34 @@ public class BSPTree {
     public Node getRoot() {
         return root;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((root == null) ? 0 : root.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BSPTree other = (BSPTree) obj;
+        if (root == null) {
+            if (other.root != null)
+                return false;
+        } else if (!root.equals(other.root))
+            return false;
+        return true;
+    }
+
+
+    
 
 
 }

@@ -108,4 +108,35 @@ public class Resources implements Externalizable {
 
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((images == null) ? 0 : images.hashCode());
+        result = prime * result + ((textures == null) ? 0 : textures.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Resources other = (Resources) obj;
+        if (images == null) {
+            if (other.images != null)
+                return false;
+        } else if (!images.equals(other.images))
+            return false;
+        if (textures == null) {
+            if (other.textures != null)
+                return false;
+        } else if (!textures.equals(other.textures))
+            return false;
+        return true;
+    }
+
 }

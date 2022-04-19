@@ -84,4 +84,49 @@ public class BoundedCube {
         return true;
 
     }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Float.floatToIntBits(bottom);
+        result = prime * result + Float.floatToIntBits(far);
+        result = prime * result + Float.floatToIntBits(left);
+        result = prime * result + ((model == null) ? 0 : model.hashCode());
+        result = prime * result + Float.floatToIntBits(near);
+        result = prime * result + Float.floatToIntBits(right);
+        result = prime * result + Float.floatToIntBits(top);
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BoundedCube other = (BoundedCube) obj;
+        if (Float.floatToIntBits(bottom) != Float.floatToIntBits(other.bottom))
+            return false;
+        if (Float.floatToIntBits(far) != Float.floatToIntBits(other.far))
+            return false;
+        if (Float.floatToIntBits(left) != Float.floatToIntBits(other.left))
+            return false;
+        if (model == null) {
+            if (other.model != null)
+                return false;
+        } else if (!model.equals(other.model))
+            return false;
+        if (Float.floatToIntBits(near) != Float.floatToIntBits(other.near))
+            return false;
+        if (Float.floatToIntBits(right) != Float.floatToIntBits(other.right))
+            return false;
+        if (Float.floatToIntBits(top) != Float.floatToIntBits(other.top))
+            return false;
+        return true;
+    }
 }
