@@ -1,6 +1,5 @@
 package dev.secondsun.game;
 
-import dev.secondsun.geometry.Camera;
 import dev.secondsun.geometry.Triangle;
 
 import java.awt.image.BufferedImage;

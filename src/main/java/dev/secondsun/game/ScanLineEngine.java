@@ -8,23 +8,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class ScanLineEngine implements Renderer {
 
     private final int screenWidth;
     private final int screenHeight;
-    private final Model board;
     private List<EdgeEntry>[] edgeTable;
-    boolean pause = false;
-    private Camera camera;
-    private final Resources resources;
+    boolean pause = false;    private final Resources resources;
 
 
     public ScanLineEngine(int screenWidth, int screenHeight, Model board, Resources resources) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.board = board;
         this.edgeTable = createEdgeTupleTable(screenHeight);
         this.resources = resources;
     }
@@ -57,14 +52,14 @@ public class ScanLineEngine implements Renderer {
 
     }
 
-
+    @SuppressWarnings("unchecked")
     private List<EdgeEntry>[] createEdgeTupleTable(int i) {
 
-        List<EdgeEntry>[] edgeTable = new List[i];
+        List<EdgeEntry>[] edgeTupleTable = new List[i];
         for (int x = 0; x < i; x++) {
-            edgeTable[x] = new ArrayList<>();
+            edgeTupleTable[x] = new ArrayList<>();
         }
-        return edgeTable;
+        return edgeTupleTable;
     }
 
 
@@ -80,7 +75,6 @@ public class ScanLineEngine implements Renderer {
     private void storeTriangleInTable(Triangle poly) {
         int color = poly.textureId;
         if (poly.normal().z > 0) {//skip polygons facing away
-//      System.out.println("normal backwards" + poly);
             return;
         }
 
@@ -134,9 +128,6 @@ public class ScanLineEngine implements Renderer {
         firstThirdSlopeInv = (float) ((first.x - third.x)) / (float) ((first.y - third.y));
         firstThirdYintercept = first.y - (float) (first.x / firstThirdSlopeInv);
 
-
-//int y = Math.round(Math.min(screenHeight - 1, second.y))-1
-        line:
         for (int y = startY; y >= Math.max(0, third.y); y--) {
 
             float startX;
@@ -172,8 +163,8 @@ public class ScanLineEngine implements Renderer {
                         0, 0, color, poly);
                 addEdge(ee, y);
             } catch (RuntimeException ex) {
-                System.out.println(startX + " " + endX);
-                System.out.println(String.format("Poly: ,A:%s\n B:%s\n C:%s", first.toString(), second.toString(), third.toString()));
+                System.err.println(startX + " " + endX);
+                System.err.println(String.format("Poly: ,A:%s\n B:%s\n C:%s", first.toString(), second.toString(), third.toString()));
                 throw ex;
             }
         }
@@ -201,7 +192,7 @@ public class ScanLineEngine implements Renderer {
                 } else if (entry.startX <= ee.startX && entry.endX >= ee.endX) {//this new entry is covered, skip it
                     return;
                 } else {
-                    System.out.println("WTF");
+                    System.err.println("WTF");
                 }
             }
         }

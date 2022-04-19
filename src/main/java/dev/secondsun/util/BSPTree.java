@@ -1,12 +1,9 @@
 package dev.secondsun.util;
 
-import dev.secondsun.geometry.Camera;
-import dev.secondsun.geometry.Model;
-import dev.secondsun.geometry.Triangle;
+import dev.secondsun.geometry.Camera;import dev.secondsun.geometry.Triangle;
 import dev.secondsun.geometry.Vertex;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,9 +72,9 @@ public class BSPTree {
                 bounds = object;
             } else if (partition == null){ //turn into two nodes and create a partition
                 var behindObject = this.bounds;//As a rule we add objects from front to back
-                Plane partition = findPartition (behindObject, object);
+                Plane foundPartition = findPartition (behindObject, object);
                 this.bounds = null;
-                this.partition = partition;
+                this.partition = foundPartition;
                 behind = new Node();
                 behind.bounds = behindObject;
                 front = new Node();

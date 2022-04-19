@@ -26,7 +26,6 @@ public class Main {
 
     public static class Screen extends Component {
         private final Resources resources = new Resources();
-        private final int scale = 1;
         private final int screenWidth = 128 ;
         private final int screenHeight = 160 ;
         private int rotY=64, rotX = 100;

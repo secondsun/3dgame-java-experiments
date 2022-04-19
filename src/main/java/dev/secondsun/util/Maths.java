@@ -85,15 +85,12 @@ public final class Maths {
      * @return uv from 0 to 1
      */
     public static Vertex2D reverseBilinear(Vertex2D point, Quad quad) {
-        var tu = -1f;
-        var tv = -1f;
-
+        
         var e = Maths.subtract(quad.B(), quad.A());
         var f = Maths.subtract(quad.D(), quad.A());
         var g = Maths.subtract(Maths.add(quad.C(), Maths.subtract(quad.A(), quad.B())), quad.D());
         var h = Maths.subtract(point, quad.A());
 
-        float k2 = Maths.cross(g, f);
         float k1 = Maths.cross(e, f) + Maths.cross(h, g);
         float k0 = Maths.cross(h, e);
 
@@ -101,8 +98,8 @@ public final class Maths {
         float v = Math.abs(-k0 / k1);
         float u = Math.abs((h.x * k1 + f.x * k0) / (e.x * k1 - g.x * k0));
 
-        tu = u;
-        tv = v;
+        var tu = u;
+        var tv = v;
 
 
         return new Vertex2D(tu, tv);

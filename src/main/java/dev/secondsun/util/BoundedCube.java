@@ -2,8 +2,6 @@ package dev.secondsun.util;
 
 import dev.secondsun.geometry.Model;
 import dev.secondsun.geometry.Triangle;
-import dev.secondsun.geometry.Vertex;
-
 /**
  * This class will create an axis aligned BSP tree bounding box around a model.
  * <p>

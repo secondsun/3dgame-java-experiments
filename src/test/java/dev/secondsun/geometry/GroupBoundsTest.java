@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import dev.secondsun.util.BSPTree;
 import dev.secondsun.util.BoundedCube;
-import dev.secondsun.util.Plane;
 import dev.secondsun.util.Resources;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -105,11 +104,11 @@ public class GroupBoundsTest {
         tree.add(roof);
 
         assertEquals(tree.getRoot().behind.bounds, ground);
-        assertEquals(tree.getRoot().front.bounds, null);
-        assertEquals(tree.getRoot().front.front.bounds, null);
+        assertEquals(null, tree.getRoot().front.bounds);
+        assertEquals(null, tree.getRoot().front.front.bounds);
         assertEquals(tree.getRoot().front.front.front.bounds, roof);
         assertEquals(tree.getRoot().front.behind.bounds, path);
-        assertEquals(tree.getRoot().front.front.behind.partition, null);
+        assertEquals(null, tree.getRoot().front.front.behind.partition);
         assertEquals(tree.getRoot().front.front.behind.bounds, building);
 
     }
