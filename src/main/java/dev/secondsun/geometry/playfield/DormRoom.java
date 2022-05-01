@@ -208,7 +208,6 @@ public class DormRoom implements Model {
         return triangles;
     }
 
-    @Override
     public BSPTree getBSPTree() {
 
         return root;
@@ -221,10 +220,6 @@ public class DormRoom implements Model {
                 return bedTries;
             }
 
-            @Override
-            public BSPTree getBSPTree() {
-                return null;
-            }
         };
     }
     public Model bookshelfModel() {
@@ -234,10 +229,6 @@ public class DormRoom implements Model {
                 return bookshelfTriangles;
             }
 
-            @Override
-            public BSPTree getBSPTree() {
-                return null;
-            }
         };
     }
     public Model floorModel() {
@@ -247,10 +238,6 @@ public class DormRoom implements Model {
                 return floorTris;
             }
 
-            @Override
-            public BSPTree getBSPTree() {
-                return null;
-            }
         };
     }
 

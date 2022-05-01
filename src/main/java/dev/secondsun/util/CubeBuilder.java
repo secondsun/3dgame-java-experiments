@@ -256,11 +256,7 @@ public class CubeBuilder {
                 return triangles;
             }
 
-            @Override
-            public BSPTree getBSPTree() {
-                return null;
-            }
-        };
+            };
     }
 
     public CubeBuilder disableBottom() {

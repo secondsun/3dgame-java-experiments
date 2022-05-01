@@ -90,11 +90,6 @@ public class BoardNew implements Model {
         return tiles;
     }
 
-    @Override
-    public BSPTree getBSPTree() {
-        return null;
-    }
-
 
 }
 

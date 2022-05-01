@@ -79,7 +79,6 @@ public class Cube implements Model {
         return tiles;
     }
 
-    @Override
     public BSPTree getBSPTree() {
         var node = new BSPTree.Node();
         node.bounds=new BoundedCube(this);

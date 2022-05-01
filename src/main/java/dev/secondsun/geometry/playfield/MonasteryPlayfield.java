@@ -413,11 +413,6 @@ public class MonasteryPlayfield implements Model {
         return triangles;
     }
 
-    @Override
-    public BSPTree getBSPTree() {
-        return this.tree;
-    }
-
 
 
     public Model field() {
