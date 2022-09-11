@@ -4,6 +4,7 @@ import dev.secondsun.game.Renderer;
 import dev.secondsun.game.ScanLineEngine;
 import dev.secondsun.geometry.Camera;
 import dev.secondsun.geometry.playfield.DormRoom;
+import dev.secondsun.geometry.playfield.Stairwell;
 import dev.secondsun.util.Resources;
 import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
@@ -34,7 +35,7 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new DormRoom(resources);
+            var board = new Stairwell(resources);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
             var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(96,32,50));
@@ -44,7 +45,14 @@ public class Main {
             var tiles = board.getTriangles();
             var tree = board.getBSPTree();
             tiles = tree.order(tiles, camera);
-            BufferedImage image = engine.draw(tiles);
+            BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+            var rgb = engine.draw(tiles);
+
+            for (int x  =0; x < screenWidth; x++) {
+                for (int y  =0; y < screenHeight; y++) {
+                    image.setRGB(x,y, rgb[x + y*screenWidth]);
+                }
+            }
 
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 

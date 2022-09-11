@@ -6,6 +6,11 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public interface Renderer {
-    BufferedImage draw(List<Triangle> tiles);
+    /**
+     *
+     * @param tiles the ordered list of polygons to draw
+     * @return integrer array of RGB data
+     */
+    int[] draw(List<Triangle> tiles);
 
 }

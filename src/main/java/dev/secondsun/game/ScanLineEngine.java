@@ -261,9 +261,10 @@ public class ScanLineEngine implements Renderer {
     }
 
     @Override
-    public BufferedImage draw(List<Triangle> tiles) {
+    public int[] draw(List<Triangle> tiles) {
         generateEdgeList(tiles);
-        BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+        int[] image = new int[screenWidth *  screenHeight];
+
         int i;
 
         line:
@@ -319,13 +320,13 @@ public class ScanLineEngine implements Renderer {
                         }
                         var texture = resources.getImage(text.imageId());
                         try {
-                            image.setRGB(x, i, texture.getRGB((int) Math.abs(uv.x * text.u())%text.u(), (int) Math.abs(uv.y *text.v())%text.v()));
+                            image[x + i * screenWidth] =  texture.getRGB((int) Math.abs(uv.x * text.u())%text.u(), (int) Math.abs(uv.y *text.v())%text.v());
                         } catch (ArrayIndexOutOfBoundsException ex) {
                             //System.out.println(uv);
-                            image.setRGB(x, i, Color.BLACK.getRGB());
+                            image[x + i * screenWidth] =  (Color.BLACK.getRGB());
                         }
                     } else {
-                        image.setRGB(x, i, entry.textureId);
+                        image[x + i * screenWidth] =  (entry.textureId);
                     }
                     lineIndex = 0;
                     while (lineIndex < line.size() && x >= line.get(lineIndex).startX) {//finds "top" entry
