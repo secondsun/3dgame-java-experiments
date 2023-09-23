@@ -11,34 +11,68 @@ import java.util.List;
 public class CubeBuilder {
 
     private Vertex start;
-    private float width, height, length;
-    private int front1, front2, top1, top2, back1, back2, bottom1, bottom2, up1, up2, down1, down2;
-    private boolean enableBottom, enableTop, enableUp, enableDown, enableFront, enableBack;
+    private float width, height, depth;
+    private int right1, right2, top1, top2, left1, left2, bottom1, bottom2, far1, far2, near1, near2;
+    private boolean enableBottom, enableTop, enableFar, enableNear, enableRight, enableLeft;
 
-    public CubeBuilder(Vertex start, float width, float height, float length) {
+    public CubeBuilder(Vertex start, float width, float height, float depth) {
         this.start = start;
         this.width = width;
         this.height = height;
-        this.length = length;
-        front1 = front2 = top1 = top2 = back1 = back2 = bottom1 = bottom2 = up1 = up2 = down1 = down2 = Color.BLACK.getRGB();
-        enableBottom = enableTop = enableUp = enableDown = enableFront = enableBack = true;
+        this.depth = depth;
+        right1 = right2 = top1 = top2 = left1 = left2 = bottom1 = bottom2 = far1 = far2 = near1 = near2 = Color.BLACK.getRGB();
+        enableBottom = enableTop = enableFar = enableNear = enableRight = enableLeft = true;
     }
-
-    public int getFront1() {
-        return front1;
+@Deprecated(forRemoval = true)
+    /**
+     * @deprecated right instead of front
+     * @return
+     */
+public int getFront1() {
+        return right1;
     }
-
+@Deprecated(forRemoval = true)
+    /**
+     * @deprecated right instead of front
+     * @return
+     */
     public CubeBuilder setFront1(int front1) {
-        this.front1 = front1;
+        this.right1 = front1;
+        return this;
+    }
+@Deprecated(forRemoval = true)
+    /**
+     * @deprecated right instead of front
+     * @return
+     */
+    public int getFront2() {
+        return right2;
+    }
+@Deprecated(forRemoval = true)
+    /**
+     * @deprecated right instead of front
+     * @return
+     */
+    public CubeBuilder setFront2(int front2) {
+        this.right2 = front2;
         return this;
     }
 
-    public int getFront2() {
-        return front2;
+    public int getRight1() {
+        return right1;
     }
 
-    public CubeBuilder setFront2(int front2) {
-        this.front2 = front2;
+    public CubeBuilder setRight1(int front1) {
+        this.right1 = front1;
+        return this;
+    }
+
+    public int getRight2() {
+        return right2;
+    }
+
+    public CubeBuilder setRight2(int front2) {
+        this.right2 = front2;
         return this;
     }
 
@@ -59,22 +93,56 @@ public class CubeBuilder {
         this.top2 = top2;
         return this;
     }
-
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated left instead of back
+     * @return
+     */
     public int getBack1() {
-        return back1;
+        return left1;
     }
-
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated left instead of back
+     * @return
+     */
     public CubeBuilder setBack1(int back1) {
-        this.back1 = back1;
+        this.left1 = back1;
+        return this;
+    }
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated left instead of back
+     * @return
+     */
+    public int getBack2() {
+        return left2;
+    }
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated left instead of back
+     * @return
+     */
+    public CubeBuilder setBack2(int back2) {
+        this.left2 = back2;
         return this;
     }
 
-    public int getBack2() {
-        return back2;
+    public int getLeft1() {
+        return left1;
     }
 
-    public CubeBuilder setBack2(int back2) {
-        this.back2 = back2;
+    public CubeBuilder setLeft1(int back1) {
+        this.left1 = back1;
+        return this;
+    }
+
+    public int getLeft2() {
+        return left2;
+    }
+
+    public CubeBuilder setLeft2(int back2) {
+        this.left2 = back2;
         return this;
     }
 
@@ -96,148 +164,224 @@ public class CubeBuilder {
         return this;
     }
 
-    public int getUp1() {
-        return up1;
+    public int getFar1() {
+        return far1;
     }
 
+    
+    
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use {@link #setFar1(int)}
+     * @return
+     */
     public CubeBuilder setUp1(int up1) {
-        this.up1 = up1;
+        this.far1 = up1;
         return this;
     }
-
-    public int getUp2() {
-        return up2;
-    }
-
+    
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use {@link #setFar2(int)}
+     * @return
+     */
     public CubeBuilder setUp2(int up2) {
-        this.up2 = up2;
+        this.far2 = up2;
         return this;
     }
 
-    public int getDown1() {
-        return down1;
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use {@link #getFar2()}
+     * @return
+     */
+    public int getUp2() {
+        return far2;
     }
 
-    public CubeBuilder setDown1(int down1) {
-        this.down1 = down1;
+@Deprecated(forRemoval = true)
+    /**
+     * @deprecated use {@link #getFar1()}
+     * @return
+     */
+    public int getUp1() {
+        return far1;
+    }
+
+    public CubeBuilder setFar1(int up1) {
+        this.far1 = up1;
         return this;
     }
 
-    public int getDown2() {
-        return down2;
+    public int getFar2() {
+        return far2;
     }
 
+    public CubeBuilder setFar2(int up2) {
+        this.far2 = up2;
+        return this;
+    }
+
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use near instead of down
+     * @return
+     */
     public CubeBuilder setDown2(int down2) {
-        this.down2 = down2;
+        this.near2 = down2;
+        return this;
+    }
+
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use near instead of down
+     * @return
+     */
+    public int getDown1() {
+        return near1;
+    }
+
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use near instead of down
+     * @return
+     */
+    public CubeBuilder setDown1(int down1) {
+        this.near1 = down1;
+        return this;
+    }
+
+    @Deprecated(forRemoval = true)
+    /**
+     * @deprecated use near instead of down
+     * @return
+     */
+    public int getDown2() {
+        return near2;
+    }
+
+    public int getNear1() {
+        return near1;
+    }
+
+    public CubeBuilder setNear1(int down1) {
+        this.near1 = down1;
+        return this;
+    }
+
+    public int getNear2() {
+        return near2;
+    }
+
+    public CubeBuilder setNear2(int down2) {
+        this.near2 = down2;
         return this;
     }
 
     public Model cube() {
         var triangles = new ArrayList<Triangle>();
-        //"bottom" side (long side away from door)
+        //"bottom" side parallel to xz plane, perpendicular to y axis
         if (enableBottom) {
             triangles.add(new Triangle(
                     new Vertex(start.x + width, start.y, start.z),
                     new Vertex(start.x, start.y, start.z),
-                    new Vertex(start.x, start.y, start.z + height),
+                    new Vertex(start.x, start.y, start.z + depth),
                     bottom1
             ));
 
             triangles.add(new Triangle(
-                    new Vertex(start.x, start.y, start.z + height),
-                    new Vertex(start.x + width, start.y, start.z + height),
+                    new Vertex(start.x, start.y, start.z + depth),
+                    new Vertex(start.x + width, start.y, start.z + depth),
                     new Vertex(start.x + width, start.y, start.z),
                     bottom2
             ));
         }
         if (enableTop) {
-            //"top" side (long side near door)
-            triangles.add(new Triangle(
-
-                    new Vertex(start.x + width, start.y + length, start.z),
-                    new Vertex(start.x, start.y + length, start.z + height),
-                    new Vertex(start.x, start.y + length, start.z),
-
+            //"top" side parallel to xz plane, perpendicular to y axis
+            triangles.add(new Triangle(                   
+                    new Vertex(start.x + width, start.y + height, start.z + depth ),
+                    new Vertex(start.x,         start.y + height, start.z + depth ),
+                    new Vertex(start.x,         start.y + height, start.z),
                     top1
             ));
 
             triangles.add(new Triangle(
-                    new Vertex(start.x, start.y + length, start.z + height),
-                    new Vertex(start.x + width, start.y + length, start.z),
-                    new Vertex(start.x + width, start.y + length, start.z + height),
+                    new Vertex(start.x        , start.y + height, start.z),
+                    new Vertex(start.x + width, start.y + height, start.z),
+                    new Vertex(start.x + width, start.y + height, start.z + depth),
                     top2
             ));
         }
 
-        if (enableFront) {
-            //"front" side (long side away from door)
+        if (enableRight) {
+            //"right" side parallel to yz plane, perpendicular to x axis
             triangles.add(new Triangle(
 
-                    new Vertex(start.x + width, start.y + length, start.z + height),
-                    new Vertex(start.x + width, start.y + length, start.z),
+                    new Vertex(start.x + width, start.y + height, start.z + depth),
+                    new Vertex(start.x + width, start.y + height, start.z),
                     new Vertex(start.x + width, start.y, start.z),
 
-                    front1
+                    right1
             ));
 
             triangles.add(new Triangle(
                     new Vertex(start.x + width, start.y, start.z),
-                    new Vertex(start.x + width, start.y, start.z + height),
-                    new Vertex(start.x + width, start.y + length, start.z + height),
-                    front2
+                    new Vertex(start.x + width, start.y, start.z + depth),
+                    new Vertex(start.x + width, start.y + height, start.z + depth),
+                    right2
             ));
         }
 
-        if (enableBack) {
-            //"back" side (long side toward wall)
+        if (enableLeft) {
+            //"left" side parallel to yz plane, perpendicular to x axis
             triangles.add(new Triangle(
 
 
                     new Vertex(start.x, start.y, start.z),
-                    new Vertex(start.x, start.y + length, start.z),
-                    new Vertex(start.x, start.y + length, start.z + height),
+                    new Vertex(start.x, start.y + height, start.z),
+                    new Vertex(start.x, start.y + height, start.z + depth),
 
-                    back1
+                    left1
             ));
 
             triangles.add(new Triangle(
 
-                    new Vertex(start.x, start.y + length, start.z + height),
-                    new Vertex(start.x, start.y, start.z + height),
+                    new Vertex(start.x, start.y + height, start.z + depth),
+                    new Vertex(start.x, start.y, start.z + depth),
                     new Vertex(start.x, start.y, start.z),
-                    back2
+                    left2
             ));
         }
 
-        if (enableUp) {
-            //"up" side (facing the ceiling)
+        if (enableFar) {
+            //"far" side parallel to xy plane, perpendicular to z axis
             triangles.add(new Triangle(
-                    new Vertex(start.x, start.y, start.z + height),
-                    new Vertex(start.x, start.y + length, start.z + height),
-                    new Vertex(start.x + width, start.y + length, start.z + height),
+                    new Vertex(start.x, start.y, start.z + depth),
+                    new Vertex(start.x, start.y + height, start.z + depth),
+                    new Vertex(start.x + width, start.y + height, start.z + depth),
 
-                    up1
+                    far1
             ));
 
             triangles.add(new Triangle(
 
-                    new Vertex(start.x + width, start.y + length, start.z + height),
+                    new Vertex(start.x + width, start.y + height, start.z + depth),
 
-                    new Vertex(start.x + width, start.y, start.z + height),
-                    new Vertex(start.x, start.y, start.z + height),
+                    new Vertex(start.x + width, start.y, start.z + depth),
+                    new Vertex(start.x, start.y, start.z + depth),
 
-                    up2
+                    far2
             ));
         }
 
-        if (enableDown) {
-            //"down" side (facing the ceiling)
+        if (enableNear) {
+            //"near" side parallel to xy plane, perpendicular to z axis
             triangles.add(new Triangle(
 
-                    new Vertex(start.x + width, start.y + length, start.z),
-                    new Vertex(start.x, start.y + length, start.z),
+                    new Vertex(start.x + width, start.y + height, start.z),
+                    new Vertex(start.x, start.y + height, start.z),
                     new Vertex(start.x, start.y, start.z),
-                    down1
+                    near1
             ));
 
             triangles.add(new Triangle(
@@ -245,9 +389,9 @@ public class CubeBuilder {
 
                     new Vertex(start.x, start.y, start.z),
                     new Vertex(start.x + width, start.y, start.z),
-                    new Vertex(start.x + width, start.y + length, start.z),
+                    new Vertex(start.x + width, start.y + height, start.z),
 
-                    down2
+                    near2
             ));
         }
         return new Model() {
@@ -270,22 +414,22 @@ public class CubeBuilder {
     }
 
     public CubeBuilder disableFront() {
-        this.enableFront = false;
+        this.enableRight = false;
         return this;
     }
 
     public CubeBuilder disableBack() {
-        this.enableBack = false;
+        this.enableLeft = false;
         return this;
     }
 
     public CubeBuilder disableUp() {
-        this.enableUp = false;
+        this.enableFar = false;
         return this;
     }
 
     public CubeBuilder disableDown() {
-        this.enableDown = false;
+        this.enableNear = false;
         return this;
     }
 }

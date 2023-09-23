@@ -30,7 +30,7 @@ public class Main {
         private final int screenWidth = 128 ;
         private final int screenHeight = 160 ;
         private int rotY=64, rotX = 100;
-        private int theta = 45;
+        private int theta = 12;
         @Override
         public void paint(Graphics g) {
             super.paint(g);
@@ -38,7 +38,7 @@ public class Main {
             var board = new Stairwell(resources);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
-            var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(96,32,50));
+            var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(96,32,50), new Vertex(0,0,1));
             board.lookAt(camera, new Vertex2D(1.5f,1.5f), new Vertex2D(120,80));
 
 
@@ -57,12 +57,12 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000/30);
+                Thread.sleep(1000/60);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            theta++;
+            theta+=1;
             rotX= (int) (300*Math.cos(Math.toRadians(theta)) + 100);
             rotY= (int) (-300*Math.sin(Math.toRadians(theta)) + 32);
             repaint();
