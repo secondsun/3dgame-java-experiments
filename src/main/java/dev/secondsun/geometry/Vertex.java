@@ -1,5 +1,6 @@
 package dev.secondsun.geometry;
 
+import dev.secondsun.util.Maths;
 import dev.secondsun.util.Plane;
 
 import java.util.Objects;
@@ -100,6 +101,20 @@ public class Vertex {
 
     public float length() {
         return (float) Math.sqrt(x * x + y * y + z * z);
+    }
+
+    public Vertex rotateAround(Vertex axis, float angle) {
+
+        var aInB = Maths.scale(axis,(Maths.dot(this, axis)/Maths.dot(axis, axis)));
+        var aOrthB = Maths.subtract(this, aInB);
+        var omega = axis.cross(aOrthB);
+
+        var x1 = (float)(Math.cos(angle)/aOrthB.length());
+        var x2 =(float) Math.sin(angle)/omega.length();
+
+        var rotatedOrtho = Maths.scale(Maths.add(Maths.scale(aOrthB,(x1)), Maths.scale(omega,(x2))), aOrthB.length());
+
+        return Maths.add(rotatedOrtho,aInB);
     }
 
     @Override

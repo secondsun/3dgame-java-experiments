@@ -74,6 +74,10 @@ public final class Maths {
         return new Vertex2D(from.x * to, from.y * to);
     }
 
+    public static Vertex scale(Vertex from, float to) {
+        return new Vertex(from.x * to, from.y * to, from.z * to);
+    }
+
     /**
      * The vertecies in quad need to be in order such that the first vertx is 0,0 in the texture
      * the clockwise around
@@ -109,6 +113,10 @@ public final class Maths {
 
     private static float cross(Vertex2D a, Vertex2D b) {
         return a.x * b.y - a.y * b.x;
+    }
+
+    public static float dot(Vertex vertex, Vertex axis) {
+        return vertex.x * axis.x + vertex.y * axis.y + vertex.z * axis.z;
     }
 
 
