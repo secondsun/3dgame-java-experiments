@@ -1,18 +1,54 @@
 package dev.secondsun.geometry;
 
 import dev.secondsun.util.BSPTree;
+import dev.secondsun.util.BoundedCube;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface Model {
+    @Deprecated
     static Model of(List<Triangle> tris) {
+
         return new Model() {
             @Override
             public List<Triangle> getTriangles() {
                 return tris;
             }
+
+            @Override
+            public BSPTree tree() {
+                BSPTree tree = new BSPTree();
+                tree.add(new BoundedCube(this));
+                return tree;
+            }
         };
     }
+
+
+    static Model ofModels(List<Model> models) {
+
+        BSPTree tree = new BSPTree();
+
+        List<Triangle> tris = new ArrayList<>();
+        for (var model:models) {
+            tris.addAll(model.getTriangles());
+            tree.add(new BoundedCube(model));
+        }
+
+        return new Model() {
+            @Override
+            public List<Triangle> getTriangles() {
+                return tris;
+            }
+
+            @Override
+            public BSPTree tree() {
+                return tree;
+            }
+        };
+    }
+
 
 
 
@@ -57,6 +93,8 @@ public interface Model {
         getTriangles().forEach(tile -> tile.rotateZ(i));
         return this;
     }
+
+    default BSPTree tree() {return null;}
 
     default Model lookAt(Camera camera, Vertex2D foV, Vertex2D worldCenter) {
         var lookAt = camera.lookAt();

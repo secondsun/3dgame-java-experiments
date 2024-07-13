@@ -44,7 +44,7 @@ public class Main {
 
             var tiles = board.getTriangles();
             var tree = board.getBSPTree();
-            tiles = tree.order(tiles, camera);
+            tiles = tree.order(camera);
             BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
             var rgb = engine.draw(tiles);
 

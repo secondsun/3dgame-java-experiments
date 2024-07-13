@@ -22,12 +22,11 @@ public class BSPTree {
 
     /**
      * Returns a list of tiles that are ordered front to back in draw order.
-     * @param tiles
      * @param camera
      * @return
      */
-    public List<Triangle> order(List<Triangle> tiles, Camera camera) {
-        var toReturn = new ArrayList<Triangle>(tiles.size());
+    public List<Triangle> order(Camera camera) {
+        var toReturn = new ArrayList<Triangle>();
 
         List<BoundedCube> modelsInOrder = this.getModelsInOrderFrom(getRoot(),camera);
 
@@ -36,7 +35,7 @@ public class BSPTree {
         return toReturn;
     }
 
-    private List<BoundedCube> getModelsInOrderFrom(Node node, Camera camera) {
+    public List<BoundedCube> getModelsInOrderFrom(Node node, Camera camera) {
         ArrayList<BoundedCube> cubes = new ArrayList<>();
 
         if (node.bounds != null) {

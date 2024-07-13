@@ -4,7 +4,7 @@
 
     <groupId>dev.secondsun</groupId>
     <artifactId>java-isoengine</artifactId>
-    <version>0.8</version>
+    <version>0.9</version>
     <url>http://github.com/secondsun/3dgame-java-experiments</url>
     <name>java 3d isoengine</name>
     <description>A 3d engine using isometric project written in java.</description>
