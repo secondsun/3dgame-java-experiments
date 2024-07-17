@@ -69,7 +69,7 @@ public class BSPTree {
         public void add(BoundedCube object) {
             if (partition == null && bounds == null) {
                 bounds = object;
-            } else if (partition == null){ //turn into two nodes and create a partition
+            } else if (partition == null) { //turn into two nodes and create a partition
                 var behindObject = this.bounds;//As a rule we add objects from front to back
                 Plane foundPartition = findPartition (behindObject, object);
                 this.bounds = null;

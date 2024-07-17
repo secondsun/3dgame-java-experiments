@@ -55,8 +55,9 @@ public class DormRoom implements Model {
     
             this.root = new BSPTree();
             root.add(new BoundedCube(floorModel()));
-            root.add(new BoundedCube(bookshelfModel()));
             root.add(new BoundedCube(bedModel()));
+            root.add(new BoundedCube(bookshelfModel()));
+
     
 
         } catch (IOException e) {
@@ -124,7 +125,7 @@ public class DormRoom implements Model {
     private void mattress() {
         this.mattressTries = new ArrayList<Triangle>();
 
-        var builder = new CubeBuilder(new Vertex(1*TILE_LENGTH,0,TILE_LENGTH-4), 2*TILE_LENGTH,4,TILE_LENGTH);
+        var builder = new CubeBuilder(new Vertex(1*TILE_LENGTH,0,TILE_LENGTH-4), 2*TILE_LENGTH,4, TILE_LENGTH);
         builder.setBottom1(bedId1)
                 .setBottom2(bedId2)
                 .setTop1(bedId1)

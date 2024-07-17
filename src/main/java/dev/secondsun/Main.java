@@ -1,5 +1,6 @@
 package dev.secondsun;
 
+import com.google.gson.Gson;
 import dev.secondsun.game.Renderer;
 import dev.secondsun.game.ScanLineEngine;
 import dev.secondsun.geometry.Camera;
@@ -27,23 +28,26 @@ public class Main {
 
     public static class Screen extends Component {
         private final Resources resources = new Resources();
-        private final int screenWidth = 128 ;
-        private final int screenHeight = 160 ;
+        private final int screenWidth = 256 ;
+        private final int screenHeight = 320 ;
         private int rotY=64, rotX = 100;
         private int theta = 12;
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new Stairwell(resources);
+            var board = new DormRoom(resources);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
-            var camera = new Camera(new Vertex(rotX,rotY,100), new Vertex(96,32,50), new Vertex(0,0,1));
-            board.lookAt(camera, new Vertex2D(1.5f,1.5f), new Vertex2D(120,80));
+            var camera = new Camera(new Vertex(rotX+48,rotY+48,50), new Vertex(48,48,0), new Vertex(0,0,1));
+            board.lookAt(camera, new Vertex2D(2f,2f), new Vertex2D(100,80));
+
+
 
 
             var tiles = board.getTriangles();
             var tree = board.getBSPTree();
+
             tiles = tree.order(camera);
             BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
             var rgb = engine.draw(tiles);
@@ -57,14 +61,14 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000/60);
+                Thread.sleep(1000/20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            theta+=1;
-            rotX= (int) (300*Math.cos(Math.toRadians(theta)) + 100);
-            rotY= (int) (-300*Math.sin(Math.toRadians(theta)) + 32);
+            theta+=3;
+            rotX= (int) (300*Math.cos(Math.toRadians(theta)));
+            rotY= (int) (-300*Math.sin(Math.toRadians(theta)));
             repaint();
         }
     }

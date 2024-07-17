@@ -15,7 +15,7 @@ public class CubeBuilder {
     private int right1, right2, top1, top2, left1, left2, bottom1, bottom2, far1, far2, near1, near2;
     private boolean enableBottom, enableTop, enableFar, enableNear, enableRight, enableLeft;
 
-    public CubeBuilder(Vertex start, float width, float height, float depth) {
+    public CubeBuilder(Vertex start, float width, float depth, float height) {
         this.start = start;
         this.width = width;
         this.height = height;
