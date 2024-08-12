@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import dev.secondsun.game.Renderer;
 import dev.secondsun.game.ScanLineEngine;
 import dev.secondsun.geometry.Camera;
+import dev.secondsun.geometry.playfield.Cube;
 import dev.secondsun.geometry.playfield.DormRoom;
+import dev.secondsun.geometry.playfield.RandomCubes;
 import dev.secondsun.geometry.playfield.Stairwell;
 import dev.secondsun.util.Resources;
 import dev.secondsun.geometry.Vertex;
@@ -28,27 +30,23 @@ public class Main {
 
     public static class Screen extends Component {
         private final Resources resources = new Resources();
-        private final int screenWidth = 256 ;
-        private final int screenHeight = 320 ;
-        private int rotY=64, rotX = 100;
-        private int theta = 12;
+        private final int screenWidth = 512 ;
+        private final int screenHeight = 384 ;
+        private int camX=128, camY = 128, camZ = 128;
+        private int theta = 1;
+
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            var board = new DormRoom(resources);
+            RandomCubes  board = new RandomCubes(320, 0);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
-            var camera = new Camera(new Vertex(rotX+48,rotY+48,50), new Vertex(48,48,0), new Vertex(0,0,1));
-            board.lookAt(camera, new Vertex2D(2f,2f), new Vertex2D(100,80));
+            var camera = new Camera(new Vertex(camX,camY,camZ), new Vertex(0,0,0), new Vertex(0,1,0));
 
+            board.lookAt(camera, new Vertex2D(3f,3f), new Vertex2D(screenWidth/2,screenHeight/2));
+            var tiles = board.tree.traverse(camera.getFrom());
 
-
-
-            var tiles = board.getTriangles();
-            var tree = board.getBSPTree();
-
-            tiles = tree.order(camera);
             BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
             var rgb = engine.draw(tiles);
 
@@ -61,14 +59,14 @@ public class Main {
             g.drawImage(image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_FAST), 0, 0, null);
 
             try {
-                Thread.sleep(1000/20);
+                Thread.sleep(1000/120);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            theta+=3;
-            rotX= (int) (300*Math.cos(Math.toRadians(theta)));
-            rotY= (int) (-300*Math.sin(Math.toRadians(theta)));
+            theta+=1;
+            camX= (int) (256*Math.cos(Math.toRadians(theta)));
+            camZ= (int) (-256*Math.sin(Math.toRadians(theta)));
             repaint();
         }
     }

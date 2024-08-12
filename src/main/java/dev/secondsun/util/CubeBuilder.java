@@ -23,6 +23,11 @@ public class CubeBuilder {
         right1 = right2 = top1 = top2 = left1 = left2 = bottom1 = bottom2 = far1 = far2 = near1 = near2 = Color.BLACK.getRGB();
         enableBottom = enableTop = enableFar = enableNear = enableRight = enableLeft = true;
     }
+
+    public void setColor(int rgb) {
+        right1 = right2 = top1 = top2 = left1 = left2 = bottom1 = bottom2 = far1 = far2 = near1 = near2 = rgb;
+    }
+
 @Deprecated(forRemoval = true)
     /**
      * @deprecated right instead of front

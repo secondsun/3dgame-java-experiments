@@ -4,6 +4,8 @@ import dev.secondsun.geometry.Quad;
 import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
 
+import java.math.BigDecimal;
+
 public final class Maths {
     public static int min(int... y) {
         int toReturn = Integer.MAX_VALUE;
@@ -120,5 +122,13 @@ public final class Maths {
     }
 
 
+    public static float distance(Vertex a, Vertex b) {
+        double deltaX = (b.x-a.x)*(b.x-a.x);
+        double deltaY = (b.y-a.y)*(b.y-a.y);
+        double  deltaZ = (b.z-a.z)*(b.z-a.z);
+
+        return (float)Math.sqrt(deltaX+deltaY+deltaZ);
+
+    }
 
 }
