@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import dev.secondsun.game.Renderer;
 import dev.secondsun.game.ScanLineEngine;
 import dev.secondsun.geometry.Camera;
-import dev.secondsun.geometry.playfield.Cube;
-import dev.secondsun.geometry.playfield.DormRoom;
-import dev.secondsun.geometry.playfield.RandomCubes;
-import dev.secondsun.geometry.playfield.Stairwell;
+import dev.secondsun.geometry.playfield.*;
 import dev.secondsun.util.Resources;
 import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
@@ -39,10 +36,17 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            RandomCubes  board = new RandomCubes(320, 0);
+            RandomPyramids  board = new RandomPyramids(15, 0);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
-            var camera = new Camera(new Vertex(camX,camY,camZ), new Vertex(0,0,0), new Vertex(0,1,0));
+            var position = new Vertex(camX,camY,camZ);
+            var lookAt = new Vertex(0,0,0);
+            var forward = position.subtract(lookAt).normalize();
+            var yAxis = new Vertex(0f,1f,0f);
+            var right = yAxis.cross(forward).normalize();
+            var up = forward.cross(right).normalize();
+
+            var camera = new Camera(position, lookAt, up);
 
             board.lookAt(camera, new Vertex2D(3f,3f), new Vertex2D(screenWidth/2,screenHeight/2));
             var tiles = board.tree.traverse(camera.getFrom());
@@ -65,8 +69,9 @@ public class Main {
             }
 
             theta+=1;
-            camX= (int) (256*Math.cos(Math.toRadians(theta)));
-            camZ= (int) (-256*Math.sin(Math.toRadians(theta)));
+            camX= (int) (-256*Math.sin(Math.toRadians(theta)));
+            //camY= (int) (256*Math.cos(Math.toRadians(theta)));
+            camZ= (int) (-256*Math.cos(Math.toRadians(theta)));
             repaint();
         }
     }

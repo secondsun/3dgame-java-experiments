@@ -32,7 +32,7 @@ public sealed interface OctNode {
         }
 
         public List<Triangle> getSortedPolys(Vertex cameraPosition) {
-            return polygons.stream().sorted(new Comparator<Triangle>() {
+            return polygons;/*.stream().sorted(new Comparator<Triangle>() {
                 @Override
                 public int compare(Triangle o1, Triangle o2) {
                     var first = Maths.distance(o1.center(),cameraPosition);
@@ -45,7 +45,7 @@ public sealed interface OctNode {
                         return 1;
                     }
                 }
-            }).toList();
+            }).toList();*/
         }
 
         public Vertex point() {

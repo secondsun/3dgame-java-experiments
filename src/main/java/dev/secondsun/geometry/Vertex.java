@@ -218,4 +218,12 @@ public class Vertex {
     }
 
 
+    public Vertex normalize() {
+        return new Vertex(this.x/length(),this.y/length(), this.z/length());
+    }
+    public Vertex subtract(Vertex other) {
+        return new Vertex(this.x - other.x,
+                this.y - other.y,
+                this.z - other.z);
+    }
 }
