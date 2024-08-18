@@ -36,7 +36,7 @@ public class Main {
         public void paint(Graphics g) {
             super.paint(g);
 
-            RandomPyramids  board = new RandomPyramids(15, 0);
+            RandomPyramids  board = new RandomPyramids(128, 0);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
             var position = new Vertex(camX,camY,camZ);
