@@ -29,9 +29,9 @@ public class MesenTestGenerator {
         List<float[][]> lookAtOutputs = new ArrayList<>();
 
 
-        var camX = 127;
-        var camY = 127;
-        var camZ = 127;
+        var camX = -64;
+        var camY = 64;
+        var camZ = -64;
 
 
         for (int x = 0; x < 360; x+=30) {
@@ -54,7 +54,9 @@ public class MesenTestGenerator {
         List<Integer> convertedInputs = convert(cameraInput);
         List<Integer> convertLookAt = convertLookAt(lookAtOutputs);
 
+        System.out.printf("input = {%s}\n", convertedInputs.stream().map(Integer::toHexString).map(it->"0x"+it).collect(Collectors.joining(",")));
 
+        System.out.printf("expected = {%s}\n", convertLookAt.stream().map(Integer::toHexString).map(it->"0x"+it).collect(Collectors.joining(",")));
 
 
 
