@@ -194,7 +194,7 @@ public class Vertex {
         return true;
     }
 
-    public Vertex transform(float[][] matrix) {
+    public Vertex   transform(float[][] matrix) {
         var nx = x*matrix[0][0] +y*matrix[0][1] +z*matrix[0][2] + matrix[0][3];
         var ny = x*matrix[1][0] +y*matrix[1][1] +z*matrix[1][2] + matrix[1][3];
         var nz = x*matrix[2][0] +y*matrix[2][1] +z*matrix[2][2] + matrix[2][3];

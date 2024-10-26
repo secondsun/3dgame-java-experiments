@@ -4,8 +4,6 @@ import dev.secondsun.geometry.Quad;
 import dev.secondsun.geometry.Vertex;
 import dev.secondsun.geometry.Vertex2D;
 
-import java.math.BigDecimal;
-
 public final class Maths {
     public static int min(int... y) {
         int toReturn = Integer.MAX_VALUE;
@@ -131,4 +129,15 @@ public final class Maths {
 
     }
 
+    public static float[] scaleMatrix(float absRange) {
+        return new float[] {absRange,0f,0f,0f,
+                0f,absRange,0f,0f,
+                0f,0f,absRange,0f,
+                0f,0f,0f,absRange,
+        };
+    }
+
+    public static float sqrt(float v) {
+        return (float)Math.sqrt((double)v);
+    }
 }

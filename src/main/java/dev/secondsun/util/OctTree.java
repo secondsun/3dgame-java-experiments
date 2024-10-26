@@ -5,8 +5,10 @@ import dev.secondsun.geometry.Triangle;
 import dev.secondsun.geometry.Vertex;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class OctTree {
     private final Range xyPlaneRange, xzPlaneRange, yzPlaneRange;
@@ -21,9 +23,15 @@ public class OctTree {
         this.yzPlaneRange = yzPlaneRange;
     }
 
-    public List<Triangle> traverse(Vertex camPos) {
+    public List<Triangle> traverse(Camera camera, float[][] frustum) {
+        Vertex camPos = camera.getFrom();
         List<OctNode> nodesToProcess;
-        var toReturn = new ArrayList<Triangle>();
+        var toReturn = new LinkedHashSet<Triangle>();
+
+        if (!isInFrustum(frustum)) {
+            return new ArrayList<>();
+        }
+
         if (camPos.z <= xyPlaneRange.mid()) {
             if (camPos.y > xzPlaneRange.mid()) {
                 if (camPos.x > yzPlaneRange.mid()) {
@@ -58,13 +66,42 @@ public class OctTree {
             if (node instanceof OctNode.PolygonNode) {
                 toReturn.addAll(((OctNode.PolygonNode) node).getSortedPolys(camPos));
             } else if (node instanceof OctNode.IntermediateNode) {
-                toReturn.addAll(((OctNode.IntermediateNode) node).tree().traverse(camPos));
+                toReturn.addAll(((OctNode.IntermediateNode) node).tree().traverse(camera, frustum));
             }
         });
 
-        return toReturn;
+        return toReturn.stream().collect(Collectors.toUnmodifiableList());
     }
 
+    boolean isInFrustum(float[][] frustum )
+    {
+        int p;
+        var z = xyPlaneRange.mid();
+        var y = xzPlaneRange.mid();
+        var x = yzPlaneRange.mid();
+        var size = xyPlaneRange.length();
+        for( p = 0; p < 6; p++ )
+        {
+            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+                continue;
+            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+                continue;
+            return false;
+        }
+        return true;
+    }
 
     public void insert(Vertex point, Triangle polygon) {
         //TODO add a node

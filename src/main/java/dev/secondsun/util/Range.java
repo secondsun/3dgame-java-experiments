@@ -13,4 +13,8 @@ public record Range(float start, float end) {
     public Range secondHalf() {
         return new Range(mid(),end());
     }
+
+    public float length() {
+        return Math.abs(start-end);
+    }
 }

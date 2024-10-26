@@ -15,8 +15,8 @@ import java.util.stream.IntStream;
 
 public class RandomPyramids implements Model {
 
-    float absRange = 64f;
-    float cubesize = 8f;
+    public static float absRange = 18f;
+    public static float cubesize = 8f;
 
     List<Triangle> triangles = new ArrayList<>();
     Random random;

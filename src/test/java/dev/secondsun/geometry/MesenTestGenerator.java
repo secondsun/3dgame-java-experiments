@@ -56,7 +56,7 @@ public class MesenTestGenerator {
 
         System.out.printf("input = {%s}\n", convertedInputs.stream().map(Integer::toHexString).map(it->"0x"+it).collect(Collectors.joining(",")));
 
-        System.out.printf("expected = {%s}\n", convertLookAt.stream().map(Integer::toHexString).map(it->"0x"+it).collect(Collectors.joining(",")));
+        System.out.printf("expected = { %s}\n", convertLookAt.stream().map(Integer::toHexString).map(it->"0x"+it).collect(Collectors.joining(",")));
 
 
 

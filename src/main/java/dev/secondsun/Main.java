@@ -29,18 +29,18 @@ public class Main {
         private final Resources resources = new Resources();
         private final int screenWidth = 512 ;
         private final int screenHeight = 384 ;
-        private int camX=128, camY = 128, camZ = 128;
+        private int camX=0, camY = 128, camZ = 0;
         private int theta = 1;
 
         @Override
         public void paint(Graphics g) {
             super.paint(g);
 
-            RandomPyramids  board = new RandomPyramids(128, 0);
+            RandomPyramids  board = new RandomPyramids(256, 0);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
             var position = new Vertex(camX,camY,camZ);
-            var lookAt = new Vertex(0,0,0);
+            var lookAt = new Vertex(0,128,128);
             var forward = position.subtract(lookAt).normalize();
             var yAxis = new Vertex(0f,1f,0f);
             var right = yAxis.cross(forward).normalize();
@@ -48,9 +48,14 @@ public class Main {
 
             var camera = new Camera(position, lookAt, up);
 
-            board.lookAt(camera, new Vertex2D(3f,3f), new Vertex2D(screenWidth/2,screenHeight/2));
-            var tiles = board.tree.traverse(camera.getFrom());
+            var foV =new Vertex2D(6f,6f);
+            var worldCenter = new Vertex2D(screenWidth/2,screenHeight/2);
 
+
+            board.lookAt(camera, foV, worldCenter);
+            float[][] frustum = camera.frustum(Math.toRadians(90));
+            var tiles = board.tree.traverse(camera, frustum);
+            System.out.printf("Tiles : %d \n", tiles.size());
             BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
             var rgb = engine.draw(tiles);
 
@@ -69,9 +74,9 @@ public class Main {
             }
 
             theta+=1;
-            camX= (int) (-256*Math.sin(Math.toRadians(theta)));
+           // camX= (int) (-256*Math.sin(Math.toRadians(theta)));
             //camY= (int) (256*Math.cos(Math.toRadians(theta)));
-            camZ= (int) (-256*Math.cos(Math.toRadians(theta)));
+            //camZ= (int) (-256*Math.cos(Math.toRadians(theta)));
             repaint();
         }
     }

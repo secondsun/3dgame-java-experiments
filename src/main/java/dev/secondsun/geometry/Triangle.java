@@ -1,6 +1,8 @@
 package dev.secondsun.geometry;
 
 
+import java.awt.*;
+
 public class Triangle{
 
     public Vertex v1, v2,v3;
@@ -24,6 +26,10 @@ public class Triangle{
         this.textureId = textureId;
         this.texture =null;
 
+    }
+
+    public Triangle(Vertex vertex, Vertex vertex1, Vertex vertex2) {
+        this(vertex,vertex1,vertex2, Color.BLACK.getRGB());
     }
 
     public Triangle scale(float factor) {
