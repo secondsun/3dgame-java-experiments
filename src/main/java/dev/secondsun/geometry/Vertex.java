@@ -13,11 +13,13 @@ public class Vertex {
     public float x;
     public float y;
     public float z;
+    public float w = 1;
 
     public Vertex(Vertex toCopy) {
         this.x = toCopy.x;
         this.y = toCopy.y;
         this.z = toCopy.z;
+        this.w = toCopy.w;
     }
 
     public Vertex(float x, float y, float z) {
@@ -195,13 +197,16 @@ public class Vertex {
     }
 
     public Vertex   transform(float[][] matrix) {
-        var nx = x*matrix[0][0] +y*matrix[0][1] +z*matrix[0][2] + matrix[0][3];
-        var ny = x*matrix[1][0] +y*matrix[1][1] +z*matrix[1][2] + matrix[1][3];
-        var nz = x*matrix[2][0] +y*matrix[2][1] +z*matrix[2][2] + matrix[2][3];
+        var nx = x*matrix[0][0] +y*matrix[0][1] +z*matrix[0][2] + w * matrix[0][3];
+        var ny = x*matrix[1][0] +y*matrix[1][1] +z*matrix[1][2] + w * matrix[1][3];
+        var nz = x*matrix[2][0] +y*matrix[2][1] +z*matrix[2][2] + w * matrix[2][3];
+        var nw = x*matrix[3][0] +y*matrix[3][1] +z*matrix[3][2] + w * matrix[3][3];
 
-        this.x = nx;
-        this.y = ny;
-        this.z = nz;
+        this.w = 1;
+        this.x = nx/nw;
+        this.y = ny/nw;
+        this.z = nz/nw;
+
 
         return this;
     }

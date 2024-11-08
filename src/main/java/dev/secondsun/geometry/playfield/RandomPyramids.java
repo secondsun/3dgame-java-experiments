@@ -20,7 +20,7 @@ public class RandomPyramids implements Model {
 
     List<Triangle> triangles = new ArrayList<>();
     Random random;
-    public OctTree tree = new OctTree(new Range(-absRange,absRange),new Range(-absRange,absRange),new Range(-absRange,absRange));
+    public OctTree tree = new OctTree(absRange, Vertex.ZERO);
 
     public RandomPyramids(int count, int seed) {
         random = new Random(seed);

@@ -74,16 +74,17 @@ public class Camera {
     public float[][] frustum(double fov) {
         var frustumCorners = new ArrayList<Vertex>();
         float [][] toReturn = new float[7][4];
+        var farv = 256f;
         var lookAt = lookAt();
 
         frustumCorners.add(new Vertex((float) Math.tan(fov/2),(float) Math.tan(-fov/2),1f));//p1.z
         frustumCorners.add(new Vertex((float) Math.tan(-fov/2),(float) Math.tan(-fov/2),1f));//p2.z
-        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* 128f,(float) Math.tan(-fov/2) * 128f,128f));//p3.z
-        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* 128f,(float) Math.tan(-fov/2) * 128f,128f));//p4.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p3.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p4.z
         frustumCorners.add(new Vertex((float) Math.tan(fov/2),(float) Math.tan(fov/2),1f));//p5.z
         frustumCorners.add(new Vertex((float) Math.tan(-fov/2),(float) Math.tan(fov/2),1f));//p6.z
-        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* 128f,(float) Math.tan(fov/2) * 128f,128f));//p7.z
-        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* 128f,(float) Math.tan(fov/2) * 128f,128f));//p8.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p7.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p8.z
 
         var lookatUndo = new SimpleMatrix(lookAt).invert().toArray2();
 
@@ -104,17 +105,17 @@ public class Camera {
         Triangle far = new Triangle(frustumCorners.get(2),frustumCorners.get(3),frustumCorners.get(7));
 
         var temp = right.normal().normalize();
-        toReturn[0] = new float[] {temp.x,temp.y,temp.z, 0f};
+        toReturn[0] = new float[] {temp.x,temp.y,-temp.z, 0f};
         temp = left.normal().normalize();
-        toReturn[1] = new float[] {temp.x,temp.y,temp.z, 0f};
+        toReturn[1] = new float[] {temp.x,temp.y,-temp.z, 0f};
         temp = bottom.normal().normalize();
-        toReturn[3] = new float[] {temp.x,temp.y,temp.z, 0f};
+        toReturn[2] = new float[] {temp.x,temp.y,-temp.z, 0f};
         temp = top.normal().normalize();
-        toReturn[2] = new float[] {temp.x,temp.y,temp.z, 0f};
+        toReturn[3] = new float[] {temp.x,temp.y,-temp.z, 0f};
         temp = far.normal().normalize();
-        toReturn[4] = new float[] {temp.x,temp.y,temp.z, 128f};
+        toReturn[4] = new float[] {temp.x,temp.y,-temp.z, 128f};
         temp = near.normal().normalize();
-        toReturn[5] = new float[] {temp.x,temp.y,temp.z, 1f};
+        toReturn[5] = new float[] {temp.x,temp.y,-temp.z, 1f};
 
 
         return toReturn;

@@ -12,15 +12,19 @@ import java.util.stream.Collectors;
 
 public class OctTree {
     private final Range xyPlaneRange, xzPlaneRange, yzPlaneRange;
+    private final Vertex center;
+    private final float range;
     //Front/Back in Order xyPlane, xzPlane, yzPLane
     private OctNode FFF, FFB, FBF, FBB, BFF,BFB, BBF, BBB;
 
 
-    public OctTree(Range xyPlaneRange, Range xzPlaneRange, Range yzPlaneRange) {
+    public OctTree(float range, Vertex center) {
         FFF =  FFB =  FBF= FBB = BFF=BFB= BBF= BBB = OctNode.Empty;
-        this.xyPlaneRange = xyPlaneRange;
-        this.xzPlaneRange = xzPlaneRange;
-        this.yzPlaneRange = yzPlaneRange;
+        this.center = center;
+        this.range = range;
+        this.xyPlaneRange = new Range(-range+ center.z, range+ center.z);
+        this.xzPlaneRange = new Range(-range+ center.y, range+ center.y);
+        this.yzPlaneRange = new Range(-range+ center.x, range+ center.x);
     }
 
     public List<Triangle> traverse(Camera camera, float[][] frustum) {
@@ -70,36 +74,56 @@ public class OctTree {
             }
         });
 
-        return toReturn.stream().collect(Collectors.toUnmodifiableList());
+        return toReturn.stream().toList();
     }
 
     boolean isInFrustum(float[][] frustum )
     {
-        int p;
-        var z = xyPlaneRange.mid();
-        var y = xzPlaneRange.mid();
-        var x = yzPlaneRange.mid();
-        var size = xyPlaneRange.length();
-        for( p = 0; p < 6; p++ )
-        {
-            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
-                continue;
-            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
-                continue;
-            return false;
+//        int p;
+//        var z = center.z;
+//        var y = center.y;
+//        var x = center.x;
+//        var size = this.range;
+//        for( p = 0; p < 6; p++ )
+//        {
+//            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z - size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x - size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x + size) + frustum[p][1] * (y - size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x - size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+//                continue;
+//            if( frustum[p][0] * (x + size) + frustum[p][1] * (y + size) + frustum[p][2]    * (z + size) + frustum[p][3] > 0 )
+//                continue;
+//            return false;
+//        }
+//        return true;
+
+        for ( var i = 0; i < 6; i ++ ) {
+
+			var plane = new Vertex(frustum[ i ][0],frustum[ i ][1],frustum[ i ][2]);
+            // corner at max distance
+            var _vector = new Vertex(plane.normalize().x > 0 ? center.x+range : center.x-range,
+                                     plane.normalize().y > 0 ? center.y+range : center.y-range,
+                                     plane.normalize().z > 0 ? center.z+range : center.z-range);
+
+
+
+            if ( Maths.dot(plane.normalize(),( _vector )) + frustum[i][3] < 0 ) {
+
+                return false;
+
+            }
+
         }
+
         return true;
     }
 
@@ -112,13 +136,13 @@ public class OctTree {
                     if (FFF == OctNode.Empty) {
                         FFF = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        FFF = handleInsert(point, polygon, FFF, new OctTree(xyPlaneRange.firstHalf(), xzPlaneRange.secondHalf(), yzPlaneRange.secondHalf()));
+                        FFF = handleInsert(point, polygon, FFF, new OctTree(range/2f, new Vertex(center.x + range/2, center.y + range/2f, center.z - range/2f)));
                     }
                 } else {
                     if (FFB == OctNode.Empty) {
                         FFB = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        FFB = handleInsert(point, polygon, FFB, new OctTree(xyPlaneRange.firstHalf(), xzPlaneRange.secondHalf(), yzPlaneRange.firstHalf()));
+                        FFB = handleInsert(point, polygon, FFB, new OctTree(range/2f, new Vertex(center.x - range/2, center.y + range/2f, center.z - range/2f)));
                     }
                 }
             } else {
@@ -126,13 +150,13 @@ public class OctTree {
                     if (FBF == OctNode.Empty) {
                         FBF = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        FBF = handleInsert(point, polygon, FBF, new OctTree(xyPlaneRange.firstHalf(), xzPlaneRange.firstHalf(), yzPlaneRange.secondHalf()));
+                        FBF = handleInsert(point, polygon, FBF, new OctTree(range/2f, new Vertex(center.x + range/2f, center.y - range/2f, center.z - range/2f)));
                     }
                 } else {
                     if (FBB == OctNode.Empty) {
                         FBB = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        FBB = handleInsert(point, polygon, FBB, new OctTree(xyPlaneRange.firstHalf(), xzPlaneRange.firstHalf(), yzPlaneRange.firstHalf()));
+                        FBB = handleInsert(point, polygon, FBB, new OctTree(range/2f, new Vertex(center.x - range/2f, center.y - range/2f, center.z - range/2f)));
                     }
                 }
             }
@@ -142,13 +166,13 @@ public class OctTree {
                     if (BFF == OctNode.Empty) {
                         BFF = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        BFF = handleInsert(point, polygon, BFF, new OctTree(xyPlaneRange.secondHalf(), xzPlaneRange.secondHalf(), yzPlaneRange.secondHalf()));
+                        BFF = handleInsert(point, polygon, BFF, new OctTree(range/2f, new Vertex(center.x + range/2f, center.y + range/2f, center.z + range/2f)));
                     }
                 } else {
                     if (BFB == OctNode.Empty) {
                         BFB = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        BFB = handleInsert(point, polygon, BFB, new OctTree(xyPlaneRange.secondHalf(), xzPlaneRange.secondHalf(), yzPlaneRange.firstHalf()));
+                        BFB = handleInsert(point, polygon, BFB, new OctTree(range/2f, new Vertex(center.x - range/2f, center.y + range/2f, center.z + range/2f)));
                     }
                 }
             } else {
@@ -156,13 +180,13 @@ public class OctTree {
                     if (BBF == OctNode.Empty) {
                         BBF = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        BBF = handleInsert(point, polygon, BBF, new OctTree(xyPlaneRange.secondHalf(), xzPlaneRange.firstHalf(), yzPlaneRange.secondHalf()));
+                        BBF = handleInsert(point, polygon, BBF, new OctTree(range/2f, new Vertex(center.x + range/2f, center.y - range/2f, center.z + range/2f)));;
                     }
                 } else {
                     if (BBB == OctNode.Empty) {
                         BBB = new OctNode.PolygonNode(point, polygon);
                     } else {
-                        BBB =handleInsert(point, polygon, BBB, new OctTree(xyPlaneRange.secondHalf(), xzPlaneRange.firstHalf(), yzPlaneRange.firstHalf()));
+                        BBB =handleInsert(point, polygon, BBB, new OctTree(range/2f, new Vertex(center.x - range/2f, center.y - range/2f, center.z + range/2f)));
                     }
                 }
             }

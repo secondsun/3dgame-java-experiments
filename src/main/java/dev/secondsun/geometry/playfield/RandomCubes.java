@@ -19,7 +19,7 @@ public class RandomCubes implements Model {
 
     List<Triangle> triangles = new ArrayList<>();
     Random random;
-    public OctTree tree = new OctTree(new Range(-absRange,absRange),new Range(-absRange,absRange),new Range(-absRange,absRange));
+    public OctTree tree = new OctTree(absRange, Vertex.ZERO);
 
     public RandomCubes(int count, int i) {
         random = new Random(i);
