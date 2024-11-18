@@ -71,18 +71,21 @@ public class Camera {
         return camToWorld;
     }
 
-    public float[][] frustum(double fov) {
+    public java.util.List<Triangle> frustumModel(double fov) {
         var frustumCorners = new ArrayList<Vertex>();
         float [][] toReturn = new float[7][4];
         var farv = 256f;
+        var nearv = 64f;
         var lookAt = lookAt();
 
-        frustumCorners.add(new Vertex((float) Math.tan(fov/2),(float) Math.tan(-fov/2),1f));//p1.z
-        frustumCorners.add(new Vertex((float) Math.tan(-fov/2),(float) Math.tan(-fov/2),1f));//p2.z
+
+
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)*nearv,(float) Math.tan(-fov/2)*nearv, nearv));//p1.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)*nearv,(float) Math.tan(-fov/2)*nearv, nearv));//p2.z
         frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p3.z
         frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p4.z
-        frustumCorners.add(new Vertex((float) Math.tan(fov/2),(float) Math.tan(fov/2),1f));//p5.z
-        frustumCorners.add(new Vertex((float) Math.tan(-fov/2),(float) Math.tan(fov/2),1f));//p6.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)*nearv,(float) Math.tan(fov/2)*nearv, nearv));//p5.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)*nearv,(float) Math.tan(fov/2)*nearv, nearv));//p6.z
         frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p7.z
         frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p8.z
 
@@ -97,10 +100,54 @@ public class Camera {
 
         frustumCorners.forEach(vertext -> vertext.transform(lookAtUndoMatrix));
 
-        Triangle top = new Triangle(frustumCorners.get(0),frustumCorners.get(1),frustumCorners.get(3));
-        Triangle right = new Triangle(frustumCorners.get(3),frustumCorners.get(1),frustumCorners.get(5));
-        Triangle bottom = new Triangle(frustumCorners.get(7),frustumCorners.get(5),frustumCorners.get(4));
-        Triangle left = new Triangle(frustumCorners.get(2),frustumCorners.get(6),frustumCorners.get(4));
+        Triangle bottom = new Triangle(frustumCorners.get(0),frustumCorners.get(3),frustumCorners.get(1), Color.RED.getRGB());
+        Triangle bottom2 = new Triangle(frustumCorners.get(0),frustumCorners.get(2),frustumCorners.get(3), Color.RED.getRGB());
+        Triangle left = new Triangle(frustumCorners.get(1),frustumCorners.get(3),frustumCorners.get(5), Color.GREEN.getRGB());
+        Triangle left2 = new Triangle(frustumCorners.get(5),frustumCorners.get(3),frustumCorners.get(7), Color.GREEN.getRGB());
+        Triangle top = new Triangle(frustumCorners.get(7),frustumCorners.get(4),frustumCorners.get(5), Color.WHITE.getRGB());
+        Triangle top2 = new Triangle(frustumCorners.get(6),frustumCorners.get(4),frustumCorners.get(7), Color.WHITE.getRGB());
+        Triangle right = new Triangle(frustumCorners.get(2),frustumCorners.get(4),frustumCorners.get(6), Color.YELLOW.getRGB());
+        Triangle right2 = new Triangle(frustumCorners.get(2),frustumCorners.get(0),frustumCorners.get(4), Color.YELLOW.getRGB());
+        Triangle near = new Triangle(frustumCorners.get(0),frustumCorners.get(5),frustumCorners.get(4), Color.BLUE.getRGB());
+        Triangle near2 = new Triangle(frustumCorners.get(0),frustumCorners.get(1),frustumCorners.get(5), Color.BLUE.getRGB());
+        Triangle far = new Triangle(frustumCorners.get(2),frustumCorners.get(7),frustumCorners.get(3), Color.PINK.getRGB());
+        Triangle far2 = new Triangle(frustumCorners.get(2),frustumCorners.get(6),frustumCorners.get(7), Color.PINK.getRGB());
+
+        return java.util.List.of(top,top2,right,right2,bottom,bottom2,left,left2,near,near2,far,far2);
+
+    }
+
+    public float[][] frustum(double fov) {
+        var frustumCorners = new ArrayList<Vertex>();
+        float [][] toReturn = new float[7][4];
+        var farv = 256f;
+        var nearv = 4f;
+        var lookAt = lookAt();
+
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* nearv,(float) Math.tan(-fov/2)* nearv, nearv));//p1.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* nearv,(float) Math.tan(-fov/2)* nearv, nearv));//p2.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p3.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(-fov/2) * farv,farv));//p4.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* nearv,(float) Math.tan(fov/2)* nearv, nearv));//p5.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* nearv,(float) Math.tan(fov/2)* nearv, nearv));//p6.z
+        frustumCorners.add(new Vertex((float) Math.tan(fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p7.z
+        frustumCorners.add(new Vertex((float) Math.tan(-fov/2)* farv,(float) Math.tan(fov/2) * farv,farv));//p8.z
+
+        var lookatUndo = new SimpleMatrix(lookAt).invert().toArray2();
+
+        var lookAtUndoMatrix = new float[][] {
+                {(float)lookatUndo[0][0],(float)lookatUndo[0][1],(float)lookatUndo[0][2],(float)lookatUndo[0][3]},
+                {(float)lookatUndo[1][0],(float)lookatUndo[1][1],(float)lookatUndo[1][2],(float)lookatUndo[1][3]},
+                {(float)lookatUndo[2][0],(float)lookatUndo[2][1],(float)lookatUndo[2][2],(float)lookatUndo[2][3]},
+                {(float)lookatUndo[3][0],(float)lookatUndo[3][1],(float)lookatUndo[3][2],(float)lookatUndo[3][3]},
+        };
+
+        frustumCorners.forEach(vertext -> vertext.transform(lookAtUndoMatrix));
+
+        Triangle bottom = new Triangle(frustumCorners.get(0),frustumCorners.get(1),frustumCorners.get(3));
+        Triangle left = new Triangle(frustumCorners.get(3),frustumCorners.get(1),frustumCorners.get(5));
+        Triangle top = new Triangle(frustumCorners.get(7),frustumCorners.get(5),frustumCorners.get(4));
+        Triangle right = new Triangle(frustumCorners.get(2),frustumCorners.get(6),frustumCorners.get(4));
         Triangle near = new Triangle(frustumCorners.get(0),frustumCorners.get(4),frustumCorners.get(5));
         Triangle far = new Triangle(frustumCorners.get(2),frustumCorners.get(3),frustumCorners.get(7));
 

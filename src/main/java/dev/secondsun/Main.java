@@ -14,6 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -40,8 +43,8 @@ public class Main {
             CornerPyramids board = new CornerPyramids(16, 5);
             Renderer engine = new ScanLineEngine(screenWidth, screenHeight, board, resources);
 
-            var lookAt = new Vertex((float) 0, (float) 0, (float) (0+theta));
-            var position = new Vertex(0, (float) 0, (float) (-16+theta));
+            var lookAt = new Vertex(0,0,1);
+            var position = new Vertex(0,0,32);
             var forward = position.subtract(lookAt).normalize();
             var yAxis = new Vertex(0f,1f,0f);
             var right = yAxis.cross(forward).normalize();
@@ -49,12 +52,22 @@ public class Main {
 
             var camera = new Camera(position, lookAt, up);
 
-            var foV =new Vertex2D(3f,3f);
+            var position2 = new Vertex((float) 0, (float) 0, (float) (0));
+            var lookAt2 = new Vertex((float) (16f*cos(theta)), (float) 16, (float) (16f*sin(theta)));
+            var forward2 = position2.subtract(lookAt2).normalize();
+            var yAxis2 = new Vertex(0f,1f,0f);
+            var right2 = yAxis2.cross(forward2).normalize();
+            var up2 = forward2.cross(right2).normalize();
+
+            var camera2 = new Camera(position2, lookAt2, up2);
+
+            var foV =new Vertex2D(.5f,.5f);
             var worldCenter = new Vertex2D(screenWidth/2,screenHeight/2);
 
             try {
                 float[][] frustum = camera.frustum(Math.toRadians(45));
-                var tiles = board.tree.traverse(camera, frustum);
+                //var tiles = board.tree.traverse(camera,frustum);
+                var tiles = camera2.frustumModel(Math.toRadians(20));
                 var lookAtM = camera.lookAt();
                 float[][] fovMatrix = {{foV.x,0,0, worldCenter.x},
                         {0, foV.y,0, worldCenter.y},
@@ -63,6 +76,7 @@ public class Main {
                 tiles.forEach((tile -> tile.transform(lookAtM)));
                 tiles.forEach(tile -> tile.transform(fovMatrix));
 
+//                System.out.printf("Tiles : %d \n", tiles.size());
                 System.out.printf("Theta : %.2f \n", theta);
                 BufferedImage image = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
                 var rgb = engine.draw(tiles);
@@ -83,7 +97,7 @@ public class Main {
             } catch (Exception ignore) {
                 throw new RuntimeException(ignore);
             }
-            theta+=.05;
+           // theta+=.05;
 //            camX= (int) (-(64)*Math.sin(Math.toRadians(theta)));
 //            //camY= camY-theta;
 //            camZ= (int) (-(64)*Math.cos(Math.toRadians(theta)));
